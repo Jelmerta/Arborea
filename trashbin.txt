@@ -1,0 +1,60 @@
+ (uit Grid, nog iets nodig?)
+ 
+ Grid(int file){
+    }
+    
+    /*void Grida(){
+    	grid = new Tile[Arborea.GRID_SIZE][Arborea.GRID_SIZE];    	
+    	int middle = (int)Math.ceil(Arborea.GRID_SIZE / 2.0);
+    	
+    	System.out.println(Arborea.GRID_SIZE + " " + middle);
+    	
+    	for (int i=0; i < grid.length; i++){
+    		if (i < middle) {
+    			int amount = Arborea.GRID_SIZE - middle + i+1;
+    			//System.out.println(amount);
+    			
+    			for (int j=0; j<amount;j++){
+    				grid[i][j] = new Tile();
+    				grid[i][j].x = new Random().nextInt(800);
+    				grid[i][j].y = new Random().nextInt(600);
+    			}
+    			
+    		} else {
+    			int amount = Arborea.GRID_SIZE + middle - i-1;
+    			//System.out.println(amount);
+    			
+    			for (int j=0; j<amount;j++){
+    				grid[i][j] = new Tile();
+    				grid[i][j].x = new Random().nextInt(800);
+    				grid[i][j].y = new Random().nextInt(600);
+    			}
+    		}
+    	}
+    	//for (Tile[] tiles : grid )
+    	//	for (Tile tile : tiles ) 
+    	//		System.out.println(tile == null);
+    }*/
+    
+    
+        void Tilea(){
+    	currentFigure = null;
+    	
+    	x = 5;
+    	y = 6;
+    	
+    }
+    
+    
+    (Painter:)
+    
+    	//	for (Tile[] tiles : Arborea.grid.grid)
+	//		for (Tile tile: tiles)
+	//			if (tile != null)
+	//				g.drawImage(tile.tileImage,tile.x,tile.y,72,43,this);
+	
+	(Team:)
+	
+	    //public void addToFigures(boolean orcTeam, byte type) {
+     //   figures.add()
+    //}
