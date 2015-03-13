@@ -11,6 +11,7 @@ class Sword extends Figure {
         super(1, pos);
 		type = Figure.TYPE_SWORD;
 		weapon = 6;
+		startHitpoints = 4;
 		hit = 4;
         teamIsOrcs = false;
     }

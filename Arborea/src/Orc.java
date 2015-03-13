@@ -7,11 +7,11 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 class Orc extends Figure {
-
     Orc(Point pos){
         super(4, pos);
 		type = Figure.TYPE_ORC;
 		weapon = 8;
+		startHitpoints = 10;
 		hit = 10;       
         teamIsOrcs = true;
     }

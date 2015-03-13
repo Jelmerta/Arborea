@@ -28,6 +28,7 @@ public class ArtManager {
 	static final BufferedImage swordImage2 = flipHorizontally(createImage("Swordsman2"));
 	
 	static final BufferedImage generalImage = flipHorizontally(createImage("General"));
+	static final BufferedImage generalImage2 = flipHorizontally(createImage("General2"));
 	
 	static final BufferedImage goblinImage = createImage("Goblin");
 	
@@ -35,6 +36,9 @@ public class ArtManager {
 
 	static final BufferedImage iconAttack = createImage("iconAttack");
 	static final BufferedImage iconMove = createImage("iconMove");
+	static final BufferedImage iconHealthbar = createImage("healthbar");
+	static final BufferedImage iconHealthbarGreen = createImage("healthbarGreen");
+	static final BufferedImage iconHealthbarRed = createImage("healthbarRed"); 
 	
 	// loads images straight from file
 	private static BufferedImage createImage(String name) {

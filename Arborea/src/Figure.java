@@ -17,7 +17,11 @@ abstract class Figure {
 	// TODO deze images zijn dubbel met artmanager
 	static final BufferedImage iconAttack = ArtManager.iconAttack;
 	static final BufferedImage iconMove = ArtManager.iconMove;
+	static final BufferedImage iconHealthbar = ArtManager.iconHealthbar;
+	static final BufferedImage iconHealthbarGreen = ArtManager.iconHealthbarGreen;
+	static final BufferedImage iconHealthbarRed = ArtManager.iconHealthbarRed;
 	
+	int startHitpoints;
     int hit, weapon, type;
     Point location;
     boolean teamIsOrcs;
@@ -171,7 +175,7 @@ abstract class Figure {
 		return (!hasAttacked);
 	}
 	
-	private int getHitpoints() {
+	public int getHitpoints() {
 		return this.hit;
 	}
 	

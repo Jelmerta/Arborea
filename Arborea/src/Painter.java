@@ -61,11 +61,13 @@ class Painter extends JPanel {
 			Point pixelCoords = t.getPixelCoords();
 			
 			Figure currentFigure = t.getFigure();
+			int figureHealth; 
 			
 			// TODO maak eleganter (geen dubbele code)
 			// 	-mogelijk door abstract functie in figure
 			//	-returnt plaatje , misschien ander returnt x,y
-			
+			// ja waarom getFigure hierboven en dan nog checken of het een figure heeft, 
+			// als het er geen heeft kan je toch direct uit functie breaken?
 			if (currentFigure == null) continue;
 			g.drawImage(currentFigure.getStandSprite(), pixelCoords.x+10, pixelCoords.y-20,this);
 			
@@ -84,6 +86,12 @@ class Painter extends JPanel {
 			}
 			if (t.hasFigure() && t.getFigure().hasAttacksLeft()){
 				g.drawImage(Figure.iconAttack, pixelCoords.x + 65, pixelCoords.y - 10, this);
+			}
+			if(t.hasFigure()) {
+				figureHealth = currentFigure.getHitpoints();
+				g.drawImage(Figure.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
+				g.drawImage(Figure.iconHealthbarGreen, pixelCoords.x + 11, pixelCoords.y + 50 + 1, this); //get new image using percentages
+				g.drawImage(Figure.iconHealthbarRed, pixelCoords.x + 11, pixelCoords.y + 50 + 1, this);
 			}
 			
 		}

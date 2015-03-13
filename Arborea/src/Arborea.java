@@ -121,9 +121,9 @@ class Arborea {
 			screener.repaint();
 			screener.rewrite();
 		}
-		//musicThread.stop(); // TODO dont use stop, dus gewoon niet gebruiken als het toch geen nut heeft?
+		//musicThread.stop(); // TODO dont use stop. weet je zeker dat het nut heeft? muziek stopt bij mij gewoon
 	}
-
+	
 	// Changes the current game state if necessary
 	void changeGameState() {
 		if(grid.getTeam(true).isEmpty()) {

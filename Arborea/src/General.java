@@ -7,18 +7,19 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 class General extends Figure {
-	
 	General(Point pos){
         super(2, pos);
 		type = Figure.TYPE_GENERAL;
 		weapon = 8;
+		startHitpoints = 5;
 		hit = 5;
         teamIsOrcs = false;
     }
 
 	@Override
 	void setUpStandSprites() {
-		standSprites = new ArrayList<BufferedImage>(1);
+		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.generalImage);
+		standSprites.add(ArtManager.generalImage2);
 	}
 }

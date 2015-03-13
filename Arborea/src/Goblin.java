@@ -11,6 +11,7 @@ class Goblin extends Figure {
         super(3, pos);
 		type = Figure.TYPE_GOBLIN;
 		weapon = 4;
+		startHitpoints = 3;
 		hit = 3;
         teamIsOrcs = true;
     }
