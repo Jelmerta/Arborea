@@ -1,4 +1,7 @@
-import java.awt.event.MouseAdapter;
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;

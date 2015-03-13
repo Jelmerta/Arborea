@@ -1,14 +1,22 @@
-import java.awt.image.BufferedImage;
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
 
+import java.awt.image.BufferedImage;
 import java.awt.Point;
+
 import java.util.HashMap;
 
 class Tile {
 	
 	private final static BufferedImage tileImage = ArtManager.tile3;
 	private final static BufferedImage tileMove = ArtManager.tileMove3;
-	final static BufferedImage mudImage = ArtManager.mud;
-	final static BufferedImage selectImage = ArtManager.select;
+	private final static BufferedImage tileAttack = ArtManager.tileAttack3;
+	private final static BufferedImage mudImage = ArtManager.mud;
+	private final static BufferedImage selectImage = ArtManager.select;
+	
+	final static int SELECT_RECT = 40;
+	final static int SELECT_TRI = 28;
 	
 	BufferedImage image = tileImage;
 	
@@ -24,6 +32,9 @@ class Tile {
     
     // use alternative tile image when in selection radius
     boolean inRadius = false;
+    
+    //
+    boolean hasBeenDrawn = false;
     
     // coordinates for painting ?
     // note that if index (not coordinate) of X is odd,
@@ -184,18 +195,42 @@ class Tile {
     // changes images of selected tiles neighbors to their alternative
     void changeNeighbourImages(){
         for (int i = 0; i < 6; i++){
-        	if (this.neighbours[i] != null)
-        		if (!this.neighbours[i].hasFigure())
-        			this.neighbours[i].image = tileMove;
-        		else {
+        	if (this.neighbours[i] != null) {
+        		if (!this.neighbours[i].hasFigure()) {
+        			if (this.getFigure().hasMovesLeft())
+        				this.neighbours[i].image = tileMove;
+        		} else {
         			// if (figure .belongsTo -> opposite team)
         			// this.neighbours[i].image = tileAttack;
+        			if (this.getFigure().hasAttacksLeft()) {
+	        			if (this.neighbours[i].hasFigure()) {
+	        			    Figure neighbourFigure = this.neighbours[i].getFigure(); 
+	        				if (!Arborea.grid.getTeam(neighbourFigure.getTeam()).contains(currentFigure))
+	        					this.neighbours[i].image = tileAttack;
+	        			}
+        			}
         		}
+        	}
         }
     }
     
     public Point getLocation() {
     	return coords;
+    }
+    
+    // returns image
+    BufferedImage getImage(){
+    	return image;
+    }
+    
+    // returns image
+    BufferedImage getMudImage(){
+    	return mudImage;
+    }
+    
+    // returns image
+    BufferedImage getSelectImage(){
+    	return selectImage;
     }
 	
 	// returns string representation of tile

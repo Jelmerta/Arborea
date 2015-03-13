@@ -1,3 +1,7 @@
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -5,8 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-
 public class Texter extends JPanel {
+	
+	private static final long serialVersionUID = 1L;
 	
 	JTextArea ta;
 	

@@ -1,25 +1,28 @@
 must:
 
-add AI
-not all maps work?
-make code clean
-put maps in separate folder
+add AI (gebruik Queue in arborea.java en zet AI zelf in figure?)
+hitpoints
 verslag
-
 
 extra:
 
 add tilehover graphics
 add winning/losing screen
 add different cursor when attacking or a menu
-add looped music (with different songs)
-add title screen
-add character animations (like move+attack) / SFX
+add character animations (like move/attack/passive/beinghit) / SFX
 add objects to field
 add more units (archery/mage)
 add special attacks
 add other game mode
 add items (increase stats)
+get money
 use panel to store info about game such as character stats when clicking characters
 make end turn button look better
-when no moves left and selecting active unit, make neighbour tiles different colour
+when no moves left and selecting active unit, make neighbour tiles different colour (same with friendlies you cant go to)
+layers so not everything has to be redrawn each frame?
+snake
+
+kind of unimportant:
+
+not all maps work? (because it's checking each tile) (doesn't really matter)
+make code clean //Arborea.grid / Points/hashmap

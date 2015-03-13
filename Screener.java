@@ -1,3 +1,7 @@
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -5,16 +9,16 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 
 //
 class Screener extends JFrame {
 
+	private static final long serialVersionUID = 1L;
+	
 	private final Painter painter;
 	private final Texter texter;
 	private final Clicker clicker;
 	private JButton endTurn;
-	private boolean turnEnded;
 	
 	Screener(String windowName){
 		// creates default JFrame object
@@ -71,19 +75,11 @@ class Screener extends JFrame {
 	
 	private class HandlerClass implements ActionListener {
 		
-		
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			//JOptionPane.showMessageDialog(null, String.format("%s", event.getActionCommand()));
-			turnEnded = true;
+			Arborea.turnEnded = true;
 		}
 	}
 	
-	public boolean getTurnEnd() {
-		return turnEnded;
-	}
-	
-	public void setTurnEnd(boolean turnEnd) {
-		this.turnEnded = turnEnd;
-	}
 }

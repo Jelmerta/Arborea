@@ -1,5 +1,8 @@
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.awt.Point;
@@ -10,11 +13,9 @@ import java.io.IOException;
 
 class Grid {
     Tile[][] grid;
-    //static ArrayList<Tile> gridTiles;
     
-    static HashMap<Point, Tile> tiles;
-    static Team humans, orcs;
-    
+    HashMap<Point, Tile> tiles;
+    Team humans, orcs;    
     
     // default grid construction
     Grid(){
@@ -23,7 +24,7 @@ class Grid {
         int half = Arborea.GRID_SIZE/2;
         Point currentPoint;
         
-        int gx = 400, gy = 300;
+        // int gx = 400, gy = 300; TODO unused
         
         for (int row = 0; row < Arborea.GRID_SIZE; row++) {
             int cols = Arborea.GRID_SIZE - java.lang.Math.abs(row - half);
@@ -34,7 +35,6 @@ class Grid {
                 currentPoint = new Point(xLbl, yLbl);
                 Tile currentTile = new Tile(currentPoint);
                 tiles.put(currentPoint, currentTile);
-                //System.out.println(tiles.values());
                 
                 int tx = (int) (400 + 72 * ((col * 2 + 1 - cols)/2));
                 int ty = (int) (300 + 43 * ((row - half) *2));
@@ -45,8 +45,6 @@ class Grid {
                 currentTile.y = ty;
             }
         }
-        
-        //System.out.println(tiles.size());
         
         // calculate neighbours
 		for (Entry<Point, Tile> entry : tiles.entrySet()){
@@ -108,91 +106,63 @@ class Grid {
 		Tile nextTile = currentTile;
 		
 		while (nextTile != null){
-			printNeighbours(currentTile);
 			if (clickPoint.x > currentTile.pixelCoords.x + currentTile.image.getWidth()){
-
-				System.out.println("greater");
-				
 				nextTile = currentTile.neighbours[3];
 				if (nextTile != null){
 					int currentDif = clickPoint.x - currentTile.middle.x;
 					int nextDif = clickPoint.x - nextTile.middle.x;
-					
-					System.out.println(currentTile.middle.x + " " + nextTile.middle.x +  " " + currentDif + " "+ nextDif);
-					
+
 					if (currentDif < nextDif) break;
-					System.out.println("didnt break from greater");
 				}
 			}
 			else if (clickPoint.x < currentTile.pixelCoords.x) {
-				System.out.println("lesser");
 				nextTile = currentTile.neighbours[0];
 			}
 			else {
-				System.out.println("breaking");
-				
 				nextTile = currentTile.neighbours[3];
 				if (nextTile != null){
 					int currentDif = Math.abs(clickPoint.x - currentTile.middle.x);
 					int nextDif = Math.abs(clickPoint.x - nextTile.middle.x);
-					
-					System.out.println(currentTile.middle.x + " " + nextTile.middle.x +  " " + currentDif + " "+ nextDif);
-					
 					if (currentDif > nextDif) currentTile = nextTile;
 				}
 				break;
 			}
-
-			//if (nextTile != null)
-			//	System.out.println(nextTile.pixelCoords.x);
-
 			currentTile = nextTile;		
 		}
 		
 		nextTile = currentTile;		
-		while (nextTile != null){
-			//printNeighbours(currentTile);
-			
-			//System.out.println(currentTile.pixelCoords.y);
-			
+		while (nextTile != null){			
 			if (clickPoint.y > currentTile.pixelCoords.y + currentTile.image.getHeight())
 				nextTile = currentTile.neighbours[5];
 			else if (clickPoint.y < currentTile.pixelCoords.y)
 				nextTile = currentTile.neighbours[2];
 			else break;
-	
-			//if (nextTile != null)
-			//	System.out.println(nextTile.pixelCoords.y);
-	
 			currentTile = nextTile;		
 		}		
 		return currentTile;
 	}
-    
-    // Prints the coordinates or null for all tiles connected
     void printNeighbours(Tile t) {
 		String s = t.coords.x + "," + t.coords.y + ": ";
 	    for (Tile tn : t.neighbours){
 	        if (tn == null) s += "null ";
 	        else s += tn.coords.x + "," + tn.coords.y + " ";
 		}
-		System.out.println(s);
+	    System.out.println(s);
     }
 
-    public static Tile getTile(Point coordinates) {
+    public Tile getTile(Point coordinates) {
         return tiles.get(coordinates);
     }
     
-    
+    // returns the boolean side (true orc, false man) of the team
     public ArrayList<Figure> getTeam(boolean side) {
     	return side ? orcs.getTeam() : humans.getTeam();
     }
     
-    public static void removeFromTeam(boolean side, Figure figure) {
+    public void removeFromTeam(boolean side, Figure figure) {
     	if (side)
     		orcs.remove(figure);
     	else 
     		humans.remove(figure);
     }
-    
 }

@@ -1,4 +1,10 @@
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 class Orc extends Figure {
 
@@ -9,4 +15,10 @@ class Orc extends Figure {
 		hit = 10;       
         teamIsOrcs = true;
     }
+
+	@Override
+	void setUpStandSprites() {
+		standSprites = new ArrayList<BufferedImage>(1);
+		standSprites.add(ArtManager.orcImage);
+	}
 }
