@@ -1,0 +1,24 @@
+/* ----------------------------------------------------------
+ Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
+---------------------------------------------------------- */
+
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+class General extends Figure {
+	
+	General(Point pos){
+        super(2, pos);
+		type = Figure.TYPE_GENERAL;
+		weapon = 8;
+		hit = 5;
+        teamIsOrcs = false;
+    }
+
+	@Override
+	void setUpStandSprites() {
+		standSprites = new ArrayList<BufferedImage>(1);
+		standSprites.add(ArtManager.generalImage);
+	}
+}
