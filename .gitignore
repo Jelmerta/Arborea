@@ -2,9 +2,6 @@
 
 .metadata
 
-*.wav
-*.mp3
-
 *.class
 
 # Mobile Tools for Java (J2ME)
