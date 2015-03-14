@@ -179,6 +179,10 @@ abstract class Figure {
 		return this.hit;
 	}
 	
+	public int getStartHitpoints() {
+		return this.startHitpoints;
+	}
+	
 	// Figure AI
 	public Point[] getAI() {
 		Point characterMove;
@@ -218,7 +222,7 @@ abstract class Figure {
 		
 		//eigenlijk beter met een canAttack
 		if(!neighboursAttackable.isEmpty()) {
-			characterAttackBefore = getbestAttack(Arborea.grid, neighboursAttackable);
+			characterAttackBefore = getbestAttack(Arborea.aiGrid, neighboursAttackable);
 			//randomIndex = randomizer.nextInt(neighboursAttackable.size());
 			//get best attack
 			//characterAttack = neighboursAttackable.get(randomIndex).getLocation();
@@ -341,7 +345,7 @@ abstract class Figure {
 			int currentAttackHP;
 			int lowestAttackHPBefore = 1000;
 			
-			Tile tileBefore = Arborea.grid.getTile(attackBefore);
+			Tile tileBefore = Arborea.aiGrid.getTile(attackBefore);
 			//Figure figureBefore = tileBefore.getFigure();
 			Tile tileAfter = Arborea.aiGrid.getTile(attackAfter);
 			//Figure figureAfter = tileAfter.getFigure();
@@ -349,13 +353,17 @@ abstract class Figure {
 			Tile[] neighboursAfter = tileAfter.getNeighbours();
 			
 			for(Tile currentTile : neighboursBefore) {
-				currentFigureBefore = currentTile.getFigure();
-				if((currentAdjacency = currentFigureBefore.calculateAdjacencyBonus(Arborea.grid)) < worstAdjacencyBefore) {
-					worstAdjacencyBefore = currentAdjacency;
-					worstAdjacencyFigureBefore = currentFigureBefore;
-					if((currentAttackHP = currentFigureBefore.getHitpoints()) < lowestAttackHPBefore) {
-						lowestAttackHPBefore = currentAttackHP;
-						lowestAttackHPFigureBefore = currentFigureBefore;
+				if(currentTile != null) {
+					currentFigureBefore = currentTile.getFigure();
+					if(currentFigureBefore != null) {
+						if((currentAdjacency = currentFigureBefore.calculateAdjacencyBonus(Arborea.aiGrid)) < worstAdjacencyBefore) {
+							worstAdjacencyBefore = currentAdjacency;
+							worstAdjacencyFigureBefore = currentFigureBefore;
+							if((currentAttackHP = currentFigureBefore.getHitpoints()) < lowestAttackHPBefore) {
+								lowestAttackHPBefore = currentAttackHP;
+								lowestAttackHPFigureBefore = currentFigureBefore;
+							}
+						}
 					}
 				}
 			}
@@ -367,13 +375,17 @@ abstract class Figure {
 			int lowestAttackHPAfter = 1000;
 			
 			for(Tile currentTile : neighboursAfter) {
-				currentFigureAfter = currentTile.getFigure();
-				if((currentAdjacency = currentFigureAfter.calculateAdjacencyBonus(Arborea.aiGrid)) < worstAdjacencyAfter) {
-					worstAdjacencyAfter = currentAdjacency;
-					worstAdjacencyFigureAfter = currentFigureAfter;
-					if((currentAttackHP = currentFigureAfter.getHitpoints()) < lowestAttackHPAfter) {
-						lowestAttackHPAfter = currentAttackHP;
-						lowestAttackHPFigureAfter = currentFigureAfter;
+				if(currentTile != null) {
+					currentFigureAfter = currentTile.getFigure();
+					if(currentFigureAfter != null) {
+						if((currentAdjacency = currentFigureAfter.calculateAdjacencyBonus(Arborea.aiGrid)) < worstAdjacencyAfter) {
+							worstAdjacencyAfter = currentAdjacency;
+							worstAdjacencyFigureAfter = currentFigureAfter;
+							if((currentAttackHP = currentFigureAfter.getHitpoints()) < lowestAttackHPAfter) {
+								lowestAttackHPAfter = currentAttackHP;
+								lowestAttackHPFigureAfter = currentFigureAfter;
+							}
+						}
 					}
 				}
 			}
