@@ -88,7 +88,8 @@ class MusicPlayer implements Runnable {
 				} catch (LineUnavailableException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
+					break;
 				}
 		    }
 		}

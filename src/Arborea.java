@@ -37,6 +37,12 @@ class Arborea {
     static Point mousePoint = new Point(0,0);
     static Tile selection = null;
     
+    // boolean for when browsing a menu
+    static boolean browsingMenu = true;
+    
+    // boolean for whether or not to play music
+    static boolean muteSound = false;
+    
     // text printed on the Texter [POSSIBLY REMOVE LATER]
     static String text = "";
     
@@ -105,22 +111,27 @@ class Arborea {
 		// TODO while getting input from menu
 		// while (menu.gettingInfo){	
 		//}
-		
 		while (active) {
 			try {
 				Thread.sleep(FRAMERATE);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			changeGameState();
-			if((!currentTeamIsOrcs && humansIsAI) || (humansIsAI && orcsIsAI) || (currentTeamIsOrcs && orcsIsAI)) {
-				handleAIMoves();
-				turnEnded = !turnEnded;
-			} else 
-				handleClicker();
+			
+			if (browsingMenu){
+				
+			} else {
+				changeGameState();		
+				if((!currentTeamIsOrcs && humansIsAI) || (humansIsAI && orcsIsAI) || (currentTeamIsOrcs && orcsIsAI)) {
+					handleAIMoves();
+					turnEnded = !turnEnded;
+				}
+			}
+			handleClicker();
 			screener.repaint();
 			screener.rewrite();
 		}
+		musicThread.interrupt();
 		//musicThread.stop(); // TODO dont use stop. weet je zeker dat het nut heeft? muziek stopt bij mij gewoon
 	}
 	
@@ -152,10 +163,22 @@ class Arborea {
 	}
 	
 	// handles mouse button input
-	void handleClicker(){	
+	void handleClicker(){
+		if (browsingMenu){
+			browsingMenu = false;
+		} else {
+			handleGameClicks();
+		}
+	}
+	
+	private void handleGameClicks(){
 		Figure figure = null;
 		Figure figureAttacked= null;
 	    if (leftClicked){
+	    	
+	    	// handle clicking on the mute/play button
+	    	handleMuteClick();
+	    	
 	    	Tile newSelection = grid.selectTile(lastClickPoint);
 	    	if (selection != null){
 		        selection.restoreNeighbourImages();   
@@ -204,6 +227,19 @@ class Arborea {
 		    text += t.toString() + t.pixelCoords.x + "," + t.pixelCoords.y + "\n"; 
 		}
 		// END DEBUG ^
+		
+	}
+	
+	private void handleMuteClick(){
+		if (leftClicked && lastClickPoint.x >= 700 && lastClickPoint.x <= 760 && lastClickPoint.y >= 20 && lastClickPoint.y <= 80) {
+			if (muteSound){
+				musicThread = new Thread(musicPlayer);
+				musicThread.start();
+			} else {
+				musicThread.interrupt();
+			}
+			muteSound = !muteSound;
+		}
 	}
 	
 	private void handleAIMoves() {

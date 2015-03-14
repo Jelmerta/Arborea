@@ -18,7 +18,8 @@ class Orc extends Figure {
 
 	@Override
 	void setUpStandSprites() {
-		standSprites = new ArrayList<BufferedImage>(1);
+		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.orcImage);
+		standSprites.add(ArtManager.orcImage2);
 	}
 }

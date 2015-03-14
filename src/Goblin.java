@@ -18,7 +18,8 @@ class Goblin extends Figure {
 
 	@Override
 	void setUpStandSprites() {
-		standSprites = new ArrayList<BufferedImage>(1);
+		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.goblinImage);
+		standSprites.add(ArtManager.goblinImage2);
 	}
 }

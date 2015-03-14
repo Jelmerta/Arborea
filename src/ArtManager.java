@@ -31,14 +31,22 @@ public class ArtManager {
 	static final BufferedImage generalImage2 = flipHorizontally(createImage("General2"));
 	
 	static final BufferedImage goblinImage = createImage("Goblin");
+	static final BufferedImage goblinImage2 = createImage("Goblin2");
 	
 	static final BufferedImage orcImage = createImage("Orc");
+	static final BufferedImage orcImage2 = createImage("Orc2");
 
 	static final BufferedImage iconAttack = createImage("iconAttack");
 	static final BufferedImage iconMove = createImage("iconMove");
 	static final BufferedImage iconHealthbar = createImage("healthbar");
 	static final BufferedImage iconHealthbarGreen = createImage("healthbarGreen");
 	static final BufferedImage iconHealthbarRed = createImage("healthbarRed"); 
+	
+	static final BufferedImage overlayTurn = createImage("overlayTurn");
+	static final BufferedImage overlayMen = createImage("overlayMen");
+	static final BufferedImage overlayOrcs = createImage("overlayOrc");
+	static final BufferedImage overlaySound = createImage("overlaySound");
+	static final BufferedImage overlayMute = createImage("overlayMute");
 	
 	// loads images straight from file
 	private static BufferedImage createImage(String name) {
