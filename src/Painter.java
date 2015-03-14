@@ -61,7 +61,8 @@ class Painter extends JPanel {
 			Point pixelCoords = t.getPixelCoords();
 			
 			Figure currentFigure = t.getFigure();
-			int figureHealth; 
+			float figureHealth, figureStartHP;
+			int drawnPixels; 
 			
 			// TODO maak eleganter (geen dubbele code)
 			// 	-mogelijk door abstract functie in figure
@@ -89,11 +90,13 @@ class Painter extends JPanel {
 			}
 			if(t.hasFigure()) {
 				figureHealth = currentFigure.getHitpoints();
+				figureStartHP = currentFigure.getStartHitpoints();
+				drawnPixels = Math.round((figureHealth/figureStartHP)*50);
+				//System.out.println("drawn pixels: " + figureHealth + " " + figureStartHP + " " + drawnPixels);
 				g.drawImage(Figure.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
-				g.drawImage(Figure.iconHealthbarGreen, pixelCoords.x + 11, pixelCoords.y + 50 + 1, this); //get new image using percentages
-				g.drawImage(Figure.iconHealthbarRed, pixelCoords.x + 11, pixelCoords.y + 50 + 1, this);
-			}
-			
+				// max width of healthbarGreen is 50, minimum 0 (figure disappears)
+				g.drawImage(Figure.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this); //get new image using percentages
+			}		
 		}
 	}
 	
