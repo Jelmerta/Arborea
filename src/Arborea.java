@@ -58,7 +58,8 @@ class Arborea {
 	
 	// The grid with all tiles
     public static Grid grid;
-    public static Grid aiGrid;
+    public static Grid aiGridStartOfFigureTurn; // Updates when the AI for the next character is updates
+    public static Grid aiGrid; // keeps updating with each move
     
     // The queue with AI moves and attacks for every character
     static LinkedList<Act> AIQueue;
@@ -180,6 +181,14 @@ class Arborea {
 	    	handleMuteClick();
 	    	
 	    	Tile newSelection = grid.selectTile(lastClickPoint);
+	    	
+    		if(newSelection != null && newSelection.hasFigure()) {
+    			figure = newSelection.getFigure();
+    			text = "This figure has " + figure.getHitpoints() + " HP left \n";
+    			//texter.write("This figure has " + figure.getHitpoints() + " left \n");
+    			screener.rewrite();
+    		}
+    		
 	    	if (selection != null){
 		        selection.restoreNeighbourImages();   
 		        //selection.getFigure().inRange(newSelection.getFigure()) (inRange doesn't work, syntax looks better though)
@@ -196,7 +205,7 @@ class Arborea {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
 					if(figure.hasAttacksLeft()) {
-						figure.attack(grid, figureAttacked);						
+						figure.attack(grid, figureAttacked);
 						figure.setAttacked(true);
 					}		
 				}
@@ -212,7 +221,6 @@ class Arborea {
 	    if (rightClicked){
 	        rightClicked = false;
 	    }
-	    
 	    // DEBUG v
 	    text = lastClickPoint.x + "," + lastClickPoint.y
 		 + "\n" + mousePoint.x + "," + mousePoint.y;
@@ -227,7 +235,6 @@ class Arborea {
 		    text += t.toString() + t.pixelCoords.x + "," + t.pixelCoords.y + "\n"; 
 		}
 		// END DEBUG ^
-		
 	}
 	
 	private void handleMuteClick(){
@@ -242,6 +249,11 @@ class Arborea {
 		}
 	}
 	
+	//attack when possible if it has a good outcome (you have high adjacency and other guy doesnt or he has 1 hp left)
+	//if(above prox threshold, go closer to average location of teammates)
+		//if still attack left, check to attack again (should compare best attack before and after and pick best one)
+	//else go closer to enemy
+		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
 		aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
@@ -254,42 +266,47 @@ class Arborea {
 		Figure attackedFigure;
 		
 		long seed = System.nanoTime();
-		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
+		ArrayList<Figure> allFiguresOfTeam = aiGrid.getTeam(currentTeamIsOrcs);
 		Collections.shuffle(allFiguresOfTeam, new Random(seed));
+		System.out.println("figures " + allFiguresOfTeam);
 		//TODO make an actual good order
-		for (Figure currentFigure : allFiguresOfTeam) {	
-			thisTile = grid.getTile(currentFigure.getLocation());
+		int count = 0;
+		for (Figure currentFigure : allFiguresOfTeam) {
+			aiGridStartOfFigureTurn = aiGrid;
+			thisTile = aiGrid.getTile(currentFigure.getLocation());
 			currentAI.setSelectedTile(thisTile); 
 	
-			//attack when possible if it has a good outcome (you have high adjacency and other guy doesnt or he has 1 hp left)
-			//if(above prox threshold, go closer to average location of teammates)
-				//if still attack left, check to attack again (should compare best attack before and after and pick best one)
-			//else go closer to enemy
-				//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)
-	
 			Point[] currentAIPoints = currentFigure.getAI();
-			attackTileBefore = grid.getTile(currentAIPoints[0]);
-			moveTile = grid.getTile(currentAIPoints[1]);
-			attackTileAfter = grid.getTile(currentAIPoints[2]);
+			attackTileBefore = aiGridStartOfFigureTurn.getTile(currentAIPoints[0]);
+			moveTile = aiGridStartOfFigureTurn.getTile(currentAIPoints[1]);
+			attackTileAfter = aiGrid.getTile(currentAIPoints[2]);
 			currentAI.setMovingTile(moveTile);
 			currentAI.setAttackTileBefore(attackTileBefore);
 			currentAI.setAttackTileAfter(attackTileAfter);
 			ai.push(currentAI);
 			
 			// Simulate the new situation on a different grid than the one used to play the game.
+			aiGrid = aiGridStartOfFigureTurn;
 			thisFigure = thisTile.getFigure();
 			if(attackTileBefore != null) {
+				System.out.println("attackbefore: " + count);
 				attackedFigure = attackTileBefore.getFigure();
 				thisFigure.attack(grid, attackedFigure);
+				//thisFigure.attack(aiGrid, attackedFigure);
 			}
 			if(moveTile != null) {
-					thisFigure.move(grid, moveTile);
+				System.out.println("move "  + count);
+				thisFigure.move(grid, moveTile);
+				//thisFigure.move(aiGrid, moveTile);
 				thisFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
+				System.out.println("attackafter: " + count);
 				attackedFigure = attackTileAfter.getFigure();
 				thisFigure.attack(grid, attackedFigure);
-			}			
+				//thisFigure.attack(aiGrid, attackedFigure);
+			}
+			count++;
 		}
 	}
     

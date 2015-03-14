@@ -1,9 +1,8 @@
 must:
 
 add AI
-hitpoints
+hitpoints (works, maybe put unit info on the right when selected?)
 verslag
-put figure files in separate folder?
 
 extra:
 

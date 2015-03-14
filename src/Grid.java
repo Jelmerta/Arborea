@@ -66,6 +66,7 @@ class Grid {
         int currentX;
         int currentY;
         int currentUnit;
+        int humanCount = 0, orcCount = 0;
 
         try {
             String sCurrentLine;
@@ -80,9 +81,11 @@ class Grid {
 	            currentTile = new Tile(currentPoint, currentUnit);
 	            
 	            if((unitNumber == 1 || unitNumber == 2) && (unitNumber != 0)) {
-	            	humans.addToTeam(currentTile.getFigure());
+	            	humans.addToTeam(currentTile.getFigure(), humanCount);
+	            	humanCount++;
 	            } else if (unitNumber != 0) {
-	            	orcs.addToTeam(currentTile.getFigure());
+	            	orcs.addToTeam(currentTile.getFigure(), orcCount);
+	            	orcCount++;
 	            }
                 tiles.put(currentPoint, currentTile);
 			}
