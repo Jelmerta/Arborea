@@ -26,10 +26,13 @@ class Painter extends JPanel {
 	public void paintComponent(Graphics g){		
 		super.paintComponent(g);
 		
-		// TODO check for menu
-		
-		paintTiles(g);
-		paintCharacters(g);
+		if (Arborea.browsingMenu){
+			
+		} else {
+			paintTiles(g);
+			paintCharacters(g);
+			paintOverlay(g);
+		}
 	}
 	
 	// paints all tiles
@@ -94,6 +97,23 @@ class Painter extends JPanel {
 				g.drawImage(Figure.iconHealthbarRed, pixelCoords.x + 11, pixelCoords.y + 50 + 1, this);
 			}
 			
+		}
+	}
+	
+	// paints overlay images
+	private void paintOverlay(Graphics g){
+
+		g.drawImage(ArtManager.overlayTurn, 30, 20, this);
+		if (Arborea.currentTeamIsOrcs){
+			g.drawImage(ArtManager.overlayOrcs, 180, 20, this);
+		} else {
+			g.drawImage(ArtManager.overlayMen, 180, 20, this);
+		}
+		
+		if (Arborea.muteSound){
+			g.drawImage(ArtManager.overlayMute, 700, 20, this);			
+		} else {
+			g.drawImage(ArtManager.overlaySound, 700, 20, this);
 		}
 	}
 	

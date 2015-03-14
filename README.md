@@ -1,2 +1,2 @@
 # Arborea
-Game project, simple RPG turn-based battle
+Game project, simple turn-based battle
