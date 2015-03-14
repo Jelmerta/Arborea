@@ -1,8 +1,9 @@
 must:
 
-add AI (gebruik Queue in arborea.java en zet AI zelf in figure?)
+add AI
 hitpoints
 verslag
+put figure files in separate folder?
 
 extra:
 
