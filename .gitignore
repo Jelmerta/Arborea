@@ -10,3 +10,5 @@ tmp/
 local.properties
 .settings/
 .loadpath
+.wav
+.mp3
