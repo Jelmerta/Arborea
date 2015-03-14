@@ -17,7 +17,8 @@ class Team {
     	figures = new ArrayList<Figure>();
     }
     
-    public void addToTeam(Figure figure) {
+    public void addToTeam(Figure figure, int index) {
+    	figure.setIndex(index);
     	figures.add(figure);
     	size++;
     }
@@ -35,15 +36,22 @@ class Team {
     	return this.size;
     }
     
-    public Point getAverageMiddlePoint() {
-    	int x = 0;
-    	int y = 0;
+    public void update(int index, Figure updatedFigure) {
+    	figures.set(index, updatedFigure);
+    }
+    
+    public double[] getAverageMiddlePointOfTeam() {
+    	double x = 0;
+    	double y = 0;
+    	double[] teamMiddlePoint = new double[2];
     	for(Figure currentFigure : figures) {
     		Point currentFigurePoint = currentFigure.getLocation();
-    		x += (int)currentFigurePoint.getX();
-    		y += (int)currentFigurePoint.getY();
+    		x += currentFigurePoint.getX();
+    		y += currentFigurePoint.getY();
     	}
-    	return new Point(x/getSize(), y/getSize());
+    	teamMiddlePoint[0] = x/getSize();
+    	teamMiddlePoint[1] = y/getSize();
+    	return teamMiddlePoint;
     }
 }
 /*    boolean teamIsOrcs; TODO weghalen?

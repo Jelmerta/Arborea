@@ -4,7 +4,6 @@
 
 import java.awt.image.BufferedImage;
 import java.awt.Point;
-
 import java.util.HashMap;
 
 class Tile {
@@ -216,6 +215,10 @@ class Tile {
     
     public Point getLocation() {
     	return coords;
+    }
+    
+    public boolean isEmpty() {
+    	return currentFigure == null ? true : false;
     }
     
     // returns image

@@ -327,3 +327,53 @@
         if you have too big rf then you end up dividing by zero
         
     
+    
+			Figure worstAdjacencyFigureBefore = null;
+			Figure worstAdjacencyFigureAfter = null;
+			Figure lowestHPFigureBefore = null;
+			Figure lowestHPFigureAfter = null;
+			int chosenAdjacencyFigure, chosenHPFigure;
+			
+			Tile tileBefore = Arborea.aiGridStartOfFigureTurn.getTile(attackBefore);
+			Figure figureBefore = tileBefore.getFigure();
+			Tile tileAfter = Arborea.aiGrid.getTile(attackAfter);
+			Figure figureAfter = tileAfter.getFigure();
+			
+			worstAdjacencyFigureBefore = figureBefore.calculateLowestAdjacencyEnemyFigure(Arborea.aiGridStartOfFigureTurn);
+			worstAdjacencyFigureAfter = figureAfter.calculateLowestAdjacencyEnemyFigure(Arborea.aiGrid);
+			
+			if(worstAdjacencyFigureBefore == null && worstAdjacencyFigureAfter == null) {
+				chosenAdjacencyFigure = 0;
+			} else if(worstAdjacencyFigureBefore != null && worstAdjacencyFigureAfter == null) {
+				chosenAdjacencyFigure = 1;
+			} else if(worstAdjacencyFigureBefore == null && worstAdjacencyFigureAfter != null) {
+				chosenAdjacencyFigure = 2;
+			} else if(worstAdjacencyFigureBefore.calculateAdjacencyBonus(Arborea.aiGridStartOfFigureTurn) < worstAdjacencyFigureAfter.calculateAdjacencyBonus(Arborea.aiGrid)) {
+				chosenAdjacencyFigure = 1;
+			} else {
+				chosenAdjacencyFigure = 2;
+			}
+			
+			lowestHPFigureBefore = calculateLowestHitEnemyFigure(Arborea.aiGridStartOfFigureTurn);
+			lowestHPFigureAfter = calculateLowestHitEnemyFigure(Arborea.aiGrid);
+			
+			if(lowestHPFigureBefore == null && lowestHPFigureAfter == null) {
+				chosenHPFigure = 0;
+			} else if(lowestHPFigureBefore != null && lowestHPFigureAfter == null) {
+				chosenHPFigure = 1;
+			} else if(lowestHPFigureBefore == null && lowestHPFigureAfter != null) {
+				chosenHPFigure = 2;
+			} else if(lowestHPFigureBefore.calculateAdjacencyBonus(Arborea.aiGridStartOfFigureTurn) < lowestHPFigureAfter.calculateAdjacencyBonus(Arborea.aiGrid)) {
+				chosenHPFigure = 1;
+			} else {
+				chosenHPFigure = 2;
+			}
+			
+			if(chosenHPFigure == 1) {
+				if(lowestHPFigureBefore.getHitpoints() == 1) {
+					//attack this unit first before move
+			} else if (chosenHPFigure == 2) {
+				if (lowestHPFigureAfter.getHitpoints() == 1)) {
+					//atack this unit after move
+				}
+			}    
