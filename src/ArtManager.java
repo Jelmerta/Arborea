@@ -2,6 +2,8 @@
  Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
 ---------------------------------------------------------- */
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -48,6 +50,20 @@ public class ArtManager {
 	static final BufferedImage overlaySound = createImage("overlaySound");
 	static final BufferedImage overlayMute = createImage("overlayMute");
 	
+	static final BufferedImage menuIntro = createImage("menuIntro");
+	static final BufferedImage menuIntroFade1 = makeTransparent(menuIntro, 0.1f);
+	static final BufferedImage menuIntroFade2 = makeTransparent(menuIntro, 0.2f);
+	static final BufferedImage menuIntroFade3 = makeTransparent(menuIntro, 0.3f);
+	static final BufferedImage menuIntroFade4 = makeTransparent(menuIntro, 0.4f);
+	static final BufferedImage menuIntroFade5 = makeTransparent(menuIntro, 0.5f);
+	static final BufferedImage menuIntroFade6 = makeTransparent(menuIntro, 0.6f);
+	static final BufferedImage menuIntroFade7 = makeTransparent(menuIntro, 0.7f);
+	static final BufferedImage menuIntroFade8 = makeTransparent(menuIntro, 0.8f);
+	static final BufferedImage menuIntroFade9 = makeTransparent(menuIntro, 0.9f);
+
+	static final BufferedImage menuOrcs = createImage("menuOrcs");
+	static final BufferedImage menuMen = createImage("menuMen");
+	
 	// loads images straight from file
 	private static BufferedImage createImage(String name) {
 		try {
@@ -64,13 +80,23 @@ public class ArtManager {
 	}
     
     // flips image horizontally
-    private static BufferedImage flipHorizontally(BufferedImage image){
-    	
+    private static BufferedImage flipHorizontally(BufferedImage image){ 	
     	AffineTransform transformer = AffineTransform.getScaleInstance(-1, 1);
     	transformer.translate(-image.getWidth(null), 0);
     	AffineTransformOp transformerOp = new AffineTransformOp(transformer, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
     	image = transformerOp.filter(image, null);
     	
 		return image;
+    }
+    
+    // makes an image transparent
+    private static BufferedImage makeTransparent(BufferedImage image, float transparency){    	
+    	BufferedImage transparentImage = new BufferedImage(image.getWidth(), image.getHeight(),BufferedImage.TYPE_INT_ARGB);
+    	Graphics2D g = transparentImage.createGraphics();
+		g.setComposite(AlphaComposite.SrcOver.derive(transparency)); 
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		
+		return transparentImage;
     }
 }

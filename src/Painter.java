@@ -10,13 +10,14 @@ import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 class Painter extends JPanel {    
-	
-	private static final long serialVersionUID = 1L;
 	Grid gridToDraw;
 	Painter(Grid grid) {
 		super();
-		this.setBackground(new Color(0,50,100));
+
+		//this.setBackground(new Color(0,50,100));
+		this.setBackground(Color.BLACK);
 		gridToDraw = grid;
 		//this.addMouseListener(new MouseAdapter());
 	}
@@ -27,11 +28,31 @@ class Painter extends JPanel {
 		super.paintComponent(g);
 		
 		if (Arborea.browsingMenu){
+			paintMenu(g, gridToDraw);
 			
 		} else {
 			paintTiles(g, gridToDraw);
 			paintCharacters(g, gridToDraw);
 			paintOverlay(g);
+		}
+	}
+	
+	// paints the menu
+	private void paintMenu(Graphics g, Grid grid){
+		// end of game
+		if (Arborea.gameOver){
+			if (grid.getTeam(Arborea.ORCTEAM).isEmpty()) {
+				g.drawImage(ArtManager.menuMen,0,0,this);
+			} else if (grid.getTeam(Arborea.MENTEAM).isEmpty()){
+				g.drawImage(ArtManager.menuOrcs,0,0,this);
+			}
+			
+		}
+		// start of game
+		else {
+			if (!Arborea.introduced){
+				g.drawImage(Arborea.menu.getMenuIntroImage(),0,0,this);
+			}
 		}
 	}
 	
