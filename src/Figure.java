@@ -96,7 +96,7 @@ abstract class Figure {
     	return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
     }
     
-	public void attack(Grid grid, Figure attacked) {	
+	public void attack(Grid grid, Figure attacked, boolean print) {	
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
     	 boolean imHitCaptain = Math.random() < hitChance;
     	 if(imHitCaptain) {
@@ -106,18 +106,19 @@ abstract class Figure {
     			 grid.removeFromTeam(attacked.getTeam(), attacked);
     			 
     		 }
+    	 } if(print) {
+    		 System.out.println("This unit has " + attacked.hit + " HP left.");
     	 }
-		 System.out.println("This unit has " + attacked.hit + " HP left.");
     }
 	
-	private boolean isNextMoveOffensive(Grid grid) {
+	private boolean isNextMoveOffensive(Grid grid, double threshold) {
 		double lengthToOwnTeam;
 		if(this.getTeam()) {
 			lengthToOwnTeam = lengthToMiddleOfTeam(grid.getTile(this.getLocation()), grid.orcs);
 		} else {
 			lengthToOwnTeam = lengthToMiddleOfTeam(grid.getTile(this.getLocation()), grid.humans);
 		}
-		if(lengthToOwnTeam > 2) {
+		if(lengthToOwnTeam > threshold) {
 			return false;
 		} else {
 			return true;
@@ -137,8 +138,8 @@ abstract class Figure {
 		ArrayList<Act> offensiveActs = new ArrayList<Act>();
 		ArrayList<Act> defensiveActs = new ArrayList<Act>();
 		
-
 		Tile thisTile = usedGrid.getTile(this.getLocation());
+		offensive = this.isNextMoveOffensive(gridBefore, threshold);
 		if(this.getTeam()) {
 			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
 			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
@@ -154,9 +155,10 @@ abstract class Figure {
 		}
 		
 		for (Act currentAct : allActs) {
+			currentAct.printAct();
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
-				this.attack(usedGrid, attackTileBefore.getFigure());
+				this.attack(usedGrid, attackTileBefore.getFigure(), false);
 			}
 			Tile moveTile = currentAct.getMovingTile();
 			if(moveTile != null) {
@@ -179,7 +181,7 @@ abstract class Figure {
 			}
 			Tile attackTileAfter = currentAct.getAttackTileAfter();
 			if(attackTileAfter != null) {
-				this.attack(usedGrid, attackTileAfter.getFigure());
+				this.attack(usedGrid, attackTileAfter.getFigure(), false);
 			}
 			
 			Tile thisTileNew = usedGrid.getTile(this.getLocation());
@@ -213,7 +215,7 @@ abstract class Figure {
 				}
 			}
 			
-			usedGrid = gridBefore;//new Grid(gridBefore); //check if works without copy constructor
+			usedGrid = new Grid(gridBefore);//new Grid(gridBefore); //check if works without copy constructor
 		}
 		Random randomGenerator = new Random();
 		int index;
@@ -310,37 +312,6 @@ abstract class Figure {
 		return neighboursAttackable;
 	}
 	
-	private Tile getMoveCloserToTeam(Grid grid, Boolean orcs, ArrayList<Tile> neighboursMoveable) {
-		Tile bestTile = grid.getTile(this.getLocation());
-		double bestLength;
-		double currentLength;
-		
-		if(orcs) {
-			bestLength = lengthToMiddleOfTeam(bestTile, grid.orcs);
-			for(Tile currentTile : neighboursMoveable) {
-				if(((currentLength = lengthToMiddleOfTeam(currentTile, grid.orcs)) < bestLength)){
-					bestLength = currentLength;
-					bestTile = currentTile;
-				}
-			}
-		} else {
-			bestLength = lengthToMiddleOfTeam(bestTile, grid.humans);
-			for(Tile currentTile : neighboursMoveable) {
-				//currentTile.getNeighbours();
-				//System.out.println("this tile ");// + currentTile);
-				currentLength = lengthToMiddleOfTeam(currentTile, grid.humans);
-				//System.out.println("length = " + currentLength);
-				if(currentLength < bestLength) {
-					//System.out.println("hi");
-					bestLength = currentLength;
-					bestTile = currentTile;
-				}
-			}
-		}
-		//System.out.println(bestTile);
-		return bestTile;
-	}
-	
     // For friendly units, there is a bonus for your weapon skill. This is contrary for enemy units and will decrease your weapon skill.
     public int calculateAdjacencyBonus(Grid grid) {
         int bonus = 0;
@@ -366,58 +337,6 @@ abstract class Figure {
         if(this.type == 3 || this.type == 4)
             bonus = -1*bonus;
         return bonus;
-    }
-    
-    private Figure calculateLowestAdjacencyEnemyFigure(Grid grid) {
-    	Tile[] neighbours = grid.getTile(this.getLocation()).getNeighbours();
-    	Figure currentFigure;
-    	int currentAdjacency;
-    	int worstAdjacency = 1000;
-    	boolean gotValue = false;
-    	Figure worstAdjacencyFigure = null;
-		for(Tile currentTile : neighbours) {
-			if(currentTile != null) {
-				currentFigure = currentTile.getFigure();
-				if(currentFigure != null) {
-					if((currentAdjacency = currentFigure.calculateAdjacencyBonus(grid)) < worstAdjacency) {
-						worstAdjacency = currentAdjacency;
-						worstAdjacencyFigure = currentFigure;
-						gotValue = true;
-					}
-				}
-			}
-		}
-		if(gotValue) {
-			return worstAdjacencyFigure;
-		} else {
-			return null;
-		}
-    }
-    
-    private Figure calculateLowestHitEnemyFigure(Grid grid) {
-    	Tile[] neighbours = grid.getTile(this.getLocation()).getNeighbours();
-    	Figure currentFigure;
-    	int currentHP;
-    	int worstHP = 1000;
-    	boolean gotValue = false;
-    	Figure worstHPFigure = null;
-		for(Tile currentTile : neighbours) {
-			if(currentTile != null) {
-				currentFigure = currentTile.getFigure();
-				if(currentFigure != null) {
-					if((currentHP = currentFigure.getHitpoints()) < worstHP) {
-						worstHP = currentHP;
-						worstHPFigure = currentFigure;
-						gotValue = true;
-					}
-				}
-			}
-		}
-		if(gotValue) {
-			return worstHPFigure;
-		} else {
-			return null;
-		}
     }
     
     static private double calculateChance(int weaponSkills, int weaponSkillsAttacked) {
@@ -488,51 +407,5 @@ abstract class Figure {
 	
 	public int getStartHitpoints() {
 		return this.startHitpoints;
-	}
-	
-	
-	//TODO needs to be specific for the grid. now making it so it can be checked in different states
-	private Figure getbestAttack(Grid testGrid, ArrayList<Tile> arrayAttackTiles) {
-		if(arrayAttackTiles.size() == 1) 
-			return arrayAttackTiles.get(0).getFigure();
-		
-		Figure currentAttackFigure;
-		Figure worstAdjacencyFigure = null;
-		Figure lowestAttackHPFigure = null;
-		int currentAdjacency;
-		int worstAdjacency = 1000;
-		int currentAttackHP;
-		int lowestAttackHP = 1000;
-		for(Tile attackTile : arrayAttackTiles) {
-			currentAttackFigure = attackTile.getFigure();
-			currentAttackHP = currentAttackFigure.getHitpoints();
-			if(currentAttackHP < lowestAttackHP) {
-				lowestAttackHP = currentAttackHP;
-				lowestAttackHPFigure = currentAttackFigure;
-			}
-			if((currentAdjacency = currentAttackFigure.calculateAdjacencyBonus(testGrid)) < worstAdjacency) { 
-				worstAdjacency = currentAdjacency;
-				worstAdjacencyFigure = currentAttackFigure;
-			}
-		}
-		if(lowestAttackHP == 1) {
-			return lowestAttackHPFigure;
-		} else {
-			return worstAdjacencyFigure;
-		}
-	}
-	
-	//maybe just make separate functions returning lowest adjacency and lowest hitpoints and compare those TODO 
-	// 0 is no attack, 1 is attack before, 2 attack after
-	private int compareAttackBeforeAndAfter(Grid gridBefore, Grid gridAfter, Figure attackBefore, Figure attackAfter) {
-		if(attackBefore.getHitpoints() == 1) {
-			return 1;
-		} else if (attackAfter.getHitpoints() == 1) { 
-			return 2;
-		} else if(attackBefore.calculateAdjacencyBonus(gridBefore) < attackAfter.calculateAdjacencyBonus(gridAfter)) {
-			return 1;
-		} else {
-			return 2;
-		}
 	}
 }

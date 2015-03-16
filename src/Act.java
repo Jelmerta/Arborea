@@ -22,6 +22,10 @@ public class Act {
 		this.selectedTile = selectedTile;
 	}
 	
+	public Tile getSelectedTile() {
+		return this.selectedTile;
+	}
+	
 	public void setMovingTile(Tile movingTile) {
 		this.movingTile = movingTile;
 	}
@@ -44,5 +48,13 @@ public class Act {
 	
 	public Tile getAttackTileAfter() {
 		return this.attackTileAfter;
+	}
+	
+	public void printAct() {
+		System.out.println("currentAct: ");
+		System.out.println(selectedTile);
+		System.out.println(attackTileBefore);
+		System.out.println(movingTile);
+		System.out.println(attackTileAfter);
 	}
 }

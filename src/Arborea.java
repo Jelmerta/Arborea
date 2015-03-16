@@ -254,7 +254,7 @@ class Arborea {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
 					if(figure.hasAttacksLeft()) {
-						figure.attack(grid, figureAttacked);
+						figure.attack(grid, figureAttacked, true);
 						figure.setAttacked(true);
 					}		
 				}
@@ -324,9 +324,10 @@ class Arborea {
 			attackTileBefore = chosenAI.getAttackTileBefore();
 			moveTile = chosenAI.getMovingTile();
 			attackTileAfter = chosenAI.getAttackTileAfter();
+			//chosenAI.printAct();
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
-				currentFigure.attack(grid, attackedFigure);
+				currentFigure.attack(grid, attackedFigure, true);
 			}
 			if(moveTile != null) {
 				currentFigure.move(grid, moveTile);
@@ -334,7 +335,7 @@ class Arborea {
 			}
 			if(attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
-				currentFigure.attack(grid, attackedFigure);
+				currentFigure.attack(grid, attackedFigure, true);
 			}
 		}
 	}
