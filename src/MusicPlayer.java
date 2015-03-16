@@ -89,16 +89,6 @@ class MusicPlayer implements Runnable {
 		    }
 		}
 	}
-
-	// stops the music player
-	// TODO
-	void mute(){
-	}
-	
-	// resumes the music player. will restart any song, not resume.
-	// TODO
-	void unmute(){
-	}
 	
 	// selects a random song
 	// TODO make so not same as previous or prevprev

@@ -81,45 +81,29 @@ class Painter extends JPanel {
 	private void paintCharacters(Graphics g, Grid grid) {
 		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
 			Tile t = entry.getValue();
-			//int currentCharType = t.getCharacterType(); TODO unused?
 			Point pixelCoords = t.getPixelCoords();
 			
 			Figure currentFigure = t.getFigure();
 			float figureHealth, figureStartHP;
 			int drawnPixels; 
-			
-			// TODO maak eleganter (geen dubbele code)
-			// 	-mogelijk door abstract functie in figure
-			//	-returnt plaatje , misschien ander returnt x,y
-			// ja waarom getFigure hierboven en dan nog checken of het een figure heeft, 
-			// als het er geen heeft kan je toch direct uit functie breaken?
+			// TODO direction
 			if (currentFigure == null) continue;
 			g.drawImage(currentFigure.getStandSprite(), pixelCoords.x+10, pixelCoords.y-20,this);
-			
-			/*
-			if(currentCharType == 1)
-				g.drawImage(currentFigure.getStandSprite(), pixelCoords.x+10+72, pixelCoords.y-20, -72, 72, this);
-			if(currentCharType == 2)
-				g.drawImage(Figure.generalImage, pixelCoords.x+10+72, pixelCoords.y-20, -72, 72, this);
-			if(currentCharType == 3)
-				g.drawImage(Figure.goblinImage, pixelCoords.x+10, pixelCoords.y-20, this);
-			if(currentCharType == 4)
-				g.drawImage(Figure.orcImage, pixelCoords.x+10, pixelCoords.y-20, this);
-			*/
+				
 			if (t.hasFigure() && t.getFigure().hasMovesLeft()){
-				g.drawImage(Figure.iconMove, pixelCoords.x + 25, pixelCoords.y, this);
+				g.drawImage(ArtManager.iconMove, pixelCoords.x + 25, pixelCoords.y, this);
 			}
 			if (t.hasFigure() && t.getFigure().hasAttacksLeft()){
-				g.drawImage(Figure.iconAttack, pixelCoords.x + 65, pixelCoords.y - 10, this);
+				g.drawImage(ArtManager.iconAttack, pixelCoords.x + 65, pixelCoords.y - 10, this);
 			}
 			if(t.hasFigure()) {
 				figureHealth = currentFigure.getHitpoints();
 				figureStartHP = currentFigure.getStartHitpoints();
 				drawnPixels = Math.round((figureHealth/figureStartHP)*50);
 				//System.out.println("drawn pixels: " + figureHealth + " " + figureStartHP + " " + drawnPixels);
-				g.drawImage(Figure.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
+				g.drawImage(ArtManager.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
 				// max width of healthbarGreen is 50, minimum 0 (figure disappears)
-				g.drawImage(Figure.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this); //get new image using percentages
+				g.drawImage(ArtManager.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this); //get new image using percentages
 			}		
 		}
 	}

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-//import java.util.Queue; TODO don't need it?
 import java.util.Random;
 
 //
@@ -81,8 +80,6 @@ class Arborea {
     
     // this is the overlying interface, that when constructed sets up other interfaces
     public Arborea(String windowName) {
-    	
-    	// TODO setup grid
     	grid = new Grid();
     	
         // painting starts as soon as the screen is made
@@ -108,10 +105,7 @@ class Arborea {
     
     // this is the main function that controls everything
 	public void run(){
-		
-		// TODO while getting input from menu
-		// while (menu.gettingInfo){	
-		//}
+
 		while (active) {
 			try {
 				Thread.sleep(FRAMERATE);
@@ -142,8 +136,6 @@ class Arborea {
 				introduced = true;
 				screener.showMenu(true);
 				screener.initCanvasBackground();
-				// TODO white is ook mooi
-				//screener.setCanvasBackground(new Color(0,50,100));
 			}
 		} else {
 			if (gameOver){
@@ -204,11 +196,7 @@ class Arborea {
 			screener.showTurnButton(false);
 			screener.showReplayButton(true);
 			return;
-			
-			// TODO yo moet hier turnEnded nog false worden?
-		}
-		
-		// TODO een turn begins waarin de setbools op true komen		
+		}		
 		if(turnEnded) {
 			for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
 				currentFigure.setMoved(true);
@@ -260,7 +248,8 @@ class Arborea {
 			        	figure.move(grid, newSelection);
 			        	figure.setMoved(true);
 		        	}
-		        }        	 // De newSelection != null lijkt me in moves/attacks al overbodig, maar kan geen kwaad te checken en eerder te short-circuiten, geldt ook voor de hasFigures?
+		        }       
+				// De newSelection != null lijkt me in moves/attacks al overbodig, maar kan geen kwaad te checken en eerder te short-circuiten, geldt ook voor de hasFigures?
 				if(newSelection != null  && selection.hasFigure() && newSelection.hasFigure() && selection.getFigure().getTeam() == currentTeamIsOrcs && newSelection.getFigure().getTeam() != currentTeamIsOrcs  && Arrays.asList(selection.getNeighbours()).contains(newSelection)) {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
@@ -329,9 +318,7 @@ class Arborea {
 		
 		long seed = System.nanoTime();
 		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
-		Collections.shuffle(allFiguresOfTeam, new Random(seed));
-		//System.out.println("figures " + allFiguresOfTeam);
-		//TODO make an actual good order
+		Collections.shuffle(allFiguresOfTeam, new Random(seed)); //TODO use 1 Random object, setSeed
 		int count = 0;
 		for (Figure currentFigure : allFiguresOfTeam) {
 			aiGridAttackBefore = new Grid(aiGrid);
@@ -381,9 +368,9 @@ class Arborea {
 		return grid;
 	}
 	
-    void setup(String gridFile) { //TODO deze kan weg?
-        //orcs = new Team(true);
-        //humans = new Team(false);
-        grid = new Grid(gridFile);
-    }
+//    void setup(String gridFile) { //TODO deze kan weg?
+//        //orcs = new Team(true);
+//        //humans = new Team(false);
+//        grid = new Grid(gridFile);
+//    }
 }

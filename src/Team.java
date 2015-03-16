@@ -10,7 +10,6 @@ import java.util.ArrayList;
 class Team {
 	
 	ArrayList<Figure> figures;
-	//boolean side; TODO never used
 	int size = 0;
 
     Team() {
@@ -54,30 +53,3 @@ class Team {
     	return teamMiddlePoint;
     }
 }
-/*    boolean teamIsOrcs; TODO weghalen?
-    ArrayList<Figure> figures;
-    
-    // sets up a team, depending on various factors
-    Team(boolean isOrcTeam){
-        
-        teamIsOrcs = isOrcTeam;
-        figures = new ArrayList<Figure>();
-        
-        if (teamIsOrcs){
-            for (int i =0; i < Arborea.AMOUNT_GOBLIN; i++){
-                figures.add(new Goblin());
-            }
-            for (int i =0; i < Arborea.AMOUNT_ORC; i++){
-                figures.add(new Orc());
-            }
-            
-        } else {
-            for (int i =0; i < Arborea.AMOUNT_SWORD; i++){
-                figures.add(new Sword());
-            }
-            for (int i =0; i < Arborea.AMOUNT_GENERAL; i++){
-                figures.add(new General());
-            }
-        }
-    }
-}*/

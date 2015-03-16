@@ -24,8 +24,6 @@ class Grid {
         int half = Arborea.GRID_SIZE/2;
         Point currentPoint;
         
-        // int gx = 400, gy = 300; TODO unused
-        
         for (int row = 0; row < Arborea.GRID_SIZE; row++) {
             int cols = Arborea.GRID_SIZE - java.lang.Math.abs(row - half);
 

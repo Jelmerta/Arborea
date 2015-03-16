@@ -15,12 +15,10 @@ abstract class Figure {
     // indexes of types
     final static byte TYPE_NONE = 0, TYPE_SWORD = 1, TYPE_GENERAL = 2, TYPE_GOBLIN = 3, TYPE_ORC = 4;
 
-	// TODO deze images zijn dubbel met artmanager
 	static final BufferedImage iconAttack = ArtManager.iconAttack;
 	static final BufferedImage iconMove = ArtManager.iconMove;
 	static final BufferedImage iconHealthbar = ArtManager.iconHealthbar;
 	static final BufferedImage iconHealthbarGreen = ArtManager.iconHealthbarGreen;
-	static final BufferedImage iconHealthbarRed = ArtManager.iconHealthbarRed;
 
     int startHitpoints, hit, weapon, type;
     int index;
@@ -83,6 +81,7 @@ abstract class Figure {
     }
     
     //not used now
+    //TODO
     boolean canMove(Grid grid, Tile destinationTile){
         if(destinationTile != null) {
             Tile currentTile = grid.getTile(location);
@@ -90,8 +89,6 @@ abstract class Figure {
         } else
             return false;
     }
-
-    //TODO doing this with pythagoras, probably not a good way to do this because of hexagonal grid
     public double lengthToMiddleOfTeam(Tile bestTile, Team thisTeam) {
     	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
     	Point location = bestTile.getLocation();
@@ -355,7 +352,7 @@ abstract class Figure {
 		// Movement
 		// eigenlijk beter met canMove maar die is al een tijd niet getest
 		if(!neighboursMoveable.isEmpty()) {
-			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); // TODO dont do this randomly
+			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); //
 			//characterMove = neighboursMoveable.get(randomIndex).getLocation();
 			boolean offensive = isNextMoveOffensive(aiGrid);
 			//System.out.println("offensive: " + offensive);
