@@ -4,6 +4,7 @@
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 //import java.util.Random;
 import java.lang.Math;
 import java.awt.GraphicsDevice;
@@ -72,7 +73,7 @@ abstract class Figure {
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
-       	System.out.println(this.getIndex());
+       	//System.out.println(this.getIndex());
     	if(this.getTeam()) {
     		grid.orcs.update(this.getIndex(), this);
     	} else {
@@ -89,9 +90,9 @@ abstract class Figure {
         } else
             return false;
     }
-    public double lengthToMiddleOfTeam(Tile bestTile, Team thisTeam) {
+    public double lengthToMiddleOfTeam(Tile thisTile, Team thisTeam) {
     	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
-    	Point location = bestTile.getLocation();
+    	Point location = thisTile.getLocation();
     	return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
     }
     
@@ -122,7 +123,193 @@ abstract class Figure {
 			return true;
 		}
 	}
-    
+	
+	public Act calculateBestMove(ArrayList<Act> allActs, Grid gridBefore) {
+		Grid usedGrid = new Grid(gridBefore);
+		int bestAdjacency = 1000;
+		int currentAdjacency;
+		double ownTeamDistance, enemyTeamDistance;
+		Tile bestAdjacencyTile;
+		Act bestAct = null;
+		double threshold = 2; //don't hardcode this one
+		boolean offensive;
+		ArrayList<Act> oneHPNeighbourActs = new ArrayList<Act>();
+		ArrayList<Act> offensiveActs = new ArrayList<Act>();
+		ArrayList<Act> defensiveActs = new ArrayList<Act>();
+		
+
+		Tile thisTile = usedGrid.getTile(this.getLocation());
+		if(this.getTeam()) {
+			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
+			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
+		} else {
+			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
+			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
+		}
+		// get closer to own team
+		if(ownTeamDistance > threshold) { 
+			offensive = false;
+		} else { // get closer to enemy team
+			offensive = true;
+		}
+		
+		for (Act currentAct : allActs) {
+			Tile attackTileBefore = currentAct.getAttackTileBefore();
+			if(attackTileBefore != null) {
+				this.attack(usedGrid, attackTileBefore.getFigure());
+			}
+			Tile moveTile = currentAct.getMovingTile();
+			if(moveTile != null) {
+				this.move(usedGrid, moveTile);
+				Tile[] neighbours = moveTile.getNeighbours();
+				if(neighbours != null) {
+					for(Tile neighbour : neighbours) {
+						if(neighbour != null) {
+							Figure neighbourFigure = neighbour.getFigure();
+							if(neighbourFigure != null && neighbourFigure.getHitpoints() == 1) {
+								Act oneHPAct = new Act();
+								oneHPAct.setSelectedTile(thisTile);
+								oneHPAct.setMovingTile(moveTile);
+								oneHPAct.setAttackTileAfter(neighbour);
+								oneHPNeighbourActs.add(oneHPAct);
+							}
+						}
+					}
+				}
+			}
+			Tile attackTileAfter = currentAct.getAttackTileAfter();
+			if(attackTileAfter != null) {
+				this.attack(usedGrid, attackTileAfter.getFigure());
+			}
+			
+			Tile thisTileNew = usedGrid.getTile(this.getLocation());
+			double ownTeamDistanceNew, enemyTeamDistanceNew;
+			if(this.getTeam()) {
+				 ownTeamDistanceNew= lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
+				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
+			} else {
+				ownTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
+				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
+			}			
+			if(ownTeamDistanceNew < ownTeamDistance) {
+				Act defensiveAct = new Act();
+				defensiveAct.setSelectedTile(thisTileNew);
+				defensiveAct.setMovingTile(moveTile); // no attack selected yet (select random one for acts that fit this move)
+				defensiveActs.add(defensiveAct);
+			}
+			if(enemyTeamDistanceNew > enemyTeamDistance) {
+				Act offensiveAct = new Act();
+				offensiveAct.setSelectedTile(thisTileNew);
+				offensiveAct.setMovingTile(moveTile); // no attack selected yet (select random one for acts that fit this move)
+				offensiveActs.add(offensiveAct);
+			}
+			
+			currentAdjacency = this.calculateAdjacencyBonus(usedGrid);
+			if(currentAdjacency < bestAdjacency) { // or just below a threshold
+				bestAdjacency = currentAdjacency;
+				bestAdjacencyTile = moveTile;
+				if(bestAdjacencyTile == null) {
+					bestAdjacencyTile = gridBefore.getTile(this.getLocation());
+				}
+			}
+			
+			usedGrid = gridBefore;//new Grid(gridBefore); //check if works without copy constructor
+		}
+		Random randomGenerator = new Random();
+		int index;
+		if(offensive) {
+			if(!oneHPNeighbourActs.isEmpty()) {
+				index = randomGenerator.nextInt(oneHPNeighbourActs.size());
+				bestAct = oneHPNeighbourActs.get(index);
+			} else if(!offensiveActs.isEmpty()) {
+					index = randomGenerator.nextInt(offensiveActs.size());
+					bestAct = offensiveActs.get(index);
+			} else {
+				Act idle = new Act();
+				idle.setSelectedTile(thisTile);
+				bestAct = idle;
+			}
+		} else if(!defensiveActs.isEmpty()){
+			index = randomGenerator.nextInt(defensiveActs.size());
+			bestAct = defensiveActs.get(index);
+		} else {
+			Act idle = new Act();
+			idle.setSelectedTile(thisTile);
+			bestAct = idle;
+		}
+		return bestAct;
+	}
+	
+	public ArrayList<Act> getAllPossibleActs(Grid gridBeforeMove, Grid usedGrid) {
+		ArrayList<Act> allPossibleActs = new ArrayList<Act>();
+		ArrayList<Tile> moveableTiles = this.getAllMoveableTiles(gridBeforeMove);
+		ArrayList<Tile> attackableTiles = this.getAllAttackableTiles(gridBeforeMove);
+		Act currentAct = new Act();
+		currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
+		allPossibleActs.add(currentAct);
+		for(Tile attackableTile : attackableTiles) {
+			currentAct = new Act();
+			currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
+			currentAct.setAttackTileBefore(attackableTile);
+			allPossibleActs.add(currentAct);
+		}
+		for(Tile moveableTile : moveableTiles) {
+			currentAct = new Act();
+			currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
+			currentAct.setMovingTile(moveableTile);
+			allPossibleActs.add(currentAct);
+			
+			this.move(usedGrid, moveableTile);
+			attackableTiles = this.getAllAttackableTiles(usedGrid);
+			usedGrid = gridBeforeMove; // do i need to clone? //resets character place
+			for(Tile attackableTile : attackableTiles) {
+				currentAct = new Act();
+				currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
+				currentAct.setMovingTile(moveableTile);
+				currentAct.setAttackTileAfter(attackableTile);
+				allPossibleActs.add(currentAct);
+			}
+		}
+		return allPossibleActs;
+	}
+	
+	public ArrayList<Tile> getAllMoveableTiles(Grid grid) {
+		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
+		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
+		Tile thisTile = grid.getTile(this.getLocation());
+		Tile[] neighbours = thisTile.getNeighbours();
+		for (Tile currentNeighbourTile : neighbours) {
+			if(currentNeighbourTile != null) {
+				neighboursNotNull.add(currentNeighbourTile);
+			}
+		}		
+		
+		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
+			if(!currentNeighbourTileNotNull.hasFigure())
+				neighboursMoveable.add(currentNeighbourTileNotNull);
+		}
+		return neighboursMoveable;
+	}
+	
+	public ArrayList<Tile> getAllAttackableTiles(Grid grid) {
+		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
+		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
+		Tile thisTile = grid.getTile(this.getLocation());
+		Tile[] neighbours = thisTile.getNeighbours();
+		for (Tile currentNeighbourTile : neighbours) {
+			if(currentNeighbourTile != null) {
+				neighboursNotNull.add(currentNeighbourTile);
+			}
+		}		
+		
+		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
+			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
+				neighboursAttackable.add(currentNeighbourTileNotNull);
+			}
+		}
+		return neighboursAttackable;
+	}
+	
 	private Tile getMoveCloserToTeam(Grid grid, Boolean orcs, ArrayList<Tile> neighboursMoveable) {
 		Tile bestTile = grid.getTile(this.getLocation());
 		double bestLength;
@@ -303,141 +490,6 @@ abstract class Figure {
 		return this.startHitpoints;
 	}
 	
-	// Figure AI
-	public Point[] getAI(Grid aiGrid, Grid gridAttackBefore, Grid gridAttackAfter) {
-		Point characterMove;
-		Figure characterAttackBefore;
-		Figure characterAttackAfter;
-		
-		Tile currentTile = aiGrid.getTile(location);
-		Figure currentFigure = currentTile.getFigure();
-		Tile[] neighbours = currentTile.getNeighbours();
-		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
-		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
-		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
-		
-		//Random randomizer = new Random();
-		//int randomIndex;
-	
-		// Setup before move
-		for (Tile currentNeighbourTile : neighbours) {
-			if(currentNeighbourTile != null) {
-				neighboursNotNull.add(currentNeighbourTile);
-			}
-		}		
-
-		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
-			if(!currentNeighbourTileNotNull.hasFigure())
-				neighboursMoveable.add(currentNeighbourTileNotNull);
-		}
-		
-		// Before move attack
-		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
-			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
-				neighboursAttackable.add(currentNeighbourTileNotNull);
-			}
-		}
-		
-		//eigenlijk beter met een canAttack
-		if(!neighboursAttackable.isEmpty()) {
-			characterAttackBefore = getbestAttack(gridAttackBefore, neighboursAttackable);
-		} else {
-			characterAttackBefore = null;
-		}
-		
-		if(characterAttackBefore != null) {
-			currentFigure.attack(gridAttackBefore, characterAttackBefore);
-		}
-		
-		// Movement
-		// eigenlijk beter met canMove maar die is al een tijd niet getest
-		if(!neighboursMoveable.isEmpty()) {
-			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); //
-			//characterMove = neighboursMoveable.get(randomIndex).getLocation();
-			boolean offensive = isNextMoveOffensive(aiGrid);
-			//System.out.println("offensive: " + offensive);
-			if(offensive) {
-				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, !currentFigure.getTeam(), neighboursMoveable).getLocation();
-			} else {
-				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, currentFigure.getTeam(), neighboursMoveable).getLocation();
-			}
-			if(characterMove == currentTile.getLocation())  {
-				characterMove = null;
-			}
-		} else {
-			characterMove = null;
-		}
-		//System.out.println("currentFigure: " + this + " characterMove: " + characterMove);
-		
-		if(characterMove != null) {
-			currentFigure.move(gridAttackBefore, currentTile);
-			currentTile = gridAttackBefore.getTile(characterMove.getLocation());
-			currentFigure.move(gridAttackAfter, currentTile);
-			currentTile = gridAttackAfter.getTile(characterMove.getLocation());
-		}
-
-		// Attack after move
-		neighboursNotNull.clear();
-		neighboursAttackable.clear();
-		neighbours = currentTile.getNeighbours();
-		
-		for (Tile currentNeighbourTile : neighbours) {
-			if(currentNeighbourTile != null) {
-				neighboursNotNull.add(currentNeighbourTile);
-			}
-		}	
-		
-		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
-			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
-				neighboursAttackable.add(currentNeighbourTileNotNull);
-			}
-		}
-		
-		//eigenlijk beter met een canAttack
-		if(!neighboursAttackable.isEmpty()) {
-			characterAttackAfter = getbestAttack(gridAttackAfter, neighboursAttackable);
-		} else {
-			characterAttackAfter = null;
-		}		
-		
-		if(characterAttackAfter != null) {
-			currentFigure.attack(gridAttackAfter, characterAttackAfter);
-		}
-		
-		
-		
-		Point[] characterAttackBeforeMoveAndAttackAfter = new Point[3];
-		
-		int bestAttack;
-		if(characterAttackBefore != null && characterAttackAfter != null) {
-			bestAttack = compareAttackBeforeAndAfter(gridAttackBefore, gridAttackAfter, characterAttackBefore, characterAttackAfter);
-		} else if(characterAttackBefore != null) {
-			bestAttack = 1;
-		} else if(characterAttackAfter != null) {
-			bestAttack = 2;
-		} else {
-			bestAttack = 0;
-		}
-		if(bestAttack == 0) {
-			characterAttackBeforeMoveAndAttackAfter[0] = null;
-			characterAttackBeforeMoveAndAttackAfter[2] = null;
-		} else if(bestAttack == 1) {
-			characterAttackBeforeMoveAndAttackAfter[0] = characterAttackBefore.getLocation();
-			characterAttackBeforeMoveAndAttackAfter[2] = null;
-			aiGrid = gridAttackBefore;
-		} else {
-			characterAttackBeforeMoveAndAttackAfter[0] = null;
-			characterAttackBeforeMoveAndAttackAfter[2] = characterAttackAfter.getLocation();
-			aiGrid = gridAttackAfter;
-		}	
-		
-		if(characterMove != null) {
-			characterAttackBeforeMoveAndAttackAfter[1] = characterMove.getLocation();
-		} else {
-			characterAttackBeforeMoveAndAttackAfter[1] = null;
-		}
-		return characterAttackBeforeMoveAndAttackAfter;
-	}
 	
 	//TODO needs to be specific for the grid. now making it so it can be checked in different states
 	private Figure getbestAttack(Grid testGrid, ArrayList<Tile> arrayAttackTiles) {

@@ -79,10 +79,10 @@ class Grid {
 	            currentTile = new Tile(currentPoint, currentUnit);
 	            
 	            if((unitNumber == 1 || unitNumber == 2) && (unitNumber != 0)) {
-	            	humans.addToTeam(currentTile.getFigure(), humanCount-1);
+	            	humans.addToTeam(currentTile.getFigure(), humanCount);
 	            	humanCount++;
 	            } else if (unitNumber != 0) {
-	            	orcs.addToTeam(currentTile.getFigure(), orcCount-1);
+	            	orcs.addToTeam(currentTile.getFigure(), orcCount);
 	            	orcCount++;
 	            }
                 tiles.put(currentPoint, currentTile);

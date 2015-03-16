@@ -376,4 +376,144 @@
 				if (lowestHPFigureAfter.getHitpoints() == 1)) {
 					//atack this unit after move
 				}
-			}    
+			}
+			
+			
+			
+			
+			
+	// Figure AI
+	public Point[] getAI(Grid aiGrid, Grid gridAttackBefore, Grid gridAttackAfter) {
+		Point characterMove;
+		Figure characterAttackBefore;
+		Figure characterAttackAfter;
+		
+		Tile currentTile = aiGrid.getTile(location);
+		Figure currentFigure = currentTile.getFigure();
+		Tile[] neighbours = currentTile.getNeighbours();
+		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
+		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
+		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
+		
+		//Random randomizer = new Random();
+		//int randomIndex;
+	
+		// Setup before move
+		for (Tile currentNeighbourTile : neighbours) {
+			if(currentNeighbourTile != null) {
+				neighboursNotNull.add(currentNeighbourTile);
+			}
+		}		
+
+		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
+			if(!currentNeighbourTileNotNull.hasFigure())
+				neighboursMoveable.add(currentNeighbourTileNotNull);
+		}
+		
+		// Before move attack
+		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
+			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
+				neighboursAttackable.add(currentNeighbourTileNotNull);
+			}
+		}
+		
+		//eigenlijk beter met een canAttack
+		if(!neighboursAttackable.isEmpty()) {
+			characterAttackBefore = getbestAttack(gridAttackBefore, neighboursAttackable);
+		} else {
+			characterAttackBefore = null;
+		}
+		
+		if(characterAttackBefore != null) {
+			currentFigure.attack(gridAttackBefore, characterAttackBefore);
+		}
+		
+		// Movement
+		// eigenlijk beter met canMove maar die is al een tijd niet getest
+		if(!neighboursMoveable.isEmpty()) {
+			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); //
+			//characterMove = neighboursMoveable.get(randomIndex).getLocation();
+			boolean offensive = isNextMoveOffensive(aiGrid);
+			//System.out.println("offensive: " + offensive);
+			if(offensive) {
+				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, !currentFigure.getTeam(), neighboursMoveable).getLocation();
+			} else {
+				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, currentFigure.getTeam(), neighboursMoveable).getLocation();
+			}
+			if(characterMove == currentTile.getLocation())  {
+				characterMove = null;
+			}
+		} else {
+			characterMove = null;
+		}
+		//System.out.println("currentFigure: " + this + " characterMove: " + characterMove);
+		
+		if(characterMove != null) {
+			currentFigure.move(gridAttackBefore, currentTile);
+			currentTile = gridAttackBefore.getTile(characterMove.getLocation());
+			currentFigure.move(gridAttackAfter, currentTile);
+			currentTile = gridAttackAfter.getTile(characterMove.getLocation());
+		}
+
+		// Attack after move
+		neighboursNotNull.clear();
+		neighboursAttackable.clear();
+		neighbours = currentTile.getNeighbours();
+		
+		for (Tile currentNeighbourTile : neighbours) {
+			if(currentNeighbourTile != null) {
+				neighboursNotNull.add(currentNeighbourTile);
+			}
+		}	
+		
+		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
+			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
+				neighboursAttackable.add(currentNeighbourTileNotNull);
+			}
+		}
+		
+		//eigenlijk beter met een canAttack
+		if(!neighboursAttackable.isEmpty()) {
+			characterAttackAfter = getbestAttack(gridAttackAfter, neighboursAttackable);
+		} else {
+			characterAttackAfter = null;
+		}		
+		
+		if(characterAttackAfter != null) {
+			currentFigure.attack(gridAttackAfter, characterAttackAfter);
+		}
+		
+		
+		
+		Point[] characterAttackBeforeMoveAndAttackAfter = new Point[3];
+		
+		int bestAttack;
+		if(characterAttackBefore != null && characterAttackAfter != null) {
+			bestAttack = compareAttackBeforeAndAfter(gridAttackBefore, gridAttackAfter, characterAttackBefore, characterAttackAfter);
+		} else if(characterAttackBefore != null) {
+			bestAttack = 1;
+		} else if(characterAttackAfter != null) {
+			bestAttack = 2;
+		} else {
+			bestAttack = 0;
+		}
+		if(bestAttack == 0) {
+			characterAttackBeforeMoveAndAttackAfter[0] = null;
+			characterAttackBeforeMoveAndAttackAfter[2] = null;
+		} else if(bestAttack == 1) {
+			characterAttackBeforeMoveAndAttackAfter[0] = characterAttackBefore.getLocation();
+			characterAttackBeforeMoveAndAttackAfter[2] = null;
+			aiGrid = gridAttackBefore;
+		} else {
+			characterAttackBeforeMoveAndAttackAfter[0] = null;
+			characterAttackBeforeMoveAndAttackAfter[2] = characterAttackAfter.getLocation();
+			aiGrid = gridAttackAfter;
+		}	
+		
+		if(characterMove != null) {
+			characterAttackBeforeMoveAndAttackAfter[1] = characterMove.getLocation();
+		} else {
+			characterAttackBeforeMoveAndAttackAfter[1] = null;
+		}
+		return characterAttackBeforeMoveAndAttackAfter;
+	}    

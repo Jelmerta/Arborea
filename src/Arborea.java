@@ -306,61 +306,36 @@ class Arborea {
 	private void handleAIMoves() {
 		Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
-		Act currentAI;
-		Tile thisTile;
-		Figure thisFigure;
 		Tile moveTile;
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
-		Grid aiGridAttackBefore = new Grid(aiGrid);
-		Grid aiGridAttackAfter = new Grid(aiGrid);
 		
+		Random random = new Random();
 		long seed = System.nanoTime();
+		random.setSeed(seed);
 		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
-		Collections.shuffle(allFiguresOfTeam, new Random(seed)); //TODO use 1 Random object, setSeed
-		int count = 0;
+		Collections.shuffle(allFiguresOfTeam, random); //TODO use 1 Random object, setSeed
+		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 		for (Figure currentFigure : allFiguresOfTeam) {
-			aiGridAttackBefore = new Grid(aiGrid);
-			aiGridAttackAfter = new Grid();
-			thisTile = grid.getTile(currentFigure.getLocation());
-			currentAI = new Act();
-			currentAI.setSelectedTile(thisTile); 
-	
-			Point[] currentAIPoints = currentFigure.getAI(grid, aiGridAttackBefore, aiGridAttackAfter); //getAI changes the states of the grid
-			attackTileBefore = aiGridAttackBefore.getTile(currentAIPoints[0]);
-			moveTile = aiGridAttackBefore.getTile(currentAIPoints[1]);
-			attackTileAfter = aiGridAttackAfter.getTile(currentAIPoints[2]);
-			currentAI.setMovingTile(moveTile);
-			currentAI.setAttackTileBefore(attackTileBefore);
-			currentAI.setAttackTileAfter(attackTileAfter);
-			//System.out.println("hoi deze tile is: " + currentAI.movingTile);
-			ai.add(currentAI);
-			
-			// Simulate the new situation on a different grid than the one used to play the game.
-			//thisFigure = thisTile.getFigure();
-			/*if(attackTileBefore != null) {
-				System.out.println("attackbefore: " + count);
+			allAICurrentFigure = currentFigure.getAllPossibleActs(grid, aiGrid);
+			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid);
+			ai.add(chosenAI);
+			attackTileBefore = chosenAI.getAttackTileBefore();
+			moveTile = chosenAI.getMovingTile();
+			attackTileAfter = chosenAI.getAttackTileAfter();
+			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
 				currentFigure.attack(grid, attackedFigure);
 			}
 			if(moveTile != null) {
-				System.out.println("move "  + count + " " + moveTile);
 				currentFigure.move(grid, moveTile);
 				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
-				System.out.println("attackafter: " + count);
 				attackedFigure = attackTileAfter.getFigure();
 				currentFigure.attack(grid, attackedFigure);
-			}*/
-			count++;
-		}
-		Act currentAct;
-		int length = ai.size();
-		for(int i = 0; i < length; i++) {
-			currentAct = ai.pollFirst();
-			//System.out.println(count + " act Tile " + currentAct.selectedTile +  " " + currentAct.movingTile);
+			}
 		}
 	}
     

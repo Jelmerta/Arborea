@@ -1,8 +1,8 @@
 public class Act {
-	Tile selectedTile;
-	Tile movingTile;
-	Tile attackTileBefore;
-	Tile attackTileAfter;
+	Tile selectedTile = null;
+	Tile movingTile = null;
+	Tile attackTileBefore = null;
+	Tile attackTileAfter = null;
 	
 	public Act() {
 	}
@@ -26,11 +26,23 @@ public class Act {
 		this.movingTile = movingTile;
 	}
 	
+	public Tile getMovingTile() {
+		return this.movingTile;
+	}
+	
 	public void setAttackTileBefore(Tile attackTileBefore) {
 		this.attackTileBefore = attackTileBefore;
 	}
 	
+	public Tile getAttackTileBefore() {
+		return this.attackTileBefore;
+	}
+	
 	public void setAttackTileAfter(Tile attackTileAfter) {
 		this.attackTileAfter = attackTileAfter;
+	}
+	
+	public Tile getAttackTileAfter() {
+		return this.attackTileAfter;
 	}
 }

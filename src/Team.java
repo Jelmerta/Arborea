@@ -28,7 +28,7 @@ class Team {
     }
     
     public ArrayList<Figure> getTeam() {
-    	return figures;
+    	return figures;	
     }
     
     private int getSize() {
