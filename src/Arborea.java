@@ -23,14 +23,15 @@ class Arborea {
     final static int WINDOW_WIDTH = 800;
     
     final static int GRID_SIZE = 9;
-	private static final boolean ORCTEAM = true;
+	static final boolean ORCTEAM = true;
+	static final boolean MENTEAM = false;
     
     // static values to keep track of mouse actions
     static boolean leftClicked = false;
     static boolean rightClicked = false;
     static boolean currentTeamIsOrcs = ORCTEAM;
     static boolean turnEnded = false;
-    static boolean humansIsAI = false;
+    static boolean menIsAI = false;
     static boolean orcsIsAI = false;
     static boolean orcStarts = false;
     static Point lastClickPoint = new Point(0,0);
@@ -43,6 +44,16 @@ class Arborea {
     // boolean for whether or not to play music
     static boolean muteSound = false;
     
+    // boolean for showing the intro
+    static boolean introduced = false;
+    
+    // boolean for the end of the game, and starting anew
+    static boolean gameOver = false;
+    static boolean playAgain = false;
+    
+    // keeps track of the menu for the begin and end of game
+    static Menu menu;
+    
     // text printed on the Texter [POSSIBLY REMOVE LATER]
     static String text = "";
     
@@ -54,7 +65,7 @@ class Arborea {
 	private MusicPlayer musicPlayer;
 
 	// 30 frames per second =~ 33.3 milliseconds sleep after each frame. 60 =~ 16.6
-	private static final int FRAMERATE = 100;
+	private static final int FRAMERATE = 16;
 	
 	// The grid with all tiles
     public static Grid grid;
@@ -81,29 +92,13 @@ class Arborea {
     public Arborea(String windowName, String fileName, String gameTypeString, String orcStartsString) { 	
     	int gameType = Integer.parseInt(gameTypeString);
     	boolean orcStarts = "1".equals(orcStartsString);
-    	currentTeamIsOrcs = orcStarts;
-    	if(gameType == 0) {
-    		humansIsAI = false;
-    		orcsIsAI = false;
-    	} else if(gameType == 1) {
-    		humansIsAI = false;
-    		orcsIsAI = true;
-    	} else if(gameType == 2) {
-    		humansIsAI = true;
-    		orcsIsAI = false;
-    	} else if(gameType == 3) {
-    		humansIsAI = true;
-    		orcsIsAI = true;
-    	}
+//    	currentTeamIsOrcs = orcStarts;
+
         grid = new Grid(fileName);
-		for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
-			currentFigure.setMoved(false);
-			currentFigure.setAttacked(false);
-		}
         screener = new Screener(windowName);
         musicPlayer = new MusicPlayer();
-        musicThread = new Thread(musicPlayer);
-        musicThread.start();
+        //musicThread.start();
+        menu = new Menu();
     }
     
     // this is the main function that controls everything
@@ -120,10 +115,10 @@ class Arborea {
 			}
 			
 			if (browsingMenu){
-				
+				changeMenuState();
 			} else {
 				changeGameState();		
-				if((!currentTeamIsOrcs && humansIsAI) || (humansIsAI && orcsIsAI) || (currentTeamIsOrcs && orcsIsAI)) {
+				if((!currentTeamIsOrcs && menIsAI) || (menIsAI && orcsIsAI) || (currentTeamIsOrcs && orcsIsAI)) {
 					handleAIMoves();
 					turnEnded = !turnEnded;
 				}
@@ -133,19 +128,79 @@ class Arborea {
 			screener.rewrite();
 		}
 		musicThread.interrupt();
-		//musicThread.stop(); // TODO dont use stop. weet je zeker dat het nut heeft? muziek stopt bij mij gewoon
+	}
+	
+	// changes the state of the menu
+	void changeMenuState(){
+		if (!introduced){
+			if (menu.finishedIntro()) {
+				introduced = true;
+				screener.showMenu(true);
+				screener.initCanvasBackground();
+				// TODO white is ook mooi
+				//screener.setCanvasBackground(new Color(0,50,100));
+			}
+		} else {
+			if (gameOver){
+				if (playAgain){
+					grid = new Grid("src/characterlocations2");
+					// TODO ^^^^^^^^^^^^^^^^^^
+					gameOver = false;
+					playAgain = false;
+					screener.showReplayButton(false);
+					screener.showMenu(true);
+				}				
+			} else {
+				switch (menu.menuOption){
+					case (Menu.ORC_PI_MEN_PI):
+						menIsAI = false;
+						orcsIsAI = false;
+						break;
+					case (Menu.ORC_PI_MEN_AI):
+						menIsAI = true;
+						orcsIsAI = false;					
+						break;
+					case (Menu.ORC_AI_MEN_PI):
+						menIsAI = false;
+						orcsIsAI = true;
+						break;
+					case (Menu.ORC_AI_MEN_AI):
+						menIsAI = true;
+						orcsIsAI = true;
+						break;
+					default:
+						return;
+				}
+				
+				menu.menuOption = -1;
+				browsingMenu = false;
+				screener.showMenu(false);
+		        musicThread = new Thread(musicPlayer);
+				musicThread.start();
+				
+				for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
+					currentFigure.setMoved(false);
+					currentFigure.setAttacked(false);
+				}
+				
+				// don't show button if only AI
+				if (!menIsAI || !orcsIsAI)
+					screener.showTurnButton(true);
+			}
+		}
 	}
 	
 	// Changes the current game state if necessary
 	void changeGameState() {
-		if(grid.getTeam(true).isEmpty()) {
-			System.out.println("Humans won!");
-			// print losing screen
-			active = false;
-		} else if(grid.getTeam(false).isEmpty()) {
-			System.out.println("Orcs won!");
-			// print winning screen
-			active = false;
+		if(grid.getTeam(ORCTEAM).isEmpty() || grid.getTeam(MENTEAM).isEmpty()) {
+			gameOver = true;
+			browsingMenu = true;
+			musicThread.interrupt();
+			screener.showTurnButton(false);
+			screener.showReplayButton(true);
+			return;
+			
+			// TODO yo moet hier turnEnded nog false worden?
 		}
 		
 		// TODO een turn begins waarin de setbools op true komen		
@@ -166,7 +221,7 @@ class Arborea {
 	// handles mouse button input
 	void handleClicker(){
 		if (browsingMenu){
-			browsingMenu = false;
+			//browsingMenu = false;
 		} else {
 			handleGameClicks();
 		}

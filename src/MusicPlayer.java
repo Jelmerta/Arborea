@@ -40,7 +40,7 @@ class MusicPlayer implements Runnable {
 		randomizer = new Random();
 	}
 	
-	// based on http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
+	// adapted from on http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
 	private void playMusic(File musicFile) throws IOException, 
 	  UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
 		class AudioListener implements LineListener {
@@ -81,14 +81,9 @@ class MusicPlayer implements Runnable {
 		    	readyForNextSong = false;
 			    try {
 			    	playMusic(selectRandomSong());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (UnsupportedAudioFileException e) {
-					e.printStackTrace();
-				} catch (LineUnavailableException e) {
+				} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					//e.printStackTrace();
 					break;
 				}
 		    }

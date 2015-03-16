@@ -9,9 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+@SuppressWarnings("serial")
 public class Texter extends JPanel {
-	
-	private static final long serialVersionUID = 1L;
 	
 	JTextArea ta;
 	
