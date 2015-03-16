@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 //import java.util.Random;
 import java.lang.Math;
+import java.awt.GraphicsDevice;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
@@ -73,6 +74,7 @@ abstract class Figure {
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
+       	System.out.println(this.getIndex());
     	if(this.getTeam()) {
     		grid.orcs.update(this.getIndex(), this);
     	} else {
@@ -104,6 +106,7 @@ abstract class Figure {
     		 if(attacked.hit <= 0) {
     			 removeFromField(grid, attacked);
     			 grid.removeFromTeam(attacked.getTeam(), attacked);
+    			 
     		 }
     	 }
 		 System.out.println("This unit has " + attacked.hit + " HP left.");
@@ -142,9 +145,9 @@ abstract class Figure {
 				//currentTile.getNeighbours();
 				//System.out.println("this tile ");// + currentTile);
 				currentLength = lengthToMiddleOfTeam(currentTile, grid.humans);
-				System.out.println("length = " + currentLength);
+				//System.out.println("length = " + currentLength);
 				if(currentLength < bestLength) {
-					System.out.println("hi");
+					//System.out.println("hi");
 					bestLength = currentLength;
 					bestTile = currentTile;
 				}
@@ -248,7 +251,12 @@ abstract class Figure {
 	
 	private void removeFromField(Grid grid, Figure attacked) {
 	    Tile deadTile = grid.getTile(attacked.location);
-	    deadTile.setFigure(null); 
+	    deadTile.setFigure(null);
+	    if(attacked.getTeam()) {
+	    	grid.orcs.update(attacked.getIndex(), null);
+	    } else {
+	    	grid.humans.update(attacked.getIndex(), null);
+	    }
 	}
 	
 	public void setIndex(int index) {
@@ -350,7 +358,7 @@ abstract class Figure {
 			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); // TODO dont do this randomly
 			//characterMove = neighboursMoveable.get(randomIndex).getLocation();
 			boolean offensive = isNextMoveOffensive(aiGrid);
-			System.out.println("offensive: " + offensive);
+			//System.out.println("offensive: " + offensive);
 			if(offensive) {
 				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, !currentFigure.getTeam(), neighboursMoveable).getLocation();
 			} else {
@@ -362,7 +370,7 @@ abstract class Figure {
 		} else {
 			characterMove = null;
 		}
-		System.out.println("currentFigure: " + this + " characterMove: " + characterMove);
+		//System.out.println("currentFigure: " + this + " characterMove: " + characterMove);
 		
 		if(characterMove != null) {
 			currentFigure.move(gridAttackBefore, currentTile);

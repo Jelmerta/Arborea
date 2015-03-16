@@ -315,7 +315,7 @@ class Arborea {
 	//else go closer to enemy
 		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
-		//Grid aiGrid = grid;
+		Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
 		Act currentAI;
 		Tile thisTile;
@@ -324,18 +324,18 @@ class Arborea {
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
-		Grid aiGridAttackBefore = new Grid(grid);
-		Grid aiGridAttackAfter = new Grid(grid);
+		Grid aiGridAttackBefore = new Grid(aiGrid);
+		Grid aiGridAttackAfter = new Grid(aiGrid);
 		
 		long seed = System.nanoTime();
 		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
 		Collections.shuffle(allFiguresOfTeam, new Random(seed));
-		System.out.println("figures " + allFiguresOfTeam);
+		//System.out.println("figures " + allFiguresOfTeam);
 		//TODO make an actual good order
 		int count = 0;
 		for (Figure currentFigure : allFiguresOfTeam) {
-			//aiGridAttackBefore = aiGrid;
-			//aiGridAttackAfter = aiGrid;
+			aiGridAttackBefore = new Grid(aiGrid);
+			aiGridAttackAfter = new Grid();
 			thisTile = grid.getTile(currentFigure.getLocation());
 			currentAI = new Act();
 			currentAI.setSelectedTile(thisTile); 
@@ -347,7 +347,7 @@ class Arborea {
 			currentAI.setMovingTile(moveTile);
 			currentAI.setAttackTileBefore(attackTileBefore);
 			currentAI.setAttackTileAfter(attackTileAfter);
-			System.out.println("hoi deze tile is: " + currentAI.movingTile);
+			//System.out.println("hoi deze tile is: " + currentAI.movingTile);
 			ai.add(currentAI);
 			
 			// Simulate the new situation on a different grid than the one used to play the game.
@@ -373,7 +373,7 @@ class Arborea {
 		int length = ai.size();
 		for(int i = 0; i < length; i++) {
 			currentAct = ai.pollFirst();
-			System.out.println(count + " act Tile " + currentAct.selectedTile +  " " + currentAct.movingTile);
+			//System.out.println(count + " act Tile " + currentAct.selectedTile +  " " + currentAct.movingTile);
 		}
 	}
     
