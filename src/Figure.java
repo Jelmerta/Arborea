@@ -74,9 +74,9 @@ abstract class Figure {
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
     	if(this.getTeam()) {
-    		Arborea.grid.orcs.update(this.getIndex(), this);
+    		grid.orcs.update(this.getIndex(), this);
     	} else {
-    		Arborea.grid.humans.update(this.getIndex(), this);
+    		grid.humans.update(this.getIndex(), this);
     	}
     }
     
@@ -102,19 +102,19 @@ abstract class Figure {
     	 if(imHitCaptain) {
     		 attacked.hit--;
     		 if(attacked.hit <= 0) {
-    			 removeFromField(attacked);
+    			 removeFromField(grid, attacked);
     			 grid.removeFromTeam(attacked.getTeam(), attacked);
     		 }
     	 }
 		 System.out.println("This unit has " + attacked.hit + " HP left.");
     }
 	
-	private boolean isNextMoveOffensive() {
+	private boolean isNextMoveOffensive(Grid grid) {
 		double lengthToOwnTeam;
 		if(this.getTeam()) {
-			lengthToOwnTeam = lengthToMiddleOfTeam(Arborea.aiGridStartOfFigureTurn.getTile(this.getLocation()), Arborea.grid.orcs);
+			lengthToOwnTeam = lengthToMiddleOfTeam(grid.getTile(this.getLocation()), grid.orcs);
 		} else {
-			lengthToOwnTeam = lengthToMiddleOfTeam(Arborea.aiGridStartOfFigureTurn.getTile(this.getLocation()), Arborea.grid.humans);
+			lengthToOwnTeam = lengthToMiddleOfTeam(grid.getTile(this.getLocation()), grid.humans);
 		}
 		if(lengthToOwnTeam > 2) {
 			return false;
@@ -123,25 +123,25 @@ abstract class Figure {
 		}
 	}
     
-	private Tile getMoveCloserToTeam(Boolean orcs, ArrayList<Tile> neighboursMoveable) {
-		Tile bestTile = Arborea.aiGridStartOfFigureTurn.getTile(this.getLocation());
+	private Tile getMoveCloserToTeam(Grid grid, Boolean orcs, ArrayList<Tile> neighboursMoveable) {
+		Tile bestTile = grid.getTile(this.getLocation());
 		double bestLength;
 		double currentLength;
 		
 		if(orcs) {
-			bestLength = lengthToMiddleOfTeam(bestTile, Arborea.grid.orcs);
+			bestLength = lengthToMiddleOfTeam(bestTile, grid.orcs);
 			for(Tile currentTile : neighboursMoveable) {
-				if(((currentLength = lengthToMiddleOfTeam(currentTile, Arborea.grid.orcs)) < bestLength)){
+				if(((currentLength = lengthToMiddleOfTeam(currentTile, grid.orcs)) < bestLength)){
 					bestLength = currentLength;
 					bestTile = currentTile;
 				}
 			}
 		} else {
-			bestLength = lengthToMiddleOfTeam(bestTile, Arborea.grid.humans);
+			bestLength = lengthToMiddleOfTeam(bestTile, grid.humans);
 			for(Tile currentTile : neighboursMoveable) {
 				//currentTile.getNeighbours();
 				//System.out.println("this tile ");// + currentTile);
-				currentLength = lengthToMiddleOfTeam(currentTile, Arborea.grid.humans);
+				currentLength = lengthToMiddleOfTeam(currentTile, grid.humans);
 				System.out.println("length = " + currentLength);
 				if(currentLength < bestLength) {
 					System.out.println("hi");
@@ -237,20 +237,18 @@ abstract class Figure {
 		return 1/(1+Math.exp(-0.4*(weaponSkills-weaponSkillsAttacked)));
 	}
 
-	public boolean inRange(Figure attacked) {
-		Tile currentTile = Arborea.grid.getTile(this.location);
-		Tile destinationTile = Arborea.grid.getTile(attacked.location);
+	public boolean inRange(Grid grid, Figure attacked) {
+		Tile currentTile = grid.getTile(this.location);
+		Tile destinationTile = grid.getTile(attacked.location);
 		if(Arrays.asList(currentTile.getNeighbours()).contains(destinationTile))
 			return true;
 		else
 			return false;
 	}
 	
-	private void removeFromField(Figure attacked) {
-	    Tile deadTile = Arborea.grid.getTile(attacked.location);
+	private void removeFromField(Grid grid, Figure attacked) {
+	    Tile deadTile = grid.getTile(attacked.location);
 	    deadTile.setFigure(null); 
-	    //Is dit genoeg of moet er ook nog iets met graphics veranderen?
-	    // TODO yo zet er TODOs bij zodat we het later terug kunnen vinden
 	}
 	
 	public void setIndex(int index) {
@@ -301,12 +299,12 @@ abstract class Figure {
 	}
 	
 	// Figure AI
-	public Point[] getAI() {
+	public Point[] getAI(Grid aiGrid, Grid gridAttackBefore, Grid gridAttackAfter) {
 		Point characterMove;
 		Figure characterAttackBefore;
 		Figure characterAttackAfter;
 		
-		Tile currentTile = Arborea.grid.getTile(location);
+		Tile currentTile = aiGrid.getTile(location);
 		Figure currentFigure = currentTile.getFigure();
 		Tile[] neighbours = currentTile.getNeighbours();
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
@@ -337,9 +335,13 @@ abstract class Figure {
 		
 		//eigenlijk beter met een canAttack
 		if(!neighboursAttackable.isEmpty()) {
-			characterAttackBefore = getbestAttack(Arborea.aiGridStartOfFigureTurn, neighboursAttackable);
+			characterAttackBefore = getbestAttack(gridAttackBefore, neighboursAttackable);
 		} else {
 			characterAttackBefore = null;
+		}
+		
+		if(characterAttackBefore != null) {
+			currentFigure.attack(gridAttackBefore, characterAttackBefore);
 		}
 		
 		// Movement
@@ -347,12 +349,12 @@ abstract class Figure {
 		if(!neighboursMoveable.isEmpty()) {
 			//randomIndex = randomizer.nextInt(neighboursMoveable.size()); // TODO dont do this randomly
 			//characterMove = neighboursMoveable.get(randomIndex).getLocation();
-			boolean offensive = isNextMoveOffensive();
+			boolean offensive = isNextMoveOffensive(aiGrid);
 			System.out.println("offensive: " + offensive);
 			if(offensive) {
-				characterMove = currentFigure.getMoveCloserToTeam(!currentFigure.getTeam(), neighboursMoveable).getLocation();
+				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, !currentFigure.getTeam(), neighboursMoveable).getLocation();
 			} else {
-				characterMove = currentFigure.getMoveCloserToTeam(currentFigure.getTeam(), neighboursMoveable).getLocation();
+				characterMove = currentFigure.getMoveCloserToTeam(aiGrid, currentFigure.getTeam(), neighboursMoveable).getLocation();
 			}
 			if(characterMove == currentTile.getLocation())  {
 				characterMove = null;
@@ -363,8 +365,10 @@ abstract class Figure {
 		System.out.println("currentFigure: " + this + " characterMove: " + characterMove);
 		
 		if(characterMove != null) {
-			currentFigure.move(Arborea.aiGrid, currentTile);
-			currentTile = Arborea.aiGrid.getTile(characterMove.getLocation());
+			currentFigure.move(gridAttackBefore, currentTile);
+			currentTile = gridAttackBefore.getTile(characterMove.getLocation());
+			currentFigure.move(gridAttackAfter, currentTile);
+			currentTile = gridAttackAfter.getTile(characterMove.getLocation());
 		}
 
 		// Attack after move
@@ -386,16 +390,22 @@ abstract class Figure {
 		
 		//eigenlijk beter met een canAttack
 		if(!neighboursAttackable.isEmpty()) {
-			characterAttackAfter = getbestAttack(Arborea.aiGrid, neighboursAttackable);
+			characterAttackAfter = getbestAttack(gridAttackAfter, neighboursAttackable);
 		} else {
 			characterAttackAfter = null;
 		}		
+		
+		if(characterAttackAfter != null) {
+			currentFigure.attack(gridAttackAfter, characterAttackAfter);
+		}
+		
+		
 		
 		Point[] characterAttackBeforeMoveAndAttackAfter = new Point[3];
 		
 		int bestAttack;
 		if(characterAttackBefore != null && characterAttackAfter != null) {
-			bestAttack = compareAttackBeforeAndAfter(characterAttackBefore, characterAttackAfter);
+			bestAttack = compareAttackBeforeAndAfter(gridAttackBefore, gridAttackAfter, characterAttackBefore, characterAttackAfter);
 		} else if(characterAttackBefore != null) {
 			bestAttack = 1;
 		} else if(characterAttackAfter != null) {
@@ -409,9 +419,11 @@ abstract class Figure {
 		} else if(bestAttack == 1) {
 			characterAttackBeforeMoveAndAttackAfter[0] = characterAttackBefore.getLocation();
 			characterAttackBeforeMoveAndAttackAfter[2] = null;
+			aiGrid = gridAttackBefore;
 		} else {
 			characterAttackBeforeMoveAndAttackAfter[0] = null;
 			characterAttackBeforeMoveAndAttackAfter[2] = characterAttackAfter.getLocation();
+			aiGrid = gridAttackAfter;
 		}	
 		
 		if(characterMove != null) {
@@ -455,12 +467,12 @@ abstract class Figure {
 	
 	//maybe just make separate functions returning lowest adjacency and lowest hitpoints and compare those TODO 
 	// 0 is no attack, 1 is attack before, 2 attack after
-	private int compareAttackBeforeAndAfter(Figure attackBefore, Figure attackAfter) {
+	private int compareAttackBeforeAndAfter(Grid gridBefore, Grid gridAfter, Figure attackBefore, Figure attackAfter) {
 		if(attackBefore.getHitpoints() == 1) {
 			return 1;
 		} else if (attackAfter.getHitpoints() == 1) { 
 			return 2;
-		} else if(attackBefore.calculateAdjacencyBonus(Arborea.aiGridStartOfFigureTurn) < attackAfter.calculateAdjacencyBonus(Arborea.aiGrid)) {
+		} else if(attackBefore.calculateAdjacencyBonus(gridBefore) < attackAfter.calculateAdjacencyBonus(gridAfter)) {
 			return 1;
 		} else {
 			return 2;

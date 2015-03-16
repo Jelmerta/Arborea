@@ -192,7 +192,7 @@ class Tile {
     }
     
     // changes images of selected tiles neighbors to their alternative
-    void changeNeighbourImages(){
+    void changeNeighbourImages(Grid grid){
         for (int i = 0; i < 6; i++){
         	if (this.neighbours[i] != null) {
         		if (!this.neighbours[i].hasFigure()) {
@@ -204,7 +204,7 @@ class Tile {
         			if (this.getFigure().hasAttacksLeft()) {
 	        			if (this.neighbours[i].hasFigure()) {
 	        			    Figure neighbourFigure = this.neighbours[i].getFigure(); 
-	        				if (!Arborea.grid.getTeam(neighbourFigure.getTeam()).contains(currentFigure))
+	        				if (!grid.getTeam(neighbourFigure.getTeam()).contains(currentFigure))
 	        					this.neighbours[i].image = tileAttack;
 	        			}
         			}

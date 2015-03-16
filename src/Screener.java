@@ -20,7 +20,10 @@ class Screener extends JFrame {
 	private final Clicker clicker;
 	private JButton endTurn;
 	
-	Screener(String windowName){
+	private Grid gridToDraw;
+	
+	Screener(String windowName, Grid grid){
+		
 		// creates default JFrame object
 		super(windowName);
 
@@ -37,7 +40,7 @@ class Screener extends JFrame {
 		this.setBackground(Color.BLACK);
 
 		// panel on which is painted
-		painter = new Painter();
+		painter = new Painter(grid);
 		painter.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));		
 		
 		// mouse listener, to use within the paint panel
@@ -66,6 +69,9 @@ class Screener extends JFrame {
 		// makes the window the correct size and displays it
 		this.pack();
 		this.setVisible(true);
+		
+		// grid to draw
+		gridToDraw = grid;
 	}
 	
 	// updates text on the text panel

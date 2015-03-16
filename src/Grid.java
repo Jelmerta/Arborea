@@ -97,6 +97,13 @@ class Grid {
     		t.calculateNeighbours(tiles);
 		}
     }
+    
+    public Grid(Grid dummy) {
+        this.grid = dummy.grid;
+        this.tiles = dummy.tiles;
+        this.humans = dummy.humans;
+        this.orcs = dummy.orcs;
+    }
 
     // returns the tile nearest to the clicked location
 	Tile selectTile(Point clickPoint) {

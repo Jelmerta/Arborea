@@ -57,9 +57,10 @@ class Arborea {
 	private static final int FRAMERATE = 100;
 	
 	// The grid with all tiles
-    public static Grid grid;
-    public static Grid aiGridStartOfFigureTurn; // Updates when the AI for the next character is updates
-    public static Grid aiGrid; // keeps updating with each move
+    public Grid grid;
+    public Grid aiGridAttackBefore; // Updates when the AI for the next character is updates
+    public Grid aiGridAttackAfter;
+    public Grid aiGrid; // keeps updating with each move
     
     // The queue with AI moves and attacks for every character
     static LinkedList<Act> AIQueue;
@@ -75,7 +76,7 @@ class Arborea {
     	
         // painting starts as soon as the screen is made
         // btw dit is waarom ik deze dus onderaan heb in de constructor
-    	screener = new Screener(windowName);
+    	screener = new Screener(windowName, grid);
     }
     
     public Arborea(String windowName, String fileName, String gameTypeString, String orcStartsString) { 	
@@ -100,7 +101,7 @@ class Arborea {
 			currentFigure.setMoved(false);
 			currentFigure.setAttacked(false);
 		}
-        screener = new Screener(windowName);
+        screener = new Screener(windowName, grid);
         musicPlayer = new MusicPlayer();
         musicThread = new Thread(musicPlayer);
         musicThread.start();
@@ -212,7 +213,7 @@ class Arborea {
 	    	}	    	
 	    	
 	        if (newSelection != null && newSelection.hasFigure() && (newSelection.getFigure().getTeam() == currentTeamIsOrcs)) {
-		        newSelection.changeNeighbourImages();
+		        newSelection.changeNeighbourImages(grid);
 	        }
 	        
 	        selection = newSelection;			
@@ -255,64 +256,72 @@ class Arborea {
 	//else go closer to enemy
 		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
-		aiGrid = grid;
+		//Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
-		Act currentAI = new Act();
+		Act currentAI;
 		Tile thisTile;
 		Figure thisFigure;
 		Tile moveTile;
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
+		Grid aiGridAttackBefore = new Grid(grid);
+		Grid aiGridAttackAfter = new Grid(grid);
 		
 		long seed = System.nanoTime();
-		ArrayList<Figure> allFiguresOfTeam = aiGrid.getTeam(currentTeamIsOrcs);
+		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
 		Collections.shuffle(allFiguresOfTeam, new Random(seed));
 		System.out.println("figures " + allFiguresOfTeam);
 		//TODO make an actual good order
 		int count = 0;
 		for (Figure currentFigure : allFiguresOfTeam) {
-			aiGridStartOfFigureTurn = aiGrid;
-			thisTile = aiGrid.getTile(currentFigure.getLocation());
+			//aiGridAttackBefore = aiGrid;
+			//aiGridAttackAfter = aiGrid;
+			thisTile = grid.getTile(currentFigure.getLocation());
+			currentAI = new Act();
 			currentAI.setSelectedTile(thisTile); 
 	
-			Point[] currentAIPoints = currentFigure.getAI();
-			attackTileBefore = aiGridStartOfFigureTurn.getTile(currentAIPoints[0]);
-			moveTile = aiGridStartOfFigureTurn.getTile(currentAIPoints[1]);
-			attackTileAfter = aiGrid.getTile(currentAIPoints[2]);
+			Point[] currentAIPoints = currentFigure.getAI(grid, aiGridAttackBefore, aiGridAttackAfter); //getAI changes the states of the grid
+			attackTileBefore = aiGridAttackBefore.getTile(currentAIPoints[0]);
+			moveTile = aiGridAttackBefore.getTile(currentAIPoints[1]);
+			attackTileAfter = aiGridAttackAfter.getTile(currentAIPoints[2]);
 			currentAI.setMovingTile(moveTile);
 			currentAI.setAttackTileBefore(attackTileBefore);
 			currentAI.setAttackTileAfter(attackTileAfter);
-			ai.push(currentAI);
+			System.out.println("hoi deze tile is: " + currentAI.movingTile);
+			ai.add(currentAI);
 			
 			// Simulate the new situation on a different grid than the one used to play the game.
-			aiGrid = aiGridStartOfFigureTurn;
-			thisFigure = thisTile.getFigure();
-			if(attackTileBefore != null) {
+			//thisFigure = thisTile.getFigure();
+			/*if(attackTileBefore != null) {
 				System.out.println("attackbefore: " + count);
 				attackedFigure = attackTileBefore.getFigure();
-				thisFigure.attack(grid, attackedFigure);
-				//thisFigure.attack(aiGrid, attackedFigure);
+				currentFigure.attack(grid, attackedFigure);
 			}
 			if(moveTile != null) {
-				System.out.println("move "  + count);
-				thisFigure.move(grid, moveTile);
-				//thisFigure.move(aiGrid, moveTile);
-				thisFigure.setMoved(true);
+				System.out.println("move "  + count + " " + moveTile);
+				currentFigure.move(grid, moveTile);
+				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
 				System.out.println("attackafter: " + count);
 				attackedFigure = attackTileAfter.getFigure();
-				thisFigure.attack(grid, attackedFigure);
-				//thisFigure.attack(aiGrid, attackedFigure);
-			}
+				currentFigure.attack(grid, attackedFigure);
+			}*/
 			count++;
+		}
+		Act currentAct;
+		int length = ai.size();
+		for(int i = 0; i < length; i++) {
+			currentAct = ai.pollFirst();
+			System.out.println(count + " act Tile " + currentAct.selectedTile +  " " + currentAct.movingTile);
 		}
 	}
     
 	public Grid getGrid() {
 		return grid;
 	}
+	
     void setup(String gridFile) { //TODO deze kan weg?
         //orcs = new Team(true);
         //humans = new Team(false);

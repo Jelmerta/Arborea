@@ -13,11 +13,11 @@ import javax.swing.JPanel;
 class Painter extends JPanel {    
 	
 	private static final long serialVersionUID = 1L;
-
-	Painter() {
+	Grid gridToDraw;
+	Painter(Grid grid) {
 		super();
 		this.setBackground(new Color(0,50,100));
-		
+		gridToDraw = grid;
 		//this.addMouseListener(new MouseAdapter());
 	}
 	
@@ -29,22 +29,22 @@ class Painter extends JPanel {
 		if (Arborea.browsingMenu){
 			
 		} else {
-			paintTiles(g);
-			paintCharacters(g);
+			paintTiles(g, gridToDraw);
+			paintCharacters(g, gridToDraw);
 			paintOverlay(g);
 		}
 	}
 	
 	// paints all tiles
-	private void paintTiles(Graphics g){
+	private void paintTiles(Graphics g, Grid grid){
 
-		for (Entry<Point, Tile> entry : Arborea.grid.tiles.entrySet()){
+		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
 			Tile t = entry.getValue();
 			Point pixelCoords = t.getPixelCoords();
 			g.drawImage(t.getMudImage(), pixelCoords.x , pixelCoords.y, this);
 		}
 		
-		for (Entry<Point, Tile> entry : Arborea.grid.tiles.entrySet()){
+		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
 			Tile t = entry.getValue();
 			Point pixelCoords = t.getPixelCoords();
 			g.drawImage(t.getImage(), pixelCoords.x , pixelCoords.y, this);
@@ -57,8 +57,8 @@ class Painter extends JPanel {
 		}
 	}
 	
-	private void paintCharacters(Graphics g) {
-		for (Entry<Point, Tile> entry : Arborea.grid.tiles.entrySet()){
+	private void paintCharacters(Graphics g, Grid grid) {
+		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
 			Tile t = entry.getValue();
 			//int currentCharType = t.getCharacterType(); TODO unused?
 			Point pixelCoords = t.getPixelCoords();
