@@ -129,6 +129,7 @@ abstract class Figure {
     		 }
     	 } if(print) {
     	 }
+    	 hasAttacked = true;
     }
 	
 	public boolean isNextMoveOffensive(Grid grid, double threshold) {

@@ -291,16 +291,51 @@ class Arborea {
 					if(neighboursMoveable.size() != 0 ) {
 						randomIndex = randomAI.nextInt(neighboursMoveable.size());
 						moveTile = grid.getTile(neighboursMoveable.get(randomIndex).getLocation());
+						// check with new figure
+						Figure figureStepped;
+						int startType = currentFigure.type;
+				        switch(startType) {
+				            case Figure.TYPE_NONE:
+				            	figureStepped = null;
+				                break;
+				            case Figure.TYPE_SWORD:
+				            	figureStepped = new Sword(currentFigure);
+				                break;
+				            case Figure.TYPE_GENERAL:
+				            	figureStepped = new General(currentFigure);
+				                break;
+				            case Figure.TYPE_GOBLIN:
+				            	figureStepped = new Goblin(currentFigure);
+				                break;
+				            case Figure.TYPE_ORC:
+				            	figureStepped = new Orc(currentFigure);
+				                break;
+				            default:
+				            	figureStepped = null;
+				            figureStepped.move(grid, moveTile); //why null
+				        }
+				        if(currentFigure.hasAttacksLeft()) {
+				        	ArrayList<Tile> neighboursAttackableAfterMove = figureStepped.getAllMoveableTiles(grid);
+							if(neighboursAttackableAfterMove.size() != 0) {
+								randomIndex = randomAI.nextInt(neighboursAttackableAfterMove.size());
+								attackTileBefore = grid.getTile(neighboursAttackableAfterMove.get(randomIndex).getLocation());
+							}
+				        }
+				        figureStepped.move(grid, grid.getTile(currentFigure.getLocation())); //probably not necessary?
 					}
-					ArrayList<Tile> neighboursAttackable = currentFigure.getAllAttackableTiles(grid);
-					if(neighboursAttackable.size() != 0) {
-						randomIndex = randomAI.nextInt(neighboursAttackable.size());
-						attackTileBefore = grid.getTile(neighboursAttackable.get(randomIndex).getLocation());
+					if(currentFigure.hasAttacksLeft()) {
+						ArrayList<Tile> neighboursAttackable = currentFigure.getAllAttackableTiles(grid);
+						if(neighboursAttackable.size() != 0) {
+							randomIndex = randomAI.nextInt(neighboursAttackable.size());
+							attackTileBefore = grid.getTile(neighboursAttackable.get(randomIndex).getLocation());
+						}
 					}
 					Act randomAIAct = new Act();
 					randomAIAct.setSelectedTile(grid.getTile(currentFigure.getLocation()));
 					randomAIAct.setMovingTile(moveTile);
-					randomAIAct.setAttackTileBefore(attackTileBefore);
+					if(attackTileBefore != null) {
+						randomAIAct.setAttackTileBefore(attackTileBefore);
+					}
 					break;
 				case Figure.AI_TRUE:
 					allAICurrentFigure = currentFigure.getAllPossibleActs();
