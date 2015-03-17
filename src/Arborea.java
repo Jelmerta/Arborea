@@ -7,41 +7,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 //
 class Arborea {
-	   
-    final static int AMOUNT_SWORD = 6;
-    final static int AMOUNT_GENERAL = 3;
-    final static int AMOUNT_GOBLIN = 8;
-    final static int AMOUNT_ORC = 2;
-    
+
+	// dimensions of the window
     final static int WINDOW_HEIGHT = 600;
     final static int WINDOW_WIDTH = 800;
     
-    final static int GRID_SIZE = 9;
+    // keeping track of teams is done with a boolean
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
-	
-	static final String mapFile = "src/maps/characterlocations2";
-	//static final String mapFile = "maps/characterlocations2";
+
+	//static final String mapFile = "maps/characterlocations2"; // console
+	static final String mapFile = "src/maps/characterlocations2"; // eclipse
     
     // static values to keep track of mouse actions
     static boolean leftClicked = false;
-    static boolean rightClicked = false;
-    static boolean currentTeamIsOrcs = ORCTEAM;
-    static boolean turnEnded = false;
-    static boolean menIsAI = false;
-    static boolean orcsIsAI = true;
-    static boolean orcStarts = false;
     static Point lastClickPoint = new Point(0,0);
     static Point mousePoint = new Point(0,0);
     static Tile selection = null;
     
-    // index of AI
+    // keeps track of what team is currently active
+    static boolean currentTeamIsOrcs = ORCTEAM;
+    
+    // keeps track of who starts
+    static boolean orcStarts = false;
+    
+    // keeps track of the end of a turn
+    static boolean turnEnded = false;
+    
+    // keeps track of the intelligence of a team
+    static boolean menIsAI = false;
+    static boolean orcsIsAI = true;
+    
+    // index of used AI type
     static int indexAI = Figure.AI_RANDOM;
     
     // boolean for when browsing a menu
@@ -60,7 +62,7 @@ class Arborea {
     static boolean gameOver = false;
     static boolean playAgain = false;
     
-    // boolean for matrix mode
+    // boolean for secret mode
     static boolean enterTheMatrix = false;
     
     // keeps track of the menu for the begin and end of game
@@ -86,23 +88,21 @@ class Arborea {
     private boolean active = true;
     
     // this is the overlying interface, that when constructed sets up other interfaces
-    public Arborea(String windowName) {
+    Arborea(String windowName) {
     	grid = new Grid(mapFile);
-    	screener = new Screener(windowName, grid);
-        musicPlayer = new MusicPlayer();
         menu = new Menu();
+    	screener = new Screener(windowName);
+        musicPlayer = new MusicPlayer();
     }
     
     // this is the main function that controls everything
 	public void run(){
-
 		while (active) {
 			try {
 				Thread.sleep(FRAMERATE);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			
+			}			
 			if (browsingMenu){
 				changeMenuState();
 			} else {
@@ -119,7 +119,9 @@ class Arborea {
 	}
 	
 	// changes the state of the menu
-	void changeMenuState(){
+	private void changeMenuState(){
+		
+		// introduction animation
 		if (!introduced){
 			if (menu.finishedIntro()) {
 				introduced = true;
@@ -127,6 +129,8 @@ class Arborea {
 				screener.setCanvasBackground(Screener.MENU_COLOR);
 			}
 		} else {
+			
+			// victory screen
 			if (gameOver){
 				if (playAgain){
 					grid = new Grid(mapFile);
@@ -135,7 +139,9 @@ class Arborea {
 					screener.showReplayButton(false);
 					screener.showMenu(true);
 					screener.setCanvasBackground(Screener.MENU_COLOR);
-				}				
+				}
+				
+			// regular menu
 			} else {
 				if (!finishedMenu) return;
 				
@@ -144,11 +150,10 @@ class Arborea {
 				} else
 					screener.setCanvasBackground(Screener.GAME_COLOR);
 				
-				//grid = new Grid(mapFile);
-				grid.setupSecret();
-				
+				grid.setupSecret();				
 				browsingMenu = false;
 				screener.showMenu(false);
+				
 				musicPlayer.updateMusicFiles();
 		        musicThread = new Thread(musicPlayer);
 				musicThread.start();
@@ -158,7 +163,7 @@ class Arborea {
 					currentFigure.setAttacked(false);
 				}
 				
-				// don't show button if only AI
+				// no need for turn button if only AI
 				if (!menIsAI || !orcsIsAI)
 					screener.showTurnButton(true);
 			}
@@ -166,7 +171,9 @@ class Arborea {
 	}
 	
 	// Changes the current game state if necessary
-	void changeGameState() {
+	private void changeGameState() {
+		
+		// when a team has been defeated
 		if(grid.getTeam(ORCTEAM).isEmpty() || grid.getTeam(MENTEAM).isEmpty()) {
 			gameOver = true;
 			browsingMenu = true;
@@ -175,7 +182,9 @@ class Arborea {
 			screener.showTurnButton(false);
 			screener.showReplayButton(true);
 			return;
-		}		
+		}
+		
+		// when a turn ends
 		if(turnEnded) {			
 			for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
 				currentFigure.setMoved(true);
@@ -191,14 +200,15 @@ class Arborea {
 	}
 	
 	// handles mouse button input
-	void handleClicker(){
+	private void handleClicker(){
 		if (browsingMenu){
-			//browsingMenu = false;
+			// all menu clicking is done via JButtons
 		} else {
 			handleGameClicks();
 		}
 	}
 	
+	// performs actions based on mouse input
 	private void handleGameClicks(){
 		Figure figure = null;
 		Figure figureAttacked= null;
@@ -207,21 +217,20 @@ class Arborea {
 	    	// handle clicking on the mute/play button
 	    	handleMuteClick();
 	    	
+	    	// try to select a tile
 	    	Tile newSelection = grid.selectTile(lastClickPoint);
     		
 	    	if (selection != null){
 		        selection.restoreNeighbourImages();   
-		        //selection.getFigure().inRange(newSelection.getFigure()) (inRange doesn't work, syntax looks better though)
 		        
-		        // TODO dude wat is dit voor condition lol
-				if( (selection.hasFigure()) && (newSelection != null) && (!newSelection.hasFigure()) && Arrays.asList(selection.neighbours).contains(newSelection) && (selection.getFigure().getTeam() == currentTeamIsOrcs) ) {
+		        // if selecting a character, perform action
+		        if( (selection.hasFigure()) && (newSelection != null) && (!newSelection.hasFigure()) && Arrays.asList(selection.neighbours).contains(newSelection) && (selection.getFigure().getTeam() == currentTeamIsOrcs) ) {
 		        	figure = selection.getFigure();
 		        	if(figure.hasMovesLeft()) {
 			        	figure.move(grid, newSelection);
 			        	figure.setMoved(true);
 		        	}
 		        }       
-				// De newSelection != null lijkt me in moves/attacks al overbodig, maar kan geen kwaad te checken en eerder te short-circuiten, geldt ook voor de hasFigures?
 				if(newSelection != null  && selection.hasFigure() && newSelection.hasFigure() && selection.getFigure().getTeam() == currentTeamIsOrcs && newSelection.getFigure().getTeam() != currentTeamIsOrcs  && Arrays.asList(selection.neighbours).contains(newSelection)) {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
@@ -232,6 +241,7 @@ class Arborea {
 				}
 	    	}	    	
 	    	
+	    	// change tile images based on mouse input
 	        if (newSelection != null && newSelection.hasFigure() && (newSelection.getFigure().getTeam() == currentTeamIsOrcs)) {
 		        newSelection.changeNeighbourImages(grid);
 	        }
@@ -239,11 +249,9 @@ class Arborea {
 	        selection = newSelection;			
 	        leftClicked = false;
 	    }
-	    if (rightClicked){
-	        rightClicked = false;
-	    }
 	}
 	
+	// mute or unmute the music player
 	private void handleMuteClick(){
 		if (leftClicked && lastClickPoint.x >= 700 && lastClickPoint.x <= 760 && lastClickPoint.y >= 20 && lastClickPoint.y <= 80) {
 			if (muteSound){
@@ -256,11 +264,7 @@ class Arborea {
 		}
 	}
 	
-	//attack when possible if it has a good outcome (you have high adjacency and other guy doesnt or he has 1 hp left)
-	//if(above prox threshold, go closer to average location of teammates)
-		//if still attack left, check to attack again (should compare best attack before and after and pick best one)
-	//else go closer to enemy
-		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
+	// think of moves and attacks for characters and perform them
 	private void handleAIMoves() {
 		LinkedList<Act> ai = new LinkedList<Act>();
 		Tile moveTile = null;
@@ -278,11 +282,13 @@ class Arborea {
 		for (Figure f : grid.getTeam(currentTeamIsOrcs))
 			allFiguresOfTeam.add(f);
 		
-		Collections.shuffle(allFiguresOfTeam, random); //TODO use 1 Random object, setSeed
+		// shuffle character order
+		Collections.shuffle(allFiguresOfTeam, random); 
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
 		for (Figure currentFigure : allFiguresOfTeam) {
 			
+			// intelligence depends on type of AI used
 			switch(Arborea.indexAI) {
 				case Figure.AI_RANDOM:
 					Random randomAI = new Random();
@@ -291,52 +297,18 @@ class Arborea {
 					if(neighboursMoveable.size() != 0 ) {
 						randomIndex = randomAI.nextInt(neighboursMoveable.size());
 						moveTile = grid.getTile(neighboursMoveable.get(randomIndex).getLocation());
-						// check with new figure
-						Figure figureStepped;
-						int startType = currentFigure.type;
-				        switch(startType) {
-				            case Figure.TYPE_NONE:
-				            	figureStepped = null;
-				                break;
-				            case Figure.TYPE_SWORD:
-				            	figureStepped = new Sword(currentFigure);
-				                break;
-				            case Figure.TYPE_GENERAL:
-				            	figureStepped = new General(currentFigure);
-				                break;
-				            case Figure.TYPE_GOBLIN:
-				            	figureStepped = new Goblin(currentFigure);
-				                break;
-				            case Figure.TYPE_ORC:
-				            	figureStepped = new Orc(currentFigure);
-				                break;
-				            default:
-				            	figureStepped = null;
-				            figureStepped.move(grid, moveTile); //why null
-				        }
-				        if(currentFigure.hasAttacksLeft()) {
-				        	ArrayList<Tile> neighboursAttackableAfterMove = figureStepped.getAllMoveableTiles(grid);
-							if(neighboursAttackableAfterMove.size() != 0) {
-								randomIndex = randomAI.nextInt(neighboursAttackableAfterMove.size());
-								attackTileBefore = grid.getTile(neighboursAttackableAfterMove.get(randomIndex).getLocation());
-							}
-				        }
-				        figureStepped.move(grid, grid.getTile(currentFigure.getLocation())); //probably not necessary?
 					}
-					if(currentFigure.hasAttacksLeft()) {
-						ArrayList<Tile> neighboursAttackable = currentFigure.getAllAttackableTiles(grid);
-						if(neighboursAttackable.size() != 0) {
-							randomIndex = randomAI.nextInt(neighboursAttackable.size());
-							attackTileBefore = grid.getTile(neighboursAttackable.get(randomIndex).getLocation());
-						}
+					ArrayList<Tile> neighboursAttackable = currentFigure.getAllAttackableTiles(grid);
+					if(neighboursAttackable.size() != 0) {
+						randomIndex = randomAI.nextInt(neighboursAttackable.size());
+						attackTileBefore = grid.getTile(neighboursAttackable.get(randomIndex).getLocation());
 					}
 					Act randomAIAct = new Act();
 					randomAIAct.setSelectedTile(grid.getTile(currentFigure.getLocation()));
 					randomAIAct.setMovingTile(moveTile);
-					if(attackTileBefore != null) {
-						randomAIAct.setAttackTileBefore(attackTileBefore);
-					}
+					randomAIAct.setAttackTileBefore(attackTileBefore);
 					break;
+					
 				case Figure.AI_TRUE:
 					allAICurrentFigure = currentFigure.getAllPossibleActs();
 					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, currentFigure.isNextMoveOffensive(grid, threshold));
@@ -345,26 +317,22 @@ class Arborea {
 					moveTile = chosenAI.getMovingTile();
 					attackTileAfter = chosenAI.getAttackTileAfter();
 					break;
-			}	
-			if(attackTileBefore != null) {
+			}
+			
+			// actually perform the decided actions
+			if (attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
-			if(moveTile != null) {
+			if (moveTile != null) {
 
 				currentFigure.move(grid, moveTile);
 				currentFigure.setMoved(true);
 			}
-			if(attackTileAfter != null) {
+			if (attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 		}
-
-//		try {
-//			Thread.sleep(50);
-//		} catch (InterruptedException e) {
-//			// 
-//		}
 	}
 }

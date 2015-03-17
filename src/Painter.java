@@ -11,14 +11,14 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+// this object paints everything on the canvas
 @SuppressWarnings("serial")
 class Painter extends JPanel {
-	Painter(Grid grid) {
+	
+	// the initial screen is black for the intro animation
+	Painter() {
 		super();
-
-		//this.setBackground(new Color(0,50,100));
 		this.setBackground(Color.BLACK);
-		//this.addMouseListener(new MouseAdapter());
 	}
 	
 	// paints the graphics on the screen. called in Arborea-> run(){ ... repaint(); ...}
@@ -81,17 +81,19 @@ class Painter extends JPanel {
 			g.drawImage(s.getSelectImage(), pixelCoords.x, pixelCoords.y,this);
 		}
 	}
-	
+
+	// paints characters, as well as remaining actions and health
 	private void paintCharacters(Graphics g) {
 		for (Entry<Point, Tile> entry : Arborea.grid.tiles.entrySet()){
 			Tile t = entry.getValue();
-			Point pixelCoords = t.getPixelCoords();
-			
 			Figure currentFigure = t.getFigure();
+			
+			// ignore tiles that hold no figure
+			if (currentFigure == null) continue;
+
+			Point pixelCoords = t.getPixelCoords();
 			float figureHealth, figureStartHP;
 			int drawnPixels;
-			
-			if (currentFigure == null) continue;
 			
 			g.drawImage(currentFigure.getStandSprite(), pixelCoords.x+10, pixelCoords.y-20,this);
 				
@@ -103,39 +105,34 @@ class Painter extends JPanel {
 			figureHealth = currentFigure.getHitpoints();
 			figureStartHP = currentFigure.getStartHitpoints();
 			drawnPixels = Math.round((figureHealth/figureStartHP)*50);
-			//System.out.println("drawn pixels: " + figureHealth + " " + figureStartHP + " " + drawnPixels);
-			g.drawImage(ArtManager.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
-			// max width of healthbarGreen is 50, minimum 0 (figure disappears)
-			g.drawImage(ArtManager.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this); //get new image using percentages
+			g.drawImage(ArtManager.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this);
+			g.drawImage(ArtManager.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this);
 		}
 	}
 	
 	// paints overlay images
 	private void paintOverlay(Graphics g){
-
-		//g.drawImage(ArtManager.overlayTurn, 30, 20, this);
-		if (Arborea.currentTeamIsOrcs){
+		if (Arborea.currentTeamIsOrcs)
 			g.drawImage(ArtManager.overlayOrcs, 80, 20, this);
-		} else {
+		else
 			g.drawImage(ArtManager.overlayMen, 80, 20, this);
-		}
 		
-		if (Arborea.muteSound){
+		if (Arborea.muteSound)
 			g.drawImage(ArtManager.overlayMute, 700, 20, this);			
-		} else {
+		else
 			g.drawImage(ArtManager.overlaySound, 700, 20, this);
-		}
 	}
-	
+
+	// paints the secret background
 	void paintSecret(Graphics g){
 		if (Arborea.enterTheMatrix)
-			g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this);
-			//g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this);	
+			//g.drawImage(new ImageIcon("art/Matrix.gif").getImage(),0,0,800,600,this); // console
+			g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this); // eclipse
 	}
 	
+	// returns the size of the canvas
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(Arborea.WINDOW_WIDTH,Arborea.WINDOW_HEIGHT);
-	}
-	
+	}	
 }

@@ -36,7 +36,7 @@ class Screener extends JFrame {
 	private final JButton replayButton;
 	
 	// all objects are immediately setup in this constructor
-	Screener(String windowName, Grid grid){
+	Screener(String windowName){
 		
 		// creates default JFrame object
 		super(windowName);
@@ -54,7 +54,7 @@ class Screener extends JFrame {
 		this.setBackground(Color.BLACK);
 
 		// panel on which is painted
-		painter = new Painter(grid);
+		painter = new Painter();
 		painter.setLayout(null); // button won't position if there is a layout
 
 		
