@@ -11,10 +11,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+// this object contains the tiles and teams in the game-world
 class Grid {    
 	
     HashMap<Point, Tile> tiles;
-    Team humans, orcs;    
+    Team humans, orcs;
+    
     // grid for world construction using file
     Grid(String gridFile) {
         tiles = new HashMap<Point, Tile>();
@@ -27,8 +29,8 @@ class Grid {
         int currentX;
         int currentY;
         int currentUnit;
-        int humanCount = 0, orcCount = 0;
 
+        // initial characters are loaded from text file
         try {
             String sCurrentLine;
             br = new BufferedReader(new FileReader(gridFile));
@@ -42,17 +44,17 @@ class Grid {
 	            currentTile = new Tile(currentPoint, currentUnit);
 	            
 	            if((unitNumber == 1 || unitNumber == 2) && (unitNumber != 0)) {
-	            	humans.addToTeam(currentTile.getFigure());//, humanCount);
-	            	humanCount++;
+	            	humans.addToTeam(currentTile.getFigure());
 	            } else if (unitNumber != 0) {
-	            	orcs.addToTeam(currentTile.getFigure());//, orcCount);
-	            	orcCount++;
+	            	orcs.addToTeam(currentTile.getFigure()); 
 	            }
                 tiles.put(currentPoint, currentTile);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        
+        // neighbors are calculated for each tile
 		for (Entry<Point, Tile> entry : tiles.entrySet()){
 		    Tile t = entry.getValue();
     		t.calculateNeighbours(tiles);
@@ -91,14 +93,16 @@ class Grid {
 		
 		// PROCEDURE :
 		// -start at middle
-		// -loop over the X coordinate until
+		// -loop over X until found square or triangle
+		// -loop over Y
+		// -if in triangle, adjust X and Y
 		
 		Tile currentTile = tiles.get(new Point(0,0));
 		Tile nextTile = currentTile;
 		
 		boolean inTriangle = false;
 		while (nextTile != null){
-			if (clickPoint.x > currentTile.getPixelCoords().x + 68){
+			if (clickPoint.x > currentTile.getPixelCoords().x + Tile.SELECT_RECT + Tile.SELECT_TRI){
 				nextTile = currentTile.neighbours[3];
 			}
 			else if (clickPoint.x < currentTile.getPixelCoords().x) {
@@ -110,7 +114,7 @@ class Grid {
 			currentTile = nextTile;		
 		}
 		if (currentTile != null)
-			if (clickPoint.x <= currentTile.getPixelCoords().x + 28)
+			if (clickPoint.x <= currentTile.getPixelCoords().x + Tile.SELECT_TRI)
 				inTriangle = true;
 		
 		nextTile = currentTile;		
@@ -128,7 +132,7 @@ class Grid {
 			int slopeY = currentTile.getPixelCoords().y + (currentTile.image.getHeight()/2) - clickPoint.y;				
 
 			// the slope of the line is y(x) = x
-			if (clickPoint.y <= currentTile.getPixelCoords().y + 29){
+			if (clickPoint.y <= currentTile.getPixelCoords().y + Tile.SELECT_TRI){
 				if (slopeY > slopeX)
 					currentTile = currentTile.neighbours[1];
 			} else {
@@ -138,6 +142,8 @@ class Grid {
 		}		
 		return currentTile;
 	}
+	
+	// prints the neighbors of a tile
     void printNeighbours(Tile t) {
 		String s = t.getLocation().x + "," + t.getLocation().y + ": ";
 	    for (Tile tn : t.neighbours){
@@ -147,22 +153,25 @@ class Grid {
 	    System.out.println(s);
     }
 
-    public Tile getTile(Point coordinates) {
+    // returns a tile located at specific Euclidean coordinates
+    Tile getTile(Point coordinates) {
         return tiles.get(coordinates);
     }
     
-    // returns the boolean side (true orc, false man) of the team
-    public ArrayList<Figure> getTeam(boolean side) {
+    // returns the boolean side (TRUE orc, FALSE men) of the team
+    ArrayList<Figure> getTeam(boolean side) {
     	return side ? orcs.getTeam() : humans.getTeam();
     }
     
-    public void removeFromTeam(boolean side, Figure figure) {
-       	if (side)
+    // removes a character from a team
+    void removeFromTeam(boolean isOrcs, Figure figure) {
+       	if (isOrcs)
     		orcs.remove(figure);
     	else 
     		humans.remove(figure);
     }
     
+    // I wonder what this does
     void setupSecret(){
 		for (Entry<Point, Tile> entry : tiles.entrySet()){
 			Tile t = entry.getValue();
