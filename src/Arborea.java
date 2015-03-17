@@ -235,7 +235,7 @@ class Arborea {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
 					if(figure.hasAttacksLeft()) {
-						figure.attack(grid, figureAttacked, true);
+						figure.attack(grid, figureAttacked);
 						figure.setAttacked(true);
 					}		
 				}
@@ -322,7 +322,7 @@ class Arborea {
 			// actually perform the decided actions
 			if (attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
-				currentFigure.attack(grid, attackedFigure, true);
+				currentFigure.attack(grid, attackedFigure);
 			}
 			if (moveTile != null) {
 
@@ -331,7 +331,7 @@ class Arborea {
 			}
 			if (attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
-				currentFigure.attack(grid, attackedFigure, true);
+				currentFigure.attack(grid, attackedFigure);
 			}
 		}
 	}

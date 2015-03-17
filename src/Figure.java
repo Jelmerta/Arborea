@@ -103,16 +103,6 @@ abstract class Figure {
        	setLocation(destinationTile.getLocation());
     }
     
-    //not used now
-    //TODO
-    boolean canMove(Grid grid, Tile destinationTile){
-        if(destinationTile != null) {
-            Tile currentTile = grid.getTile(location);
-        	return !destinationTile.hasFigure() && Arrays.asList(currentTile.neighbours).contains(destinationTile);
-        } else
-            return false;
-    }
-    
     //not optimal method, but good enough
     public double lengthToMiddleOfTeam(Tile thisTile, Team thisTeam) {
     	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
@@ -120,7 +110,8 @@ abstract class Figure {
     	return (Math.abs((location.getX() - middleOfTeam[0])) + Math.abs(location.getY() - middleOfTeam[1]))
     			- (Math.abs(location.getX() - middleOfTeam[0]) - Math.abs(location.getY() - middleOfTeam[1])/2);    }
     
-	public void attack(Grid grid, Figure attacked, boolean print) {
+    // Figures an attack other figures based on a hit chance which used adjacency of nearby figures, always does 1 damage
+	public void attack(Grid grid, Figure attacked) {
 		// if attacked = null, figure is already dead
 		if(attacked == null) return;
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
@@ -130,11 +121,11 @@ abstract class Figure {
     		 if(attacked.hit <= 0) {
     			 removeFromField(grid, attacked);
     		 }
-    	 } if(print) {
     	 }
     	 hasAttacked = true;
     }
 	
+	// If length is greater than some threshold, move closer to own team, else move closer to enemy team
 	public boolean isNextMoveOffensive(Grid grid, double threshold) {
 		double lengthToOwnTeam;
 		if(this.getTeam()) {
@@ -149,6 +140,7 @@ abstract class Figure {
 		}
 	}
 	
+	// Out of all the acts calculated, get the best one based on offensive/defensive
 	public Act calculateBestMove(ArrayList<Act> allActs, boolean offensive) {
 		Grid usedGrid = new Grid(Arborea.grid);
 		int bestAdjacency = 1000;
@@ -173,8 +165,7 @@ abstract class Figure {
 			//System.out.println(currentAct.toString());
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
-				this.attack(usedGrid, attackTileBefore.getFigure(), false);
-				System.out.println("test4");
+				this.attack(usedGrid, attackTileBefore.getFigure());
 			}
 			Tile moveTile = currentAct.getMovingTile();
 			if(moveTile != null) {
@@ -197,10 +188,10 @@ abstract class Figure {
 			}
 			Tile attackTileAfter = currentAct.getAttackTileAfter();
 			if(attackTileAfter != null) {
-				this.attack(usedGrid, attackTileAfter.getFigure(), false);
-				System.out.println("test5");
+				this.attack(usedGrid, attackTileAfter.getFigure());
 			}
 			
+			// calculate distances
 			Tile thisTileNew = usedGrid.getTile(this.getLocation());
 			double ownTeamDistanceNew, enemyTeamDistanceNew;
 			if(this.getTeam()) {
@@ -234,6 +225,7 @@ abstract class Figure {
 			
 			usedGrid = new Grid(Arborea.grid);
 		}
+		// select best move
 		Random randomGenerator = new Random();
 		int index;
 		if(offensive) {
@@ -259,6 +251,7 @@ abstract class Figure {
 		return bestAct;
 	}
 	
+	// calculate every single move possible by a figure
 	public ArrayList<Act> getAllPossibleActs() {
 		Grid gridBeforeMove = new Grid(Arborea.grid);
 		
@@ -298,12 +291,12 @@ abstract class Figure {
 				currentAct.setAttackTileAfter(attackableTile);
 				allPossibleActs.add(currentAct);
 			}
-//			this.move(usedGrid, gridBeforeMove.getTile(this.getLocation()));
 			usedGrid = new Grid(gridBeforeMove);
 		}
 		return allPossibleActs;
 	}
 	
+	// get all tiles a figure can move to
 	public ArrayList<Tile> getAllMoveableTiles(Grid grid) {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
@@ -322,6 +315,7 @@ abstract class Figure {
 		return neighboursMoveable;
 	}
 	
+	// get all enemy figures surrounding this figure
 	public ArrayList<Tile> getAllAttackableTiles(Grid grid) {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
@@ -369,25 +363,18 @@ abstract class Figure {
         return bonus;
     }
        
+    // calculate the hit chance
     static private double calculateChance(int weaponSkills, int weaponSkillsAttacked) {
 		return 1/(1+Math.exp(-0.4*(weaponSkills-weaponSkillsAttacked)));
 	}
-
-	public boolean inRange(Grid grid, Figure attacked) {
-		Tile currentTile = grid.getTile(this.location);
-		Tile destinationTile = grid.getTile(attacked.location);
-		if(Arrays.asList(currentTile.neighbours).contains(destinationTile))
-			return true;
-		else
-			return false;
-	}
 	
+    // removes a figures from the team and grid
 	private void removeFromField(Grid grid, Figure attacked) {
 	    Tile deadTile = grid.getTile(attacked.location);
 	    deadTile.setFigure(null);
 		grid.removeFromTeam(attacked.getTeam(), attacked);
 	}
-	
+
 	public void setLocation(Point location) {
 		this.location = location;
 	}
