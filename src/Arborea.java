@@ -79,7 +79,7 @@ class Arborea {
 	private static final int FRAMERATE = 16;
 	
 	// The grid with all tiles
-    public Grid grid;
+    static Grid grid;
     public Grid aiGridAttackBefore; // Updates when the AI for the next character is updates
     public Grid aiGridAttackAfter;
     public Grid aiGrid; // keeps updating with each move
@@ -130,7 +130,6 @@ class Arborea {
 			if (menu.finishedIntro()) {
 				introduced = true;
 				screener.showMenu(true);
-				//screener.initCanvasBackground();
 				screener.setCanvasBackground(Screener.MENU_COLOR);
 			}
 		} else {
@@ -141,6 +140,7 @@ class Arborea {
 					playAgain = false;
 					screener.showReplayButton(false);
 					screener.showMenu(true);
+					screener.setCanvasBackground(Screener.MENU_COLOR);
 				}				
 			} else {
 				if (!finishedMenu) return;
@@ -150,6 +150,7 @@ class Arborea {
 				} else
 					screener.setCanvasBackground(Screener.GAME_COLOR);
 				
+				//grid = new Grid(mapFile);
 				grid.setupSecret();
 				
 				browsingMenu = false;
@@ -182,6 +183,17 @@ class Arborea {
 			return;
 		}		
 		if(turnEnded) {
+			
+//			ArrayList<Integer> john = new ArrayList<Integer>();
+//			
+//			System.out.println(grid.getTeam(MENTEAM));
+//			System.out.println(john);
+//			john.add(new Integer(1));
+//			System.out.println(john);
+//			john.remove(john.get(0));
+//			System.out.println(john);
+
+			
 			for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
 				currentFigure.setMoved(true);
 				currentFigure.setAttacked(true);

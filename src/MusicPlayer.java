@@ -39,7 +39,7 @@ class MusicPlayer implements Runnable {
 		lastIndex = -1;
 	}
 	
-	// adapted from on http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
+	// adapted from http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
 	private void playMusic(File musicFile) throws IOException, 
 	  UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
 		class AudioListener implements LineListener {
@@ -99,7 +99,6 @@ class MusicPlayer implements Runnable {
 	}
 	
 	// selects a random song
-	// TODO make so not same as previous or prevprev
 	private File selectRandomSong() {
 		int randomIndex = randomizer.nextInt(musicFiles.length);
 		
