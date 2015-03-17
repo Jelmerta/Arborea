@@ -3,7 +3,6 @@
 ---------------------------------------------------------- */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.lang.Math;
 import java.awt.Point;
@@ -15,32 +14,41 @@ abstract class Figure {
     // indexes of types
     final static byte TYPE_NONE = 0, TYPE_SWORD = 1, TYPE_GENERAL = 2, TYPE_GOBLIN = 3, TYPE_ORC = 4;
 
+	// indexes of types of artificial intelligence
+	static final int AI_RANDOM = 0;
+	static final int AI_TRUE = 1;
+	
     // Images to see if it has an attack left, move left and its health bar
 	static final BufferedImage iconAttack = ArtManager.iconAttack;
 	static final BufferedImage iconMove = ArtManager.iconMove;
 	static final BufferedImage iconHealthbar = ArtManager.iconHealthbar;
 	static final BufferedImage iconHealthbarGreen = ArtManager.iconHealthbarGreen;
-
-	static final int AI_RANDOM = 0;
-	static final int AI_TRUE = 1;
 	
+	// whether the character is facing eastward
 	boolean facingRight = true;
 	
+	// starting values of a character
     int startHitpoints, hit, weapon, type;
-    int index;
-    Point location;
+    
+    // Euclidean coordinates of the tile on which the character stands
+    private Point location;
+    
+    // whether the character is an Orc or a Man
     boolean teamIsOrcs;
-    boolean hasMoved = true;
-    boolean hasAttacked = true;
+    
+    // whether the character has performed certain moves
+    private boolean hasMoved = true;
+    private boolean hasAttacked = true;
 
     // Separate threads for each figure exist to run the animation
     Thread animationThread;
     Animator animator;
     
+    // lists that contain sprites
     ArrayList<BufferedImage> standSprites;
     ArrayList<BufferedImage> standSpritesL;
 
-    // normal constructor
+    // animation is started upon construction
     Figure(int startType, Point position) {
         this.type = startType;
         this.location = position;
@@ -54,7 +62,6 @@ abstract class Figure {
     	this.startHitpoints = copy.hit;
     	this.weapon = copy.weapon;
     	this.type = copy.type;
-    	this.index = copy.index;
     	this.location = new Point(copy.location.x,copy.location.y);
     	this.teamIsOrcs = copy.teamIsOrcs;
     	this.hasMoved = copy.hasMoved;
@@ -65,11 +72,16 @@ abstract class Figure {
     	this.standSpritesL = copy.standSpritesL;
     }
     
+    // prepares the sprites for animation
+    // since there are only stand sprites, only they will be set up
     void setUpSprites(){
     	setUpStandSprites();
     }
+    
+    // seeting up of stand sprites is defined in subclasses
     abstract void setUpStandSprites();
     
+    // returns a sprite corresponding to the animator and the direction
     BufferedImage getStandSprite(){
     	if (facingRight)
     		return standSprites.get(animator.getAnimationIndex());
@@ -92,8 +104,8 @@ abstract class Figure {
 		animator = null;
 	}
     
-    // Uses grid in case of further AI development
-    public void move(Grid grid, Tile destinationTile) {    	
+    // moves a character to another tile
+    void move(Grid grid, Tile destinationTile) {    	
     	if (destinationTile.getLocation().x < this.getLocation().x)
     		this.facingRight = false;
     	if (destinationTile.getLocation().x > this.getLocation().x)
@@ -103,17 +115,19 @@ abstract class Figure {
        	setLocation(destinationTile.getLocation());
     }
     
-    //not optimal method, but good enough
-    public double lengthToMiddleOfTeam(Tile thisTile, Team thisTeam) {
-    	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
+    // finds a defensive spot based on position of allies
+    double lengthToMiddleOfTeam(Tile thisTile, Team thisTeam) {
+    	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam();
     	Point location = thisTile.getLocation();
     	return (Math.abs((location.getX() - middleOfTeam[0])) + Math.abs(location.getY() - middleOfTeam[1]))
     			- (Math.abs(location.getX() - middleOfTeam[0]) - Math.abs(location.getY() - middleOfTeam[1])/2);    }
     
-    // Figures an attack other figures based on a hit chance which used adjacency of nearby figures, always does 1 damage
-	public void attack(Grid grid, Figure attacked) {
+    // character attacks another character, based on a hit % and adjacencies
+	void attack(Grid grid, Figure attacked) {
+		
 		// if attacked = null, figure is already dead
 		if(attacked == null) return;
+		
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
     	 boolean imHitCaptain = Math.random() < hitChance;
     	 if(imHitCaptain) {
@@ -125,8 +139,8 @@ abstract class Figure {
     	 hasAttacked = true;
     }
 	
-	// If length is greater than some threshold, move closer to own team, else move closer to enemy team
-	public boolean isNextMoveOffensive(Grid grid, double threshold) {
+	// decides whether to be agressive or not, based on ally strength
+	boolean isNextMoveOffensive(Grid grid, double threshold) {
 		double lengthToOwnTeam;
 		if(this.getTeam()) {
 			lengthToOwnTeam = lengthToMiddleOfTeam(grid.getTile(this.getLocation()), grid.orcs);
@@ -140,9 +154,12 @@ abstract class Figure {
 		}
 	}
 	
-	// Out of all the acts calculated, get the best one based on offensive/defensive
-	public Act calculateBestMove(ArrayList<Act> allActs, boolean offensive) {
+	// calculates best move, based on surroundings
+	Act calculateBestMove(ArrayList<Act> allActs, boolean offensive) {
+		
+		// a new temporary grid is made
 		Grid usedGrid = new Grid(Arborea.grid);
+		
 		int bestAdjacency = 1000;
 		int currentAdjacency;
 		double ownTeamDistance, enemyTeamDistance;
@@ -161,8 +178,8 @@ abstract class Figure {
 			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, Arborea.grid.humans);
 		}
 		
+		// check all acts for relevance
 		for (Act currentAct : allActs) {
-			//System.out.println(currentAct.toString());
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
 				this.attack(usedGrid, attackTileBefore.getFigure());
@@ -225,7 +242,8 @@ abstract class Figure {
 			
 			usedGrid = new Grid(Arborea.grid);
 		}
-		// select best move
+		
+		// select best move, random if no clear favorite
 		Random randomGenerator = new Random();
 		int index;
 		if(offensive) {
@@ -252,7 +270,7 @@ abstract class Figure {
 	}
 	
 	// calculate every single move possible by a figure
-	public ArrayList<Act> getAllPossibleActs() {
+	ArrayList<Act> getAllPossibleActs() {
 		Grid gridBeforeMove = new Grid(Arborea.grid);
 		
 		ArrayList<Act> allPossibleActs = new ArrayList<Act>();
@@ -297,7 +315,7 @@ abstract class Figure {
 	}
 	
 	// get all tiles a figure can move to
-	public ArrayList<Tile> getAllMoveableTiles(Grid grid) {
+	ArrayList<Tile> getAllMoveableTiles(Grid grid) {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
 		Tile thisTile = grid.getTile(this.getLocation());
@@ -316,7 +334,7 @@ abstract class Figure {
 	}
 	
 	// get all enemy figures surrounding this figure
-	public ArrayList<Tile> getAllAttackableTiles(Grid grid) {
+	ArrayList<Tile> getAllAttackableTiles(Grid grid) {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
 		Tile thisTile = grid.getTile(this.getLocation());
@@ -336,8 +354,8 @@ abstract class Figure {
 		return neighboursAttackable;
 	}
 	
-    // For friendly units, there is a bonus for your weapon skill. This is contrary for enemy units and will decrease your weapon skill.
-    public int calculateAdjacencyBonus(Grid grid) {
+    // allies give adjaceny bonus, enemies do the opposite
+    int calculateAdjacencyBonus(Grid grid) {
         int bonus = 0;
         Tile thisTile = grid.getTile(this.location);
         
@@ -363,7 +381,7 @@ abstract class Figure {
         return bonus;
     }
        
-    // calculate the hit chance
+    // calculate chance to hit a character
     static private double calculateChance(int weaponSkills, int weaponSkillsAttacked) {
 		return 1/(1+Math.exp(-0.4*(weaponSkills-weaponSkillsAttacked)));
 	}
@@ -375,42 +393,53 @@ abstract class Figure {
 		grid.removeFromTeam(attacked.getTeam(), attacked);
 	}
 
-	public void setLocation(Point location) {
+	// sets Euclidean coordinate of the tile on which a character stands
+	void setLocation(Point location) {
 		this.location = location;
 	}
-	public Point getLocation() {
+	
+	// gets that tile
+	Point getLocation() {
 		return location;
 	}
 	
-	public int returnType() {
+	// returns the index of the type of this character
+	int returnType() {
         return type;
     }
 	
-	public boolean getTeam() {
+	// returns to what team this character belongs
+	boolean getTeam() {
 		return teamIsOrcs;
 	}
 	
-	public void setMoved(boolean moved) {
+	// sets whether a character has a move left
+	void setMoved(boolean moved) {
 		hasMoved = moved;
 	}
 	
-	public void setAttacked(boolean attacked) {
+	// sets whether a character has attacked
+	void setAttacked(boolean attacked) {
 		hasAttacked = attacked;
 	}
 	
-	public boolean hasMovesLeft() {
+	// returns whether or not a character can still move
+	boolean hasMovesLeft() {
 		return (!hasMoved);
 	}
 	
-	public boolean hasAttacksLeft() {
+	// returns whether or not a character can still attack
+	boolean hasAttacksLeft() {
 		return (!hasAttacked);
 	}
 	
-	public int getHitpoints() {
+	// returns the hit points of the character
+	int getHitpoints() {
 		return this.hit;
 	}
 	
-	public int getStartHitpoints() {
+	// returns the initial hit points of the character
+	int getStartHitpoints() {
 		return this.startHitpoints;
 	}
 }
