@@ -104,11 +104,14 @@ abstract class Figure {
         } else
             return false;
     }
+    
+    //not optimal method, but good enough
     public double lengthToMiddleOfTeam(Tile thisTile, Team thisTeam) {
     	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
     	Point location = thisTile.getLocation();
-    	//return (Math.abs((location.getX() - middleOfTeam[0])) + Math.abs(location.getY() - middleOfTeam[1]))) - (Math.abs((location.getX() - middleOfTeam[0])) - Math.abs(location.getY() - middleOfTeam[1]))/2); 
-    	return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
+    	return (Math.abs((location.getX() - middleOfTeam[0])) + Math.abs(location.getY() - middleOfTeam[1]))
+    			- (Math.abs(location.getX() - middleOfTeam[0]) - Math.abs(location.getY() - middleOfTeam[1])/2); 
+    	//return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
     }
     
 	public void attack(Grid grid, Figure attacked, boolean print) {	
@@ -265,29 +268,37 @@ abstract class Figure {
 		Act currentAct = new Act();
 		currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
 		allPossibleActs.add(currentAct);
+		
 		for(Tile attackableTile : attackableTiles) {
 			currentAct = new Act();
 			currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
 			currentAct.setAttackTileBefore(attackableTile);
 			allPossibleActs.add(currentAct);
-			
+			usedGrid = new Grid(gridBeforeMove);
+		}
+		for(Tile attackableTile : attackableTiles) {
+			currentAct = new Act();
+			currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
+			currentAct.setAttackTileBefore(attackableTile);
+			for(Tile moveableTile : moveableTiles) {
+				currentAct.setMovingTile(moveableTile);
+				allPossibleActs.add(currentAct);
+				usedGrid = new Grid(gridBeforeMove);
+			}
 		}
 		for(Tile moveableTile : moveableTiles) {
+			this.move(usedGrid, moveableTile);
 			currentAct = new Act();
 			currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
 			currentAct.setMovingTile(moveableTile);
-			allPossibleActs.add(currentAct);
-			
-			this.move(usedGrid, moveableTile);
 			attackableTiles = this.getAllAttackableTiles(usedGrid);
-			usedGrid = gridBeforeMove; // do i need to clone? //resets character place
+			usedGrid = new Grid(gridBeforeMove);
 			for(Tile attackableTile : attackableTiles) {
-				currentAct = new Act();
-				currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
-				currentAct.setMovingTile(moveableTile);
 				currentAct.setAttackTileAfter(attackableTile);
 				allPossibleActs.add(currentAct);
 			}
+			this.move(usedGrid, gridBeforeMove.getTile(this.getLocation())); // is this necessary?
+			usedGrid = new Grid(gridBeforeMove);
 		}
 		return allPossibleActs;
 	}
