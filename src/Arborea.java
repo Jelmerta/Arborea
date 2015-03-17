@@ -351,10 +351,4 @@ class Arborea {
 			}
 		}
 	}
-	
-//    void setup(String gridFile) { //TODO deze kan weg?
-//        //orcs = new Team(true);
-//        //humans = new Team(false);
-//        grid = new Grid(gridFile);
-//    }
 }
