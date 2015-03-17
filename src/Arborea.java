@@ -327,7 +327,6 @@ class Arborea {
 							if(neighboursAttackableAfterMove.size() != 0) {
 								randomIndex = randomAI.nextInt(neighboursAttackableAfterMove.size());
 								attackTileAfter = grid.getTile(neighboursAttackableAfterMove.get(randomIndex).getLocation());
-								System.out.println(attackTileAfter);
 								hasAttacksLeft = false;
 							}
 				        }
