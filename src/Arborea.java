@@ -42,7 +42,7 @@ class Arborea {
     static Tile selection = null;
     
     // index of AI
-    static int indexAI = Figure.AI_TRUE;
+    static int indexAI = Figure.AI_RANDOM;
     
     // boolean for when browsing a menu
     static boolean browsingMenu = true;
@@ -65,9 +65,6 @@ class Arborea {
     
     // keeps track of the menu for the begin and end of game
     static Menu menu;
-    
-    // text printed on the Texter [POSSIBLY REMOVE LATER]
-    static String text = "";
     
 	// this is the window in which everything takes place
 	private static Screener screener;	
@@ -117,7 +114,6 @@ class Arborea {
 			}
 			handleClicker();
 			screener.repaint();
-			screener.rewrite();
 		}
 		musicThread.interrupt();
 	}
@@ -144,7 +140,7 @@ class Arborea {
 				if (!finishedMenu) return;
 				
 				if (enterTheMatrix) {
-					screener.setCanvasBackground(Screener.MATRIX_COLOR);
+					screener.setCanvasBackground(Screener.SECRET_COLOR);
 				} else
 					screener.setCanvasBackground(Screener.GAME_COLOR);
 				
@@ -212,20 +208,13 @@ class Arborea {
 	    	handleMuteClick();
 	    	
 	    	Tile newSelection = grid.selectTile(lastClickPoint);
-	    	
-    		if(newSelection != null && newSelection.hasFigure()) {
-    			figure = newSelection.getFigure();
-    			text = "This figure has " + figure.getHitpoints() + " HP left \n";
-    			//texter.write("This figure has " + figure.getHitpoints() + " left \n");
-    			screener.rewrite();
-    		}
     		
 	    	if (selection != null){
 		        selection.restoreNeighbourImages();   
 		        //selection.getFigure().inRange(newSelection.getFigure()) (inRange doesn't work, syntax looks better though)
 		        
 		        // TODO dude wat is dit voor condition lol
-				if( (selection.hasFigure()) && (newSelection != null) && (!newSelection.hasFigure()) && Arrays.asList(selection.getNeighbours()).contains(newSelection) && (selection.getFigure().getTeam() == currentTeamIsOrcs) ) {
+				if( (selection.hasFigure()) && (newSelection != null) && (!newSelection.hasFigure()) && Arrays.asList(selection.neighbours).contains(newSelection) && (selection.getFigure().getTeam() == currentTeamIsOrcs) ) {
 		        	figure = selection.getFigure();
 		        	if(figure.hasMovesLeft()) {
 			        	figure.move(grid, newSelection);
@@ -233,12 +222,11 @@ class Arborea {
 		        	}
 		        }       
 				// De newSelection != null lijkt me in moves/attacks al overbodig, maar kan geen kwaad te checken en eerder te short-circuiten, geldt ook voor de hasFigures?
-				if(newSelection != null  && selection.hasFigure() && newSelection.hasFigure() && selection.getFigure().getTeam() == currentTeamIsOrcs && newSelection.getFigure().getTeam() != currentTeamIsOrcs  && Arrays.asList(selection.getNeighbours()).contains(newSelection)) {
+				if(newSelection != null  && selection.hasFigure() && newSelection.hasFigure() && selection.getFigure().getTeam() == currentTeamIsOrcs && newSelection.getFigure().getTeam() != currentTeamIsOrcs  && Arrays.asList(selection.neighbours).contains(newSelection)) {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
 					if(figure.hasAttacksLeft()) {
 						figure.attack(grid, figureAttacked, true);
-						System.out.println("test");
 						figure.setAttacked(true);
 					}		
 				}
@@ -254,20 +242,6 @@ class Arborea {
 	    if (rightClicked){
 	        rightClicked = false;
 	    }
-	    // DEBUG v
-	    text = lastClickPoint.x + "," + lastClickPoint.y
-		 + "\n" + mousePoint.x + "," + mousePoint.y;
-		 
-		 if (selection != null) {
-		     text += "\n" + "Selected : " + selection.toString();
-		 }
-
-		 text += "\n\n";
-		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
-		    Tile t = entry.getValue();
-		    text += t.toString() + t.pixelCoords.x + "," + t.pixelCoords.y + "\n"; 
-		}
-		// END DEBUG ^
 	}
 	
 	private void handleMuteClick(){
@@ -308,9 +282,9 @@ class Arborea {
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
 		for (Figure currentFigure : allFiguresOfTeam) {
-
+			
 			switch(Arborea.indexAI) {
-				case 0:
+				case Figure.AI_RANDOM:
 					Random randomAI = new Random();
 					ArrayList<Tile> neighboursMoveable = currentFigure.getAllMoveableTiles(grid);
 					int randomIndex;
@@ -328,7 +302,7 @@ class Arborea {
 					randomAIAct.setMovingTile(moveTile);
 					randomAIAct.setAttackTileBefore(attackTileBefore);
 					break;
-				case 1:
+				case Figure.AI_TRUE:
 					allAICurrentFigure = currentFigure.getAllPossibleActs();
 					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, currentFigure.isNextMoveOffensive(grid, threshold));
 					ai.add(chosenAI);
@@ -340,20 +314,22 @@ class Arborea {
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
-				System.out.println("test2");
 			}
 			if(moveTile != null) {
+
 				currentFigure.move(grid, moveTile);
 				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
-				System.out.println("test3");
 			}
-			moveTile = null;
-			attackTileBefore = null;
-			attackTileAfter = null;
 		}
+
+//		try {
+//			Thread.sleep(50);
+//		} catch (InterruptedException e) {
+//			// 
+//		}
 	}
 }
