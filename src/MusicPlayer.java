@@ -29,15 +29,14 @@ class MusicPlayer implements Runnable {
 	// randomizer object
 	Random randomizer;
 	
+	// integer to keep track of last used index, to avoid doubling
+	int lastIndex;
+	
 	// sets up the object by creating a list of all music files
 	MusicPlayer(){
-		musicFiles = new File("src/music").listFiles(); //eclipse
-		//musicFiles = new File("music").listFiles(); //console
-		
-//		for (File f : musicFiles){
-//			System.out.println(f);
-//		}
+		updateMusicFiles();
 		randomizer = new Random();
+		lastIndex = -1;
 	}
 	
 	// adapted from on http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
@@ -74,6 +73,15 @@ class MusicPlayer implements Runnable {
 		}
 	}
 	
+	void updateMusicFiles(){
+		String folder;
+		if (Arborea.enterTheMatrix) folder = "secret";
+		else folder = "music";
+
+		musicFiles = new File("src/" + folder).listFiles(); //eclipse
+		//musicFiles = new File(folder).listFiles(); //console
+	}
+	
 	@Override
 	public void run() {
 	    while (true){
@@ -94,6 +102,12 @@ class MusicPlayer implements Runnable {
 	// TODO make so not same as previous or prevprev
 	private File selectRandomSong() {
 		int randomIndex = randomizer.nextInt(musicFiles.length);
+		
+		// make sure not to use last song, but only if enough songs
+		if (musicFiles.length > 1)
+			while (randomIndex == lastIndex)
+				randomIndex = randomizer.nextInt(musicFiles.length);
+		lastIndex = randomIndex;
 		return musicFiles[randomIndex];
 	}
 }

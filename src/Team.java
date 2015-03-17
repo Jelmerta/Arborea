@@ -28,7 +28,7 @@ class Team {
     }
     
     public ArrayList<Figure> getTeam() {
-    	return figures;	
+    	return figures;
     }
     
     private int getSize() {
@@ -44,11 +44,9 @@ class Team {
     	double y = 0;
     	double[] teamMiddlePoint = new double[2];
     	for(Figure currentFigure : figures) {
-    		if(currentFigure != null) {
-	    		Point currentFigurePoint = currentFigure.getLocation();
-	    		x += currentFigurePoint.getX();
-	    		y += currentFigurePoint.getY();
-    		}
+    		Point currentFigurePoint = currentFigure.getLocation();
+    		x += currentFigurePoint.getX();
+    		y += currentFigurePoint.getY();
     	}
     	teamMiddlePoint[0] = x/getSize();
     	teamMiddlePoint[1] = y/getSize();

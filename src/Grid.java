@@ -79,10 +79,10 @@ class Grid {
 	            currentTile = new Tile(currentPoint, currentUnit);
 	            
 	            if((unitNumber == 1 || unitNumber == 2) && (unitNumber != 0)) {
-	            	humans.addToTeam(currentTile.getFigure(), humanCount);
+	            	humans.addToTeam(currentTile.getFigure(), humanCount-1);
 	            	humanCount++;
 	            } else if (unitNumber != 0) {
-	            	orcs.addToTeam(currentTile.getFigure(), orcCount);
+	            	orcs.addToTeam(currentTile.getFigure(), orcCount-1);
 	            	orcCount++;
 	            }
                 tiles.put(currentPoint, currentTile);
@@ -113,39 +113,45 @@ class Grid {
 		Tile currentTile = tiles.get(new Point(0,0));
 		Tile nextTile = currentTile;
 		
+		boolean inTriangle = false;
 		while (nextTile != null){
-			if (clickPoint.x > currentTile.pixelCoords.x + currentTile.image.getWidth()){
+			if (clickPoint.x > currentTile.pixelCoords.x + 68){
 				nextTile = currentTile.neighbours[3];
-				if (nextTile != null){
-					int currentDif = clickPoint.x - currentTile.middle.x;
-					int nextDif = clickPoint.x - nextTile.middle.x;
-
-					if (currentDif < nextDif) break;
-				}
 			}
 			else if (clickPoint.x < currentTile.pixelCoords.x) {
 				nextTile = currentTile.neighbours[0];
 			}
 			else {
-				nextTile = currentTile.neighbours[3];
-				if (nextTile != null){
-					int currentDif = Math.abs(clickPoint.x - currentTile.middle.x);
-					int nextDif = Math.abs(clickPoint.x - nextTile.middle.x);
-					if (currentDif > nextDif) currentTile = nextTile;
-				}
 				break;
 			}
 			currentTile = nextTile;		
 		}
+		if (currentTile != null)
+			if (clickPoint.x <= currentTile.pixelCoords.x + 28)
+				inTriangle = true;
 		
 		nextTile = currentTile;		
 		while (nextTile != null){			
 			if (clickPoint.y > currentTile.pixelCoords.y + currentTile.image.getHeight())
-				nextTile = currentTile.neighbours[5];
+				nextTile = currentTile.neighbours[5];		
 			else if (clickPoint.y < currentTile.pixelCoords.y)
 				nextTile = currentTile.neighbours[2];
 			else break;
 			currentTile = nextTile;		
+		}
+		
+		if (currentTile != null && inTriangle){
+			int slopeX = clickPoint.x - currentTile.pixelCoords.x;
+			int slopeY = currentTile.pixelCoords.y + (currentTile.image.getHeight()/2) - clickPoint.y;				
+
+			// the slope of the line is y(x) = x
+			if (clickPoint.y <= currentTile.pixelCoords.y + 29){
+				if (slopeY > slopeX)
+					currentTile = currentTile.neighbours[1];
+			} else {
+				if (Math.abs((double)slopeY) > slopeX)
+					currentTile = currentTile.neighbours[0];
+			}
 		}		
 		return currentTile;
 	}
@@ -172,5 +178,12 @@ class Grid {
     		orcs.remove(figure);
     	else 
     		humans.remove(figure);
+    }
+    
+    void setupSecret(){
+		for (Entry<Point, Tile> entry : tiles.entrySet()){
+			Tile t = entry.getValue();
+    		t.setSecret();
+		}
     }
 }

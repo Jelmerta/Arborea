@@ -31,8 +31,9 @@ class Animator implements Runnable{
 		while (!Thread.interrupted()){
 			try {
 				Thread.sleep(animationInterval);
-				animationID++;
-				if (animationID >= amountOfAnimations) animationID = 0;
+				int tempID = animationID +1;
+				if (tempID >= amountOfAnimations) tempID = 0;
+				animationID = tempID;
 			} catch (InterruptedException e) {
 			}
 		}
