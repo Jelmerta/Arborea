@@ -32,12 +32,6 @@ class Tile {
     Point pixelCoords;
     Point middle;
     
-    // use alternative tile image when in selection radius
-    boolean inRadius = false;
-    
-    //
-    boolean hasBeenDrawn = false;
-    
     Tile(){
         this.coords = new Point(0,0);
         this.neighbours = new Tile[6];
