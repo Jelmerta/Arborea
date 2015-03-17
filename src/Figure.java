@@ -87,12 +87,6 @@ abstract class Figure {
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
-       	//System.out.println(this.getIndex());
-    	/*if(this.getTeam()) {
-    		grid.orcs.update(this.getIndex(), this);
-    	} else {
-    		grid.humans.update(this.getIndex(), this);
-    	}*/ //niet nodig want het zijn dezelfde figures? TODO
     }
     
     //not used now
@@ -378,7 +372,7 @@ abstract class Figure {
 	private void removeFromField(Grid grid, Figure attacked) {
 	    Tile deadTile = grid.getTile(attacked.location);
 	    deadTile.setFigure(null);
-		grid.removeFromTeam(attacked.getTeam(), this);
+		grid.removeFromTeam(attacked.getTeam(), attacked);
 		System.out.println(grid.getTeam(false));
 	    /*if(attacked.getTeam()) {
 	    	grid.orcs.update(attacked.getIndex(), null);

@@ -16,7 +16,6 @@ class Team {
     }
     
     public void addToTeam(Figure figure) {
-    	//figure.setIndex(index);
     	figures.add(figure);
     }
     
