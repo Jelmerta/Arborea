@@ -78,7 +78,6 @@ abstract class Figure {
     
     // Uses grid in case of further AI development
     public void move(Grid grid, Tile destinationTile) {    	
-
     	if (destinationTile.getLocation().x < this.getLocation().x)
     		this.facingRight = false;
     	if (destinationTile.getLocation().x > this.getLocation().x)
@@ -104,12 +103,11 @@ abstract class Figure {
     	double[] middleOfTeam = thisTeam.getAverageMiddlePointOfTeam(); //thisTeam = Arborea.grid.orcs or humans
     	Point location = thisTile.getLocation();
     	return (Math.abs((location.getX() - middleOfTeam[0])) + Math.abs(location.getY() - middleOfTeam[1]))
-    			- (Math.abs(location.getX() - middleOfTeam[0]) - Math.abs(location.getY() - middleOfTeam[1])/2); 
-    	//return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
-    }
+    			- (Math.abs(location.getX() - middleOfTeam[0]) - Math.abs(location.getY() - middleOfTeam[1])/2);    }
     
 	public void attack(Grid grid, Figure attacked, boolean print) {
 		// if attacked = null, figure is already dead
+		System.out.println(this);
 		if(attacked == null) return;
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
     	 boolean imHitCaptain = Math.random() < hitChance;
@@ -160,7 +158,7 @@ abstract class Figure {
 		}
 		
 		for (Act currentAct : allActs) {
-			currentAct.printAct();
+			//currentAct.printAct();
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
 				this.attack(usedGrid, attackTileBefore.getFigure(), false);
@@ -195,9 +193,6 @@ abstract class Figure {
 				 ownTeamDistanceNew= lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
 				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
 			} else {
-
-
-
 				ownTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
 				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
 			}			
@@ -250,13 +245,14 @@ abstract class Figure {
 		return bestAct;
 	}
 	
-	public ArrayList<Act> getAllPossibleActs(Grid gridBeforeMove, Grid usedGrid) {
+	public ArrayList<Act> getAllPossibleActs(Grid gridBeforeMove) {
 		ArrayList<Act> allPossibleActs = new ArrayList<Act>();
 		ArrayList<Tile> moveableTiles = this.getAllMoveableTiles(gridBeforeMove);
 		ArrayList<Tile> attackableTiles = this.getAllAttackableTiles(gridBeforeMove);
 		Act currentAct = new Act();
 		currentAct.setSelectedTile(gridBeforeMove.getTile(this.getLocation()));
 		allPossibleActs.add(currentAct);
+		Grid usedGrid = new Grid(gridBeforeMove);
 		
 		for(Tile attackableTile : attackableTiles) {
 			currentAct = new Act();
@@ -373,21 +369,7 @@ abstract class Figure {
 	    Tile deadTile = grid.getTile(attacked.location);
 	    deadTile.setFigure(null);
 		grid.removeFromTeam(attacked.getTeam(), attacked);
-		System.out.println(grid.getTeam(false));
-	    /*if(attacked.getTeam()) {
-	    	grid.orcs.update(attacked.getIndex(), null);
-	    } else {
-	    	grid.humans.update(attacked.getIndex(), null);
-	    }*/ //niet nodig want figure in team is zelfde als figure op board
 	}
-	/*
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	*/
-	/*public int getIndex() {
-		return this.index;
-	}*/
 	
 	public void setLocation(Point location) {
 		this.location = location;
@@ -427,6 +409,4 @@ abstract class Figure {
 	public int getStartHitpoints() {
 		return this.startHitpoints;
 	}
-	
-
 }

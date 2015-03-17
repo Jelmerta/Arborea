@@ -316,15 +316,19 @@ class Arborea {
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
 		for (Figure currentFigure : allFiguresOfTeam) {
-			allAICurrentFigure = currentFigure.getAllPossibleActs(grid, aiGrid);
+			System.out.println();
+			System.err.println(currentFigure);
+			allAICurrentFigure = currentFigure.getAllPossibleActs(grid);
 			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
 			ai.add(chosenAI);
 			attackTileBefore = chosenAI.getAttackTileBefore();
 			moveTile = chosenAI.getMovingTile();
 			attackTileAfter = chosenAI.getAttackTileAfter();
 			//chosenAI.printAct();
+			
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
+				System.out.println("hoi1" + attackedFigure);
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 			if(moveTile != null) {
@@ -334,6 +338,7 @@ class Arborea {
 			}
 			if(attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
+				System.out.println("hoi2" + attackedFigure);
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 		}

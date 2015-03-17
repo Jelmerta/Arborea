@@ -166,9 +166,7 @@ class Grid {
     }
     
     public void removeFromTeam(boolean side, Figure figure) {
-    	System.out.println(figure);
-
-    	if (side)
+       	if (side)
     		orcs.remove(figure);
     	else 
     		humans.remove(figure);

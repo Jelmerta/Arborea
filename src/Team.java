@@ -20,10 +20,7 @@ class Team {
     }
     
     public void remove(Figure figure) {
-    	System.out.println("hoi");
-    	System.out.println(figures);
     	figures.remove(figure);
-    	System.out.println(figures);
     }
     
     public ArrayList<Figure> getTeam() {
