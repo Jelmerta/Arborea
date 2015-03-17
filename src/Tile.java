@@ -37,20 +37,27 @@ class Tile {
     	this.coords = new Point(copy.coords.x,copy.coords.y);
     	this.usedTileImage = copy.usedTileImage;
     	this.image = copy.image;
-		switch (copy.currentFigure.type){
-			case Figure.TYPE_SWORD:
-				this.currentFigure = new Sword(copy.currentFigure);
-				break;
-			case Figure.TYPE_GENERAL:
-				this.currentFigure = new General(copy.currentFigure);
-				break;
-			case Figure.TYPE_ORC:
-				this.currentFigure = new Orc(copy.currentFigure);
-				break;
-			case Figure.TYPE_GOBLIN:
-				this.currentFigure = new Goblin(copy.currentFigure);
-				break;
-		}
+    	
+    	this.neighbours = copy.neighbours;
+    	
+    	if (copy.currentFigure == null)
+    		this.currentFigure = null;
+    	else {
+			switch (copy.currentFigure.type){
+				case Figure.TYPE_SWORD:
+					this.currentFigure = new Sword(copy.currentFigure);
+					break;
+				case Figure.TYPE_GENERAL:
+					this.currentFigure = new General(copy.currentFigure);
+					break;
+				case Figure.TYPE_ORC:
+					this.currentFigure = new Orc(copy.currentFigure);
+					break;
+				case Figure.TYPE_GOBLIN:
+					this.currentFigure = new Goblin(copy.currentFigure);
+					break;
+			}
+    	}
     }
     
     Tile(Point pos, int startType) {
