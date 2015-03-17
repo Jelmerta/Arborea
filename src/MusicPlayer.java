@@ -99,7 +99,6 @@ class MusicPlayer implements Runnable {
 	}
 	
 	// selects a random song
-	// TODO make so not same as previous or prevprev
 	private File selectRandomSong() {
 		int randomIndex = randomizer.nextInt(musicFiles.length);
 		
