@@ -16,8 +16,6 @@ class Clicker implements MouseListener, MouseMotionListener {
 		Arborea.lastClickPoint.y = e.getY();
 		if (e.getButton() == MouseEvent.BUTTON1)
 			Arborea.leftClicked = true;
-		else if (e.getButton() == MouseEvent.BUTTON3)
-			Arborea.rightClicked = true;
 	}
 
     // mouse is moved
