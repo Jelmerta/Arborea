@@ -50,7 +50,7 @@ class MusicPlayer implements Runnable {
 					notifyAll();
 				}
 			}
-			public synchronized void waitUntilDone() throws InterruptedException {
+			synchronized void waitUntilDone() throws InterruptedException {
 				while (!done) wait();
 			}
 		}

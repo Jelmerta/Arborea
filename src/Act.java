@@ -10,12 +10,12 @@ class Act {
 	Tile attackTileAfter = null;
 	
 	// an Act can be made with or without predefined target tiles
-	public Act() {
+	Act() {
 	}
-	public Act(Tile selectedTile) {
+	Act(Tile selectedTile) {
 		this.selectedTile = selectedTile;
 	}	
-	public Act(Tile currentFigureTile, Tile movingTile, Tile attackTileBefore, Tile attackTileAfter) {
+	Act(Tile currentFigureTile, Tile movingTile, Tile attackTileBefore, Tile attackTileAfter) {
 		this.selectedTile = currentFigureTile;
 		this.movingTile = movingTile;
 		this.attackTileBefore = attackTileBefore;
@@ -23,34 +23,34 @@ class Act {
 	}
 	
 	// get/set-methods for storing the selected tile of the action
-	public void setSelectedTile(Tile selectedTile) {
+	void setSelectedTile(Tile selectedTile) {
 		this.selectedTile = selectedTile;
 	}	
-	public Tile getSelectedTile() {
+	Tile getSelectedTile() {
 		return this.selectedTile;
 	}
 
 	// get/set-methods for storing the target tile of an action
-	public void setMovingTile(Tile movingTile) {
+	void setMovingTile(Tile movingTile) {
 		this.movingTile = movingTile;
 	}	
-	public Tile getMovingTile() {
+	Tile getMovingTile() {
 		return this.movingTile;
 	}
 
 	// get/set-methods for storing a tile before an action
-	public void setAttackTileBefore(Tile attackTileBefore) {
+	void setAttackTileBefore(Tile attackTileBefore) {
 		this.attackTileBefore = attackTileBefore;
 	}	
-	public Tile getAttackTileBefore() {
+	Tile getAttackTileBefore() {
 		return this.attackTileBefore;
 	}
 	
 	// get/set-methods for storing a tile after an action
-	public void setAttackTileAfter(Tile attackTileAfter) {
+	void setAttackTileAfter(Tile attackTileAfter) {
 		this.attackTileAfter = attackTileAfter;
 	}	
-	public Tile getAttackTileAfter() {
+	Tile getAttackTileAfter() {
 		return this.attackTileAfter;
 	}
 	
