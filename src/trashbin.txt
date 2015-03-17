@@ -787,4 +787,9 @@ class Arborea {
 	}
 }
 
+				//attack when possible if it has a good outcome (you have high adjacency and other guy doesnt or he has 1 hp left)
+	//if(above prox threshold, go closer to average location of teammates)
+		//if still attack left, check to attack again (should compare best attack before and after and pick best one)
+	//else go closer to enemy
+		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 			
