@@ -11,9 +11,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-class Grid {
-    Tile[][] grid;
-    
+class Grid {    
     HashMap<Point, Tile> tiles;
     Team humans, orcs;    
     
@@ -88,11 +86,12 @@ class Grid {
 		}
     }
     
-    public Grid(Grid dummy) {
-        this.grid = dummy.grid;
-        this.tiles = dummy.tiles;
-        this.humans = dummy.humans;
-        this.orcs = dummy.orcs;
+    // copy constructor, uses copy constructors of its objects
+    public Grid(Grid copy) {
+        this.tiles = copy.tiles;
+        
+        this.humans = new Team(copy.humans);
+        this.orcs = new Team(copy.orcs);
     }
 
     // returns the tile nearest to the clicked location

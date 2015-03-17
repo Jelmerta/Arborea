@@ -15,6 +15,27 @@ class Team {
     	figures = new ArrayList<Figure>();
     }
     
+    // copy constructor
+    Team(Team copy){
+    	figures = new ArrayList<Figure>();
+    	for (Figure f : copy.figures){
+    		switch (f.type){
+    			case Figure.TYPE_SWORD:
+    				figures.add(new Sword(f));
+    				break;
+    			case Figure.TYPE_GENERAL:
+    				figures.add(new General(f));
+    				break;
+    			case Figure.TYPE_ORC:
+    				figures.add(new Orc(f));
+    				break;
+    			case Figure.TYPE_GOBLIN:
+    				figures.add(new Goblin(f));
+    				break;
+    		}
+    	}
+    }
+    
     public void addToTeam(Figure figure) {
     	figures.add(figure);
     }

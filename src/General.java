@@ -16,6 +16,11 @@ class General extends Figure {
         teamIsOrcs = false;
         facingRight = false;
     }
+    
+    // copy constructor
+    General(Figure copy){
+    	super(copy);
+    }
 
 	@Override
 	void setUpStandSprites() {

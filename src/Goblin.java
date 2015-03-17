@@ -15,6 +15,11 @@ class Goblin extends Figure {
 		hit = 3;
         teamIsOrcs = true;
     }
+    
+    // copy constructor
+    Goblin(Figure copy){
+    	super(copy);
+    }
 
 	@Override
 	void setUpStandSprites() {

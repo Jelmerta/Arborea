@@ -29,14 +29,31 @@ abstract class Figure {
     int index;
     Point location;
     boolean teamIsOrcs;
-    private boolean hasMoved = true;
-    private boolean hasAttacked = true;
+    boolean hasMoved = true;
+    boolean hasAttacked = true;
     
     Thread animationThread;
     Animator animator;
     
     ArrayList<BufferedImage> standSprites;
     ArrayList<BufferedImage> standSpritesL;
+
+    // copy constructor
+    Figure(Figure copy){
+    	this.facingRight = copy.facingRight;
+    	this.startHitpoints = copy.hit;
+    	this.weapon = copy.weapon;
+    	this.type = copy.type;
+    	this.index = copy.index;
+    	this.location = new Point(copy.location.x,copy.location.y);
+    	this.teamIsOrcs = copy.teamIsOrcs;
+    	this.hasMoved = copy.hasMoved;
+    	this.hasAttacked = copy.hasAttacked;
+    	this.animationThread = copy.animationThread;
+    	this.animator = copy.animator;
+    	this.standSprites = copy.standSprites;
+    	this.standSpritesL = copy.standSpritesL;
+    }
     
     void setUpSprites(){
     	setUpStandSprites();
@@ -64,10 +81,6 @@ abstract class Figure {
 		animationThread.interrupt();
 		animator = null;
 	}
-    
-    Figure(){
-        
-    }
     
     Figure(int startType, Point position) {
         this.type = startType;
