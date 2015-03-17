@@ -6,19 +6,11 @@ import java.awt.image.BufferedImage;
 
 class Menu {
 	
-	final static int ORC_PI_MEN_PI = 1;
-	final static int ORC_PI_MEN_AI = 2;
-	final static int ORC_AI_MEN_PI = 3;
-	final static int ORC_AI_MEN_AI = 4;
-	
 	Animator introAnimator;
 	Thread animationThread;
 	
-	int menuOption;
-	
     Menu(){
         prepareIntro();
-        menuOption = -1;
     }
     
     void showOptions(){

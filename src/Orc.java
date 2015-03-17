@@ -21,5 +21,8 @@ class Orc extends Figure {
 		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.orcImage);
 		standSprites.add(ArtManager.orcImage2);
+		standSpritesL = new ArrayList<BufferedImage>(2);
+		standSpritesL.add(ArtManager.orcImageL);
+		standSpritesL.add(ArtManager.orcImageL2);
 	}
 }

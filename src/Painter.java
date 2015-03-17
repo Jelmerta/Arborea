@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Map.Entry;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
@@ -27,6 +28,8 @@ class Painter extends JPanel {
 	public void paintComponent(Graphics g){		
 		super.paintComponent(g);
 		
+		paintSecret(g);
+		
 		if (Arborea.browsingMenu){
 			paintMenu(g, gridToDraw);
 			
@@ -42,9 +45,9 @@ class Painter extends JPanel {
 		// end of game
 		if (Arborea.gameOver){
 			if (grid.getTeam(Arborea.ORCTEAM).isEmpty()) {
-				g.drawImage(ArtManager.menuMen,0,0,this);
+				g.drawImage(ArtManager.menuMenVictory,0,0,this);
 			} else if (grid.getTeam(Arborea.MENTEAM).isEmpty()){
-				g.drawImage(ArtManager.menuOrcs,0,0,this);
+				g.drawImage(ArtManager.menuOrcsVictory,0,0,this);
 			}
 			
 		}
@@ -52,6 +55,10 @@ class Painter extends JPanel {
 		else {
 			if (!Arborea.introduced){
 				g.drawImage(Arborea.menu.getMenuIntroImage(),0,0,this);
+			} else {
+				g.drawImage(ArtManager.menuArborea,0,10,this);
+				g.drawImage(ArtManager.menuOrcsStart,50,180,this);
+				g.drawImage(ArtManager.menuMenStart,450,180,this);
 			}
 		}
 	}
@@ -59,10 +66,12 @@ class Painter extends JPanel {
 	// paints all tiles
 	private void paintTiles(Graphics g, Grid grid){
 
-		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
-			Tile t = entry.getValue();
-			Point pixelCoords = t.getPixelCoords();
-			g.drawImage(t.getMudImage(), pixelCoords.x , pixelCoords.y, this);
+		if (!Arborea.enterTheMatrix){ 
+			for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
+				Tile t = entry.getValue();
+				Point pixelCoords = t.getPixelCoords();
+				g.drawImage(t.getMudImage(), pixelCoords.x , pixelCoords.y, this);
+			}
 		}
 		
 		for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
@@ -111,11 +120,11 @@ class Painter extends JPanel {
 	// paints overlay images
 	private void paintOverlay(Graphics g){
 
-		g.drawImage(ArtManager.overlayTurn, 30, 20, this);
+		//g.drawImage(ArtManager.overlayTurn, 30, 20, this);
 		if (Arborea.currentTeamIsOrcs){
-			g.drawImage(ArtManager.overlayOrcs, 180, 20, this);
+			g.drawImage(ArtManager.overlayOrcs, 80, 20, this);
 		} else {
-			g.drawImage(ArtManager.overlayMen, 180, 20, this);
+			g.drawImage(ArtManager.overlayMen, 80, 20, this);
 		}
 		
 		if (Arborea.muteSound){
@@ -123,6 +132,12 @@ class Painter extends JPanel {
 		} else {
 			g.drawImage(ArtManager.overlaySound, 700, 20, this);
 		}
+	}
+	
+	void paintSecret(Graphics g){
+		if (!Arborea.browsingMenu && Arborea.enterTheMatrix)
+			g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this);
+			//g.drawImage(new ImageIcon("src/art/Matrix_Code.gif").getImage(),0,0,800,600,this);	
 	}
 	
 	@Override
