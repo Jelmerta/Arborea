@@ -165,11 +165,11 @@ class Grid {
     	return side ? orcs.getTeam() : humans.getTeam();
     }
     
-    public void removeFromTeam(boolean side, Figure figure) {
+    public void removeFromTeam(boolean side) {
     	if (side)
-    		orcs.remove(figure);
+    		orcs.remove();
     	else 
-    		humans.remove(figure);
+    		humans.remove();
     }
     
     void setupSecret(){

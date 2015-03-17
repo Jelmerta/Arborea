@@ -74,6 +74,7 @@ public class ArtManager {
 	static final BufferedImage menuOrcsStart = createImage("menuStartOrc");
 	static final BufferedImage menuMenStart = createImage("menuStartMen");
 	static final BufferedImage menuArborea = createImage("menuArborea");
+	static final BufferedImage menuVictory = createImage("menuVictory");
 		
 	// loads images straight from file
 	private static BufferedImage createImage(String name) {

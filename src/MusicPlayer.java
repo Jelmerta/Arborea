@@ -39,7 +39,7 @@ class MusicPlayer implements Runnable {
 		lastIndex = -1;
 	}
 	
-	// adapted from on http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
+	// adapted from http://stackoverflow.com/questions/577724/trouble-playing-wav-in-java
 	private void playMusic(File musicFile) throws IOException, 
 	  UnsupportedAudioFileException, LineUnavailableException, InterruptedException {
 		class AudioListener implements LineListener {

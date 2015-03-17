@@ -121,7 +121,7 @@ abstract class Figure {
     		 attacked.hit--;
     		 if(attacked.hit <= 0) {
     			 removeFromField(grid, attacked);
-    			 grid.removeFromTeam(attacked.getTeam(), attacked);
+    			 grid.removeFromTeam(attacked.getTeam());
     			 
     		 }
     	 } if(print) {

@@ -22,8 +22,8 @@ class Team {
     	size++;
     }
     
-    public void remove(Figure figure) {
-    	figures.remove(figure);
+    public void remove() {
+    	figures.remove(null);
     	size--;
     }
     
