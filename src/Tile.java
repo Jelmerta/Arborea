@@ -6,8 +6,14 @@ import java.awt.image.BufferedImage;
 import java.awt.Point;
 import java.util.HashMap;
 
+// this object represents a part of the game-world
 class Tile {
 	
+	// a hexagonal tile is made up of a rectangle and two triangles
+	final static int SELECT_RECT = 40;
+	final static int SELECT_TRI = 28;
+	
+	// these images can vary and so require specific get-methods
 	private final static BufferedImage tileImage = ArtManager.tile3;
 	private final static BufferedImage tileSecret = ArtManager.tile4;
 	private final static BufferedImage tileMove = ArtManager.tileMove3;
@@ -15,30 +21,51 @@ class Tile {
 	private final static BufferedImage mudImage = ArtManager.mud;
 	private final static BufferedImage selectImage = ArtManager.select;
 	
+	// displayed images on the canvas
 	private BufferedImage usedTileImage = tileImage;
-	
-	final static int SELECT_RECT = 40;
-	final static int SELECT_TRI = 28;
-	
 	BufferedImage image = tileImage;
 	
-    //Point[] destinations;
+	// the tile keeps track of who is standing on it
     private Figure currentFigure;
     
+    // coordinates, both for Euclidean system and in pixels
+    private Point coords;
+    private Point pixelCoords;
+    
+    // all neighboring tiles are stored for easy access
     Tile[] neighbours;
     
-    // coordinates
-    Point coords;
-    Point pixelCoords;
- 
+    // upon constructing a tile, a character is initialized also
+    Tile(Point pos, int startType) {
+        this.coords = pos;
+        this.pixelCoords = calcPixelCoords(pos);
+        switch(startType) {
+            case Figure.TYPE_NONE:
+            	currentFigure = null;
+                break;
+            case Figure.TYPE_SWORD:
+            	currentFigure = new Sword(pos);
+                break;
+            case Figure.TYPE_GENERAL:
+            	currentFigure = new General(pos);
+                break;
+            case Figure.TYPE_GOBLIN:
+            	currentFigure = new Goblin(pos);
+                break;
+            case Figure.TYPE_ORC:
+            	currentFigure = new Orc(pos);
+                break;
+            default:
+            	currentFigure = null;
+        }
+    }
+    
     // copy constructor
     Tile(Tile copy){
     	this.pixelCoords = new Point(copy.coords.y,copy.coords.y);
     	this.coords = new Point(copy.coords.x,copy.coords.y);
     	this.usedTileImage = copy.usedTileImage;
     	this.image = copy.image;
-    	
-    	this.neighbours = copy.neighbours;
     	
     	if (copy.currentFigure == null)
     		this.currentFigure = null;
@@ -60,31 +87,6 @@ class Tile {
     	}
     }
     
-    Tile(Point pos, int startType) {
-        this.coords = pos;
-        this.pixelCoords = calcPixelCoords(pos);
-        switch(startType) {
-            case Figure.TYPE_NONE:
-            	currentFigure = null;
-                break;
-            case Figure.TYPE_SWORD:
-            	currentFigure = new Sword(pos);
-                break;
-            case Figure.TYPE_GENERAL:
-            	currentFigure = new General(pos);
-                break;
-            case Figure.TYPE_GOBLIN:
-            	currentFigure = new Goblin(pos);
-                break;
-            case Figure.TYPE_ORC:
-            	currentFigure = new Orc(pos);
-                break;
-            default:
-            	System.out.println("An error has occurred");
-                System.exit(1);
-        }
-    }
-    
     // calculates the pixel coordinates of the top left point of the title
     private Point calcPixelCoords(Point coords) {
         int padding = (int)(tileImage.getWidth() * 0.3)+3;
@@ -103,11 +105,7 @@ class Tile {
         return new Point(pixelCoordX, pixelCoordY);
     }
     
-    // calculates the pixel coordinates of the middle of the tile
-    private Point calcMiddlePoint(){
-    	return new Point(pixelCoords.x + tileImage.getWidth() /2, pixelCoords.y + tileImage.getHeight() /2);
-    }
-    
+    // finds and stores all neighbors for the tile
     void calculateNeighbours(HashMap<Point, Tile> tiles){
         this.neighbours = new Tile[6];
         
@@ -143,29 +141,25 @@ class Tile {
         else neighbours[5] = null;
     }
     
-    public Tile[] getNeighbours() {
-        return neighbours;
-    }
-    
-    public Point getPixelCoords() {
-        return pixelCoords;
-    }
-    
-    public boolean hasFigure() {
+    // returns whether or not a character is standing on the tile
+    boolean hasFigure() {
         return currentFigure != null;
     }
 
-    public int getCharacterType() {
+    // returns the index of the type of the character on the tile
+    int getCharacterType() {
         if(currentFigure != null)
         	return currentFigure.returnType();
         else
         	return 0;
     }
     
-    public Figure getFigure() {
+    // returns the character standing on the tile
+    Figure getFigure() {
     	return currentFigure;
     }
 
+    // places a character on the tjle
     void setFigure(Figure figure) {
     	currentFigure = figure;
     }
@@ -200,29 +194,32 @@ class Tile {
         }
     }
     
-    public Point getLocation() {
+    // returns the Euclidean coordinates of the tile
+    Point getLocation() {
     	return coords;
     }
     
-    public boolean isEmpty() {
-    	return currentFigure == null ? true : false;
+    // returns the pixel coordinates of top left corner over tile
+    Point getPixelCoords() {
+        return pixelCoords;
     }
     
-    // returns image
+    // returns an image representing the tile
     BufferedImage getImage(){
     	return image;
     }
     
-    // returns image
+    // returns an image for the base of the tile
     BufferedImage getMudImage(){
     	return mudImage;
     }
     
-    // returns image
+    // returns an image used when selecting a tile
     BufferedImage getSelectImage(){
     	return selectImage;
     }
     
+    // I wonder what this does
     void setSecret(){
     	if (Arborea.enterTheMatrix)
     		usedTileImage = tileSecret;
@@ -231,7 +228,7 @@ class Tile {
 		image = usedTileImage;
     }
 	
-	// returns string representation of tile
+	// returns a String representation of the tile
 	@Override
 	public String toString(){
 		String s = "T(" + coords.x + "," + coords.y + ")";
