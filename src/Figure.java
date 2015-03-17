@@ -5,16 +5,17 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-//import java.util.Random;
 import java.lang.Math;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+// Figure is an abstract class that can be instantiated by Sword, General, Goblin, Orc
 abstract class Figure {
     
     // indexes of types
     final static byte TYPE_NONE = 0, TYPE_SWORD = 1, TYPE_GENERAL = 2, TYPE_GOBLIN = 3, TYPE_ORC = 4;
 
+    // Images to see if it has an attack left, move left and its health bar
 	static final BufferedImage iconAttack = ArtManager.iconAttack;
 	static final BufferedImage iconMove = ArtManager.iconMove;
 	static final BufferedImage iconHealthbar = ArtManager.iconHealthbar;
@@ -31,13 +32,22 @@ abstract class Figure {
     boolean teamIsOrcs;
     boolean hasMoved = true;
     boolean hasAttacked = true;
-    
+
+    // Separate threads for each figure exist to run the animation
     Thread animationThread;
     Animator animator;
     
     ArrayList<BufferedImage> standSprites;
     ArrayList<BufferedImage> standSpritesL;
 
+    // normal constructor
+    Figure(int startType, Point position) {
+        this.type = startType;
+        this.location = position;
+        this.setUpSprites();
+        this.startAnimation();
+    }
+    
     // copy constructor
     Figure(Figure copy){
     	this.facingRight = copy.facingRight;
@@ -81,13 +91,6 @@ abstract class Figure {
 		animationThread.interrupt();
 		animator = null;
 	}
-    
-    Figure(int startType, Point position) {
-        this.type = startType;
-        this.location = position;
-        this.setUpSprites();
-        this.startAnimation();
-    }
     
     // Uses grid in case of further AI development
     public void move(Grid grid, Tile destinationTile) {    	
