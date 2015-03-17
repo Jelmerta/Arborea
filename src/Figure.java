@@ -96,6 +96,9 @@ abstract class Figure {
     	if (destinationTile.getLocation().x > this.getLocation().x)
     		this.facingRight = true;
     	
+    	System.out.println(grid);
+    	System.out.println(this);
+    	System.out.println(this.getLocation());
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
@@ -158,8 +161,6 @@ abstract class Figure {
 		ArrayList<Act> oneHPNeighbourActs = new ArrayList<Act>();
 		ArrayList<Act> offensiveActs = new ArrayList<Act>();
 		ArrayList<Act> defensiveActs = new ArrayList<Act>();
-		
-
 
 		Tile thisTile = usedGrid.getTile(this.getLocation());
 		if(this.getTeam()) {

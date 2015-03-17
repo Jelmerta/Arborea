@@ -297,9 +297,9 @@ class Arborea {
 		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
 		LinkedList<Act> ai = new LinkedList<Act>();
-		Tile moveTile;
-		Tile attackTileBefore;
-		Tile attackTileAfter;
+		Tile moveTile = null;
+		Tile attackTileBefore = null;
+		Tile attackTileAfter = null;
 		Figure attackedFigure;
 		double threshold = 2;
 		
@@ -316,18 +316,37 @@ class Arborea {
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
 		for (Figure currentFigure : allFiguresOfTeam) {
-			System.out.println();
-			System.err.println(currentFigure);
-			allAICurrentFigure = currentFigure.getAllPossibleActs(grid);
-			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
-			ai.add(chosenAI);
-			attackTileBefore = chosenAI.getAttackTileBefore();
-			moveTile = chosenAI.getMovingTile();
-			attackTileAfter = chosenAI.getAttackTileAfter();
-			//chosenAI.printAct();
-			
-			
-			
+			switch(Arborea.indexAI) {
+				case 0:
+					Random randomAI = new Random();
+					ArrayList<Tile> neighboursMoveable = currentFigure.getAllMoveableTiles(grid);
+					int randomIndex;
+					if(neighboursMoveable.size() != 0 ) {
+						randomIndex = randomAI.nextInt(neighboursMoveable.size());
+						moveTile = grid.getTile(neighboursMoveable.get(randomIndex).getLocation());
+					}
+					ArrayList<Tile> neighboursAttackable = currentFigure.getAllAttackableTiles(grid);
+					if(neighboursAttackable.size() != 0) {
+						randomIndex = randomAI.nextInt(neighboursAttackable.size());
+						attackTileBefore = grid.getTile(neighboursAttackable.get(randomIndex).getLocation());
+					}
+					Act randomAIAct = new Act();
+					randomAIAct.setSelectedTile(grid.getTile(currentFigure.getLocation()));
+					randomAIAct.setMovingTile(moveTile);
+					randomAIAct.setAttackTileBefore(attackTileBefore);
+					break;
+				case 1:
+					System.out.println();
+					System.err.println(currentFigure);
+					allAICurrentFigure = currentFigure.getAllPossibleActs(grid);
+					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
+					ai.add(chosenAI);
+					attackTileBefore = chosenAI.getAttackTileBefore();
+					moveTile = chosenAI.getMovingTile();
+					attackTileAfter = chosenAI.getAttackTileAfter();
+					//chosenAI.printAct();
+					break;
+			}	
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
 				System.out.println("hoi1" + attackedFigure);
@@ -341,7 +360,8 @@ class Arborea {
 			if(attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
 				System.out.println("hoi2" + attackedFigure);
-				currentFigure.attack(grid, attackedFigure, true);
+				currentFigure.attack(grid, attackedFigure, true);		
+			
 			}
 		}
 	}

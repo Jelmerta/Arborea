@@ -15,8 +15,7 @@ class Grid {
 	
     HashMap<Point, Tile> tiles;
     Team humans, orcs;    
-
-    // grid for special world construction using file
+    // grid for world construction using file
     Grid(String gridFile) {
         tiles = new HashMap<Point, Tile>();
         humans = new Team();
@@ -66,7 +65,7 @@ class Grid {
     	for(Entry<Point, Tile> entry : tiles.entrySet()) {
     		Point p = entry.getKey();
     		Tile t = entry.getValue();
-    		tiles.put(p, t);
+    		tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
         this.humans = new Team(copy.humans);
         this.orcs = new Team(copy.orcs);
