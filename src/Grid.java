@@ -65,11 +65,21 @@ class Grid {
     	for(Entry<Point, Tile> entry : copy.tiles.entrySet()) {
     		Point p = entry.getKey();
     		Tile t = entry.getValue();
-    		tiles.put(new Point(p.x,p.y),new Tile(t));
+    		this.tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
-    	//System.err.println(tiles.size());
-        this.humans = new Team(copy.humans);
-        this.orcs = new Team(copy.orcs);
+    	
+    	this.humans = new Team();
+    	this.orcs = new Team();
+    	
+        for (Entry<Point,Tile> entry : this.tiles.entrySet()){
+        	Tile t = entry.getValue();
+        	if (t.hasFigure()) {
+        		if (t.getFigure().teamIsOrcs)
+        			orcs.addToTeam(t.getFigure());
+        		else
+        			humans.addToTeam(t.getFigure());
+        	}
+        }
     }
 
     // returns the tile nearest to the clicked location
