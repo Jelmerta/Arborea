@@ -14,7 +14,6 @@ class Sword extends Figure {
 		startHitpoints = 4;
 		hit = 4;
         teamIsOrcs = false;
-        facingRight = false;
     }
 
 	@Override
@@ -22,8 +21,5 @@ class Sword extends Figure {
 		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.swordImage);
 		standSprites.add(ArtManager.swordImage2);
-		standSpritesL = new ArrayList<BufferedImage>(2);
-		standSpritesL.add(ArtManager.swordImageL);
-		standSpritesL.add(ArtManager.swordImageL2);
 	}
 }

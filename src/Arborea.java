@@ -24,9 +24,6 @@ class Arborea {
     final static int GRID_SIZE = 9;
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
-	
-	static final String mapFile = "src/characterlocations4";
-	//static final String mapFile = "characterlocations2";
     
     // static values to keep track of mouse actions
     static boolean leftClicked = false;
@@ -34,14 +31,11 @@ class Arborea {
     static boolean currentTeamIsOrcs = ORCTEAM;
     static boolean turnEnded = false;
     static boolean menIsAI = false;
-    static boolean orcsIsAI = true;
+    static boolean orcsIsAI = false;
     static boolean orcStarts = false;
     static Point lastClickPoint = new Point(0,0);
     static Point mousePoint = new Point(0,0);
     static Tile selection = null;
-    
-    // index of AI
-    static int indexAI = Figure.AI_TRUE;
     
     // boolean for when browsing a menu
     static boolean browsingMenu = true;
@@ -51,16 +45,10 @@ class Arborea {
     
     // boolean for showing the intro
     static boolean introduced = false;
-
-    // boolean for finishing the menu
-    static boolean finishedMenu = false;
     
     // boolean for the end of the game, and starting anew
     static boolean gameOver = false;
     static boolean playAgain = false;
-    
-    // boolean for matrix mode
-    static boolean enterTheMatrix = false;
     
     // keeps track of the menu for the begin and end of game
     static Menu menu;
@@ -92,9 +80,24 @@ class Arborea {
     
     // this is the overlying interface, that when constructed sets up other interfaces
     public Arborea(String windowName) {
-    	grid = new Grid(mapFile);
+    	grid = new Grid();
+    	
+        // painting starts as soon as the screen is made
+        // btw dit is waarom ik deze dus onderaan heb in de constructor
     	screener = new Screener(windowName, grid);
+    }
+    
+    public Arborea(String windowName, String fileName, String gameTypeString, String orcStartsString) { 	 // TODO deze kan nu weg
+//    	currentTeamIsOrcs = orcStarts;
+
+        grid = new Grid(fileName);
+		for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
+			currentFigure.setMoved(false);
+			currentFigure.setAttacked(false);
+		}
+        screener = new Screener(windowName, grid);
         musicPlayer = new MusicPlayer();
+        //musicThread.start();
         menu = new Menu();
     }
     
@@ -130,31 +133,43 @@ class Arborea {
 			if (menu.finishedIntro()) {
 				introduced = true;
 				screener.showMenu(true);
-				//screener.initCanvasBackground();
-				screener.setCanvasBackground(Screener.MENU_COLOR);
+				screener.initCanvasBackground();
 			}
 		} else {
 			if (gameOver){
 				if (playAgain){
-					grid = new Grid(mapFile);
+					grid = new Grid("src/characterlocations2");
+					// TODO ^^^^^^^^^^^^^^^^^^
 					gameOver = false;
 					playAgain = false;
 					screener.showReplayButton(false);
 					screener.showMenu(true);
 				}				
 			} else {
-				if (!finishedMenu) return;
+				switch (menu.menuOption){
+					case (Menu.ORC_PI_MEN_PI):
+						menIsAI = false;
+						orcsIsAI = false;
+						break;
+					case (Menu.ORC_PI_MEN_AI):
+						menIsAI = true;
+						orcsIsAI = false;					
+						break;
+					case (Menu.ORC_AI_MEN_PI):
+						menIsAI = false;
+						orcsIsAI = true;
+						break;
+					case (Menu.ORC_AI_MEN_AI):
+						menIsAI = true;
+						orcsIsAI = true;
+						break;
+					default:
+						return;
+				}
 				
-				if (enterTheMatrix) {
-					screener.setCanvasBackground(Screener.MATRIX_COLOR);
-				} else
-					screener.setCanvasBackground(Screener.GAME_COLOR);
-				
-				grid.setupSecret();
-				
+				menu.menuOption = -1;
 				browsingMenu = false;
 				screener.showMenu(false);
-				musicPlayer.updateMusicFiles();
 		        musicThread = new Thread(musicPlayer);
 				musicThread.start();
 				
@@ -175,7 +190,6 @@ class Arborea {
 		if(grid.getTeam(ORCTEAM).isEmpty() || grid.getTeam(MENTEAM).isEmpty()) {
 			gameOver = true;
 			browsingMenu = true;
-			finishedMenu = false;
 			musicThread.interrupt();
 			screener.showTurnButton(false);
 			screener.showReplayButton(true);
@@ -238,7 +252,7 @@ class Arborea {
 					figure = selection.getFigure();
 					figureAttacked = newSelection.getFigure();
 					if(figure.hasAttacksLeft()) {
-						figure.attack(grid, figureAttacked);
+						figure.attack(grid, figureAttacked, true);
 						figure.setAttacked(true);
 					}		
 				}
@@ -290,61 +304,38 @@ class Arborea {
 	private void handleAIMoves() {
 		Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
-		Act currentAI;
-		Tile thisTile;
-		Figure thisFigure;
 		Tile moveTile;
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
-		Grid aiGridAttackBefore = new Grid(aiGrid);
-		Grid aiGridAttackAfter = new Grid(aiGrid);
+		double threshold = 2;
 		
+		Random random = new Random();
 		long seed = System.nanoTime();
+		random.setSeed(seed);
 		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
-		Collections.shuffle(allFiguresOfTeam, new Random(seed)); //TODO use 1 Random object, setSeed
-		int count = 0;
+		Collections.shuffle(allFiguresOfTeam, random); //TODO use 1 Random object, setSeed
+		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 		for (Figure currentFigure : allFiguresOfTeam) {
-			aiGridAttackBefore = new Grid(aiGrid);
-			aiGridAttackAfter = new Grid();
-			thisTile = grid.getTile(currentFigure.getLocation());
-			currentAI = new Act();
-			currentAI.setSelectedTile(thisTile); 
-	
-			Point[] currentAIPoints = currentFigure.getAI(grid, aiGridAttackBefore, aiGridAttackAfter); //getAI changes the states of the grid
-			attackTileBefore = aiGridAttackBefore.getTile(currentAIPoints[0]);
-			moveTile = aiGridAttackBefore.getTile(currentAIPoints[1]);
-			attackTileAfter = aiGridAttackAfter.getTile(currentAIPoints[2]);
-			currentAI.setMovingTile(moveTile);
-			currentAI.setAttackTileBefore(attackTileBefore);
-			currentAI.setAttackTileAfter(attackTileAfter);
-			//System.out.println("hoi deze tile is: " + currentAI.movingTile);
-			ai.add(currentAI);
-			
-			// Simulate the new situation on a different grid than the one used to play the game.
-			//thisFigure = thisTile.getFigure();
-			/*if(attackTileBefore != null) {
-				System.out.println("attackbefore: " + count);
+			allAICurrentFigure = currentFigure.getAllPossibleActs(grid, aiGrid);
+			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
+			ai.add(chosenAI);
+			attackTileBefore = chosenAI.getAttackTileBefore();
+			moveTile = chosenAI.getMovingTile();
+			attackTileAfter = chosenAI.getAttackTileAfter();
+			//chosenAI.printAct();
+			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
-				currentFigure.attack(grid, attackedFigure);
+				currentFigure.attack(grid, attackedFigure, true);
 			}
 			if(moveTile != null) {
-				System.out.println("move "  + count + " " + moveTile);
 				currentFigure.move(grid, moveTile);
 				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
-				System.out.println("attackafter: " + count);
 				attackedFigure = attackTileAfter.getFigure();
-				currentFigure.attack(grid, attackedFigure);
-			}*/
-			count++;
-		}
-		Act currentAct;
-		int length = ai.size();
-		for(int i = 0; i < length; i++) {
-			currentAct = ai.pollFirst();
-			//System.out.println(count + " act Tile " + currentAct.selectedTile +  " " + currentAct.movingTile);
+				currentFigure.attack(grid, attackedFigure, true);
+			}
 		}
 	}
     

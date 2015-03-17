@@ -26,25 +26,17 @@ public class ArtManager {
 
 	static final BufferedImage select = createImage("select");
 
-	static final BufferedImage swordImage = createImage("Swordsman");
-	static final BufferedImage swordImage2 = createImage("Swordsman2");	
-	static final BufferedImage swordImageL = flipHorizontally(swordImage);
-	static final BufferedImage swordImageL2 = flipHorizontally(swordImage2);
+	static final BufferedImage swordImage = flipHorizontally(createImage("Swordsman"));
+	static final BufferedImage swordImage2 = flipHorizontally(createImage("Swordsman2"));
 	
-	static final BufferedImage generalImage = createImage("General");
-	static final BufferedImage generalImage2 = createImage("General2");	
-	static final BufferedImage generalImageL = flipHorizontally(generalImage);
-	static final BufferedImage generalImageL2 = flipHorizontally(generalImage2);
+	static final BufferedImage generalImage = flipHorizontally(createImage("General"));
+	static final BufferedImage generalImage2 = flipHorizontally(createImage("General2"));
 	
 	static final BufferedImage goblinImage = createImage("Goblin");
 	static final BufferedImage goblinImage2 = createImage("Goblin2");
-	static final BufferedImage goblinImageL = flipHorizontally(goblinImage);
-	static final BufferedImage goblinImageL2 = flipHorizontally(goblinImage2);
-
+	
 	static final BufferedImage orcImage = createImage("Orc");
 	static final BufferedImage orcImage2 = createImage("Orc2");
-	static final BufferedImage orcImageL = flipHorizontally(orcImage);
-	static final BufferedImage orcImageL2 = flipHorizontally(orcImage2);
 
 	static final BufferedImage iconAttack = createImage("iconAttack");
 	static final BufferedImage iconMove = createImage("iconMove");
@@ -69,12 +61,9 @@ public class ArtManager {
 	static final BufferedImage menuIntroFade8 = makeTransparent(menuIntro, 0.8f);
 	static final BufferedImage menuIntroFade9 = makeTransparent(menuIntro, 0.9f);
 
-	static final BufferedImage menuOrcsVictory = createImage("menuOrcs");
-	static final BufferedImage menuMenVictory = createImage("menuMen");
-	static final BufferedImage menuOrcsStart = createImage("menuStartOrc");
-	static final BufferedImage menuMenStart = createImage("menuStartMen");
-	static final BufferedImage menuArborea = createImage("menuArborea");
-		
+	static final BufferedImage menuOrcs = createImage("menuOrcs");
+	static final BufferedImage menuMen = createImage("menuMen");
+	
 	// loads images straight from file
 	private static BufferedImage createImage(String name) {
 		try {

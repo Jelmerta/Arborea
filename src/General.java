@@ -14,7 +14,6 @@ class General extends Figure {
 		startHitpoints = 5;
 		hit = 5;
         teamIsOrcs = false;
-        facingRight = false;
     }
 
 	@Override
@@ -22,8 +21,5 @@ class General extends Figure {
 		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.generalImage);
 		standSprites.add(ArtManager.generalImage2);
-		standSpritesL = new ArrayList<BufferedImage>(2);
-		standSpritesL.add(ArtManager.generalImageL);
-		standSpritesL.add(ArtManager.generalImageL2);
 	}
 }

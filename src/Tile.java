@@ -9,13 +9,10 @@ import java.util.HashMap;
 class Tile {
 	
 	private final static BufferedImage tileImage = ArtManager.tile3;
-	private final static BufferedImage tileSecret = ArtManager.tile4;
 	private final static BufferedImage tileMove = ArtManager.tileMove3;
 	private final static BufferedImage tileAttack = ArtManager.tileAttack3;
 	private final static BufferedImage mudImage = ArtManager.mud;
 	private final static BufferedImage selectImage = ArtManager.select;
-	
-	private BufferedImage usedTileImage = tileImage;
 	
 	final static int SELECT_RECT = 40;
 	final static int SELECT_TRI = 28;
@@ -44,9 +41,6 @@ class Tile {
     // although that CAN be done in paintComponents, that
     // will mean it has to calculate everytime.
     // preferablly it can be calculated once
-    int x, y;
-    
-    // TODO x y wordt nergens gebruikt
     
     // so this does mean we need indexes ?
     //int ix, iy;
@@ -192,7 +186,7 @@ class Tile {
     void restoreNeighbourImages(){
         for (int i = 0; i < 6; i++){
         	if (this.neighbours[i] != null)
-        		this.neighbours[i].image = usedTileImage;
+        		this.neighbours[i].image = tileImage;
         }
     }
     
@@ -239,14 +233,6 @@ class Tile {
     // returns image
     BufferedImage getSelectImage(){
     	return selectImage;
-    }
-    
-    void setSecret(){
-    	if (Arborea.enterTheMatrix)
-    		usedTileImage = tileSecret;
-    	else 
-    		usedTileImage = tileImage;
-		image = usedTileImage;
     }
 	
 	// returns string representation of tile
