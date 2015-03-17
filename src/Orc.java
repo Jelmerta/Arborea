@@ -15,6 +15,11 @@ class Orc extends Figure {
 		hit = 10;       
         teamIsOrcs = true;
     }
+    
+    // copy constructor
+    Orc(Figure copy){
+    	super(copy);
+    }
 
 	@Override
 	void setUpStandSprites() {

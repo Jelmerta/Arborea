@@ -16,6 +16,11 @@ class Sword extends Figure {
         teamIsOrcs = false;
         facingRight = false;
     }
+    
+    // copy constructor
+    Sword(Figure copy){
+    	super(copy);
+    }
 
 	@Override
 	void setUpStandSprites() {
