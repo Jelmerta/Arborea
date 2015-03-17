@@ -25,8 +25,8 @@ class Arborea {
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
 	
-	static final String mapFile = "src/characterlocations4";
-	//static final String mapFile = "characterlocations2";
+	static final String mapFile = "src/maps/characterlocations2";
+	//static final String mapFile = "maps/characterlocations2";
     
     // static values to keep track of mouse actions
     static boolean leftClicked = false;
