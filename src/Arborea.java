@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 //
 class Arborea {
@@ -184,15 +185,10 @@ class Arborea {
 		}		
 		if(turnEnded) {
 			
-//			ArrayList<Integer> john = new ArrayList<Integer>();
-//			
-//			System.out.println(grid.getTeam(MENTEAM));
-//			System.out.println(john);
-//			john.add(new Integer(1));
-//			System.out.println(john);
-//			john.remove(john.get(0));
-//			System.out.println(john);
-
+			System.err.println(
+			//grid.getTeam(ORCTEAM) + " " +
+			grid.getTeam(MENTEAM)
+					);
 			
 			for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
 				currentFigure.setMoved(true);
@@ -300,7 +296,7 @@ class Arborea {
 	//else go closer to enemy
 		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
-		Grid aiGrid = grid;
+		Grid aiGrid = new Grid(grid);
 		LinkedList<Act> ai = new LinkedList<Act>();
 		Tile moveTile;
 		Tile attackTileBefore;
@@ -311,7 +307,12 @@ class Arborea {
 		Random random = new Random();
 		long seed = System.nanoTime();
 		random.setSeed(seed);
-		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
+		
+		// because of concurrent modification, using a COW-list
+		CopyOnWriteArrayList<Figure> allFiguresOfTeam = new CopyOnWriteArrayList<Figure>();;
+		for (Figure f : grid.getTeam(currentTeamIsOrcs))
+			allFiguresOfTeam.add(f);
+		
 		Collections.shuffle(allFiguresOfTeam, random); //TODO use 1 Random object, setSeed
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
