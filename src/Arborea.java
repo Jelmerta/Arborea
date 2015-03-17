@@ -24,6 +24,9 @@ class Arborea {
     final static int GRID_SIZE = 9;
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
+	
+	static final String mapFile = "src/characterlocations4";
+	//static final String mapFile = "characterlocations2";
     
     // static values to keep track of mouse actions
     static boolean leftClicked = false;
@@ -31,11 +34,14 @@ class Arborea {
     static boolean currentTeamIsOrcs = ORCTEAM;
     static boolean turnEnded = false;
     static boolean menIsAI = false;
-    static boolean orcsIsAI = false;
+    static boolean orcsIsAI = true;
     static boolean orcStarts = false;
     static Point lastClickPoint = new Point(0,0);
     static Point mousePoint = new Point(0,0);
     static Tile selection = null;
+    
+    // index of AI
+    static int indexAI = Figure.AI_TRUE;
     
     // boolean for when browsing a menu
     static boolean browsingMenu = true;
@@ -45,10 +51,16 @@ class Arborea {
     
     // boolean for showing the intro
     static boolean introduced = false;
+
+    // boolean for finishing the menu
+    static boolean finishedMenu = false;
     
     // boolean for the end of the game, and starting anew
     static boolean gameOver = false;
     static boolean playAgain = false;
+    
+    // boolean for matrix mode
+    static boolean enterTheMatrix = false;
     
     // keeps track of the menu for the begin and end of game
     static Menu menu;
@@ -80,24 +92,9 @@ class Arborea {
     
     // this is the overlying interface, that when constructed sets up other interfaces
     public Arborea(String windowName) {
-    	grid = new Grid();
-    	
-        // painting starts as soon as the screen is made
-        // btw dit is waarom ik deze dus onderaan heb in de constructor
+    	grid = new Grid(mapFile);
     	screener = new Screener(windowName, grid);
-    }
-    
-    public Arborea(String windowName, String fileName, String gameTypeString, String orcStartsString) { 	 // TODO deze kan nu weg
-//    	currentTeamIsOrcs = orcStarts;
-
-        grid = new Grid(fileName);
-		for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
-			currentFigure.setMoved(false);
-			currentFigure.setAttacked(false);
-		}
-        screener = new Screener(windowName, grid);
         musicPlayer = new MusicPlayer();
-        //musicThread.start();
         menu = new Menu();
     }
     
@@ -133,43 +130,31 @@ class Arborea {
 			if (menu.finishedIntro()) {
 				introduced = true;
 				screener.showMenu(true);
-				screener.initCanvasBackground();
+				//screener.initCanvasBackground();
+				screener.setCanvasBackground(Screener.MENU_COLOR);
 			}
 		} else {
 			if (gameOver){
 				if (playAgain){
-					grid = new Grid("src/characterlocations2");
-					// TODO ^^^^^^^^^^^^^^^^^^
+					grid = new Grid(mapFile);
 					gameOver = false;
 					playAgain = false;
 					screener.showReplayButton(false);
 					screener.showMenu(true);
 				}				
 			} else {
-				switch (menu.menuOption){
-					case (Menu.ORC_PI_MEN_PI):
-						menIsAI = false;
-						orcsIsAI = false;
-						break;
-					case (Menu.ORC_PI_MEN_AI):
-						menIsAI = true;
-						orcsIsAI = false;					
-						break;
-					case (Menu.ORC_AI_MEN_PI):
-						menIsAI = false;
-						orcsIsAI = true;
-						break;
-					case (Menu.ORC_AI_MEN_AI):
-						menIsAI = true;
-						orcsIsAI = true;
-						break;
-					default:
-						return;
-				}
+				if (!finishedMenu) return;
 				
-				menu.menuOption = -1;
+				if (enterTheMatrix) {
+					screener.setCanvasBackground(Screener.MATRIX_COLOR);
+				} else
+					screener.setCanvasBackground(Screener.GAME_COLOR);
+				
+				grid.setupSecret();
+				
 				browsingMenu = false;
 				screener.showMenu(false);
+				musicPlayer.updateMusicFiles();
 		        musicThread = new Thread(musicPlayer);
 				musicThread.start();
 				
@@ -190,6 +175,7 @@ class Arborea {
 		if(grid.getTeam(ORCTEAM).isEmpty() || grid.getTeam(MENTEAM).isEmpty()) {
 			gameOver = true;
 			browsingMenu = true;
+			finishedMenu = false;
 			musicThread.interrupt();
 			screener.showTurnButton(false);
 			screener.showReplayButton(true);
@@ -304,11 +290,16 @@ class Arborea {
 	private void handleAIMoves() {
 		Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
+
+
+
 		Tile moveTile;
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
 		double threshold = 2;
+
+
 		
 		Random random = new Random();
 		long seed = System.nanoTime();
@@ -316,27 +307,56 @@ class Arborea {
 		ArrayList<Figure> allFiguresOfTeam = grid.getTeam(currentTeamIsOrcs);
 		Collections.shuffle(allFiguresOfTeam, random); //TODO use 1 Random object, setSeed
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
+
 		for (Figure currentFigure : allFiguresOfTeam) {
 			allAICurrentFigure = currentFigure.getAllPossibleActs(grid, aiGrid);
 			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
 			ai.add(chosenAI);
+
+
+
+
+
+
+
 			attackTileBefore = chosenAI.getAttackTileBefore();
 			moveTile = chosenAI.getMovingTile();
 			attackTileAfter = chosenAI.getAttackTileAfter();
 			//chosenAI.printAct();
+
+
+
+
+
+
+
+
+
+
 			if(attackTileBefore != null) {
+
 				attackedFigure = attackTileBefore.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 			if(moveTile != null) {
+
 				currentFigure.move(grid, moveTile);
 				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
+
 				attackedFigure = attackTileAfter.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
+
+
 		}
+
+
+
+
+
+
 	}
     
 	public Grid getGrid() {

@@ -21,5 +21,8 @@ class Goblin extends Figure {
 		standSprites = new ArrayList<BufferedImage>(2);
 		standSprites.add(ArtManager.goblinImage);
 		standSprites.add(ArtManager.goblinImage2);
+		standSpritesL = new ArrayList<BufferedImage>(2);
+		standSpritesL.add(ArtManager.goblinImageL);
+		standSpritesL.add(ArtManager.goblinImageL2);
 	}
 }

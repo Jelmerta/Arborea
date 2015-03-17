@@ -13,21 +13,27 @@ import javax.swing.JButton;
 //
 @SuppressWarnings("serial")
 class Screener extends JFrame {
+
+	static final Color MENU_COLOR = new Color(50,1,2);
+	static final Color BUTTON_COLOR = new Color(130,130,150);
+	static final Color GAME_COLOR = new Color(0,50,100);
+	static final Color MATRIX_COLOR = new Color(0,0,0);
+	
+	private static final Font MENU_FONT = new Font("Franklin Gothic Demi", Font.BOLD, 16);
 	
 	private final Painter painter;
 	private final Texter texter;
 	private final Clicker clicker;
+	
+	// buttons for turn ending, menu options and replay
 	private final JButton turner;
-
-	private final JButton menuButton1;
-	private final JButton menuButton2;
-	private final JButton menuButton3;
-	private final JButton menuButton4;
-	private final JButton menuButton5;
-	
+	private final JButton menuButtonOrcs;
+	private final JButton menuButtonMen;
+	private final JButton menuButtonAI;
+	private final JButton menuButtonFirstMove;
+	private final JButton startButton;
+	private final JButton secretButton;
 	private final JButton replayButton;
-	
-	private Grid gridToDraw;
 	
 	Screener(String windowName, Grid grid){
 		
@@ -59,11 +65,11 @@ class Screener extends JFrame {
 		// button to end turn
 		turner = new JButton("End turn");
 		turner.setBackground(new Color(210,190,190));
-		turner.setBounds(680,540,87,30);
+		turner.setBounds(660,540,112,30);
 		turner.setVisible(false);
 		turner.setBorderPainted(false);
 		turner.setFocusPainted(false);
-		turner.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 12));
+		turner.setFont(MENU_FONT);
 		
 		turner.addActionListener(new ActionListener(){
 			@Override
@@ -80,87 +86,99 @@ class Screener extends JFrame {
 		String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 		texter.write(content);
 		
+		startButton = new JButton("Start Game");
+		startButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Arborea.finishedMenu = true;
+			}
+		});
+		startButton.setBounds(330,475,140,30);
+		startButton.setBackground(BUTTON_COLOR);
+		startButton.setVisible(false);
+		startButton.setFocusPainted(false);
+		startButton.setFont(MENU_FONT);
+		
 		// buttons for in the title screen menu
-		menuButton1 = new JButton("<html>Orcs - AI<br />Men - Player</html>");
-		menuButton1.addActionListener(new ActionListener(){
+		menuButtonOrcs = new JButton("AI");
+		menuButtonOrcs.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Arborea.menu.menuOption = Menu.ORC_AI_MEN_PI;
+				Arborea.orcsIsAI = !Arborea.orcsIsAI;
+				if (Arborea.orcsIsAI)
+					menuButtonOrcs.setText("AI");
+				else
+					menuButtonOrcs.setText("Player");
 			}
 		});
-		menuButton1.setBounds(0,0,400,280);
-		menuButton1.setVisible(false);
-		menuButton1.setBackground(new Color(160,160,180));
-		menuButton1.setBorderPainted(false);
-		menuButton1.setFocusPainted(false);
-		menuButton1.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
+		menuButtonOrcs.setBounds(155,435,90,30);
+		menuButtonOrcs.setBackground(BUTTON_COLOR);
+		menuButtonOrcs.setVisible(false);
+		menuButtonOrcs.setFocusPainted(false);
+		menuButtonOrcs.setFont(MENU_FONT);
 		
-		menuButton2 = new JButton("<html>Orcs - Player<br />Men - AI</html>");
-		menuButton2.addActionListener(new ActionListener(){
+		menuButtonMen = new JButton("Player");
+		menuButtonMen.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Arborea.menu.menuOption = Menu.ORC_PI_MEN_AI;
+				Arborea.menIsAI = !Arborea.menIsAI;
+				if (Arborea.menIsAI)
+					menuButtonMen.setText("AI");
+				else
+					menuButtonMen.setText("Player");
 			}
 		});
-		menuButton2.setBounds(400,0,400,280);
-		menuButton2.setVisible(false);
-		menuButton2.setBackground(new Color(160,160,180));
-		menuButton2.setBorderPainted(false);
-		menuButton2.setFocusPainted(false);
-		menuButton2.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
+		menuButtonMen.setBounds(555,435,90,30);
+		menuButtonMen.setBackground(BUTTON_COLOR);
+		menuButtonMen.setVisible(false);
+		menuButtonMen.setFocusPainted(false);
+		menuButtonMen.setFont(MENU_FONT);
 		
-		menuButton3 = new JButton("<html>Orcs - Player<br />Men - Player</html>");
-		menuButton3.addActionListener(new ActionListener(){
+		menuButtonAI = new JButton("True AI");
+		menuButtonAI.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Arborea.menu.menuOption = Menu.ORC_PI_MEN_PI;
+				int tempIndex = Arborea.indexAI +1;
+				if (tempIndex > 1) tempIndex = 0;
+				Arborea.indexAI = tempIndex;
+				switch (Arborea.indexAI){
+					case 0:
+						menuButtonAI.setText("Random AI"); 
+						break;
+					case 1:
+						menuButtonAI.setText("True AI");
+						break;
+				}
 			}
 		});
-		menuButton3.setBounds(0,320,400,280);
-		menuButton3.setVisible(false);
-		menuButton3.setBackground(new Color(160,160,180));
-		menuButton3.setBorderPainted(false);
-		menuButton3.setFocusPainted(false);
-		menuButton3.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
+		menuButtonAI.setBounds(0,560,378,40);
+		menuButtonAI.setBackground(BUTTON_COLOR);
+		menuButtonAI.setVisible(false);
+		menuButtonAI.setFocusPainted(false);
+		menuButtonAI.setFont(MENU_FONT);		
 		
-		menuButton4 = new JButton("<html>Orcs - AI<br />Men - AI</html>");
-		menuButton4.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Arborea.menu.menuOption = Menu.ORC_AI_MEN_AI;
-			}
-		});
-		menuButton4.setBounds(400,320,400,280);
-		menuButton4.setVisible(false);
-		menuButton4.setBackground(new Color(160,160,180));
-		menuButton4.setBorderPainted(false);
-		menuButton4.setFocusPainted(false);
-		menuButton4.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
-		
-		menuButton5 = new JButton("Orcs have First Turn");
-		menuButton5.addActionListener(new ActionListener(){
+		menuButtonFirstMove = new JButton("Orcs have First Turn");
+		menuButtonFirstMove.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Arborea.currentTeamIsOrcs = !Arborea.currentTeamIsOrcs;
 				
 				if (Arborea.currentTeamIsOrcs)
-					menuButton5.setText("Orcs have First Turn");
+					menuButtonFirstMove.setText("Orcs have First Turn");
 				else
-					menuButton5.setText("Men have First Turn");					
+					menuButtonFirstMove.setText("Men have First Turn");					
 			}
 		});
-		menuButton5.setBounds(0,280,800,40);
-		menuButton5.setVisible(false);
-		menuButton5.setBackground(new Color(160,160,180));
-		menuButton5.setFocusPainted(false);
-		menuButton5.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
-		
-		painter.add(menuButton1);
-		painter.add(menuButton2);
-		painter.add(menuButton3);
-		painter.add(menuButton4);
-		painter.add(menuButton5);
-		
+		menuButtonFirstMove.setBounds(378,560,378,40);
+		menuButtonFirstMove.setBackground(BUTTON_COLOR);
+		menuButtonFirstMove.setVisible(false);
+		menuButtonFirstMove.setFont(MENU_FONT);
+
+		painter.add(startButton);
+		painter.add(menuButtonOrcs);
+		painter.add(menuButtonMen);
+		painter.add(menuButtonAI);
+		painter.add(menuButtonFirstMove);
 		
 		replayButton = new JButton("New Game");
 		replayButton.addActionListener(new ActionListener(){
@@ -171,12 +189,33 @@ class Screener extends JFrame {
 		});
 		replayButton.setBounds(340,550,120,30);
 		replayButton.setVisible(false);
-		replayButton.setBackground(new Color(160,160,180));
+		replayButton.setBackground(BUTTON_COLOR);
 		replayButton.setBorderPainted(false);
 		replayButton.setFocusPainted(false);
-		replayButton.setFont(new Font("Franklin Gothic Demi", Font.BOLD, 16));
+		replayButton.setFont(MENU_FONT);
 		
 		painter.add(replayButton);
+		
+		secretButton = new JButton("?");
+		secretButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Arborea.enterTheMatrix = !Arborea.enterTheMatrix;
+				
+				if (Arborea.enterTheMatrix){
+					secretButton.setText("!");
+				} else {
+					secretButton.setText("?");
+				}
+			}
+		});
+		secretButton.setBounds(756,560,44,40);
+		secretButton.setBackground(BUTTON_COLOR);
+		secretButton.setVisible(false);
+		secretButton.setFocusPainted(false);
+		secretButton.setFont(MENU_FONT);
+		
+		painter.add(secretButton);
 		
 		// the paint and text panels are added to the window
 	    this.getContentPane().add(painter, "West");
@@ -185,9 +224,6 @@ class Screener extends JFrame {
 		// makes the window the correct size and displays it
 		this.pack();
 		this.setVisible(true);
-		
-		// grid to draw
-		gridToDraw = grid;
 	}
 	
 	// updates text on the text panel
@@ -196,21 +232,17 @@ class Screener extends JFrame {
 	}
 	
 	// sets the color of the canvas background
-	void initCanvasBackground(){
-		setCanvasBackground(new Color(0,50,100));
-	}
-	
-	// sets the color of the canvas background
 	void setCanvasBackground(Color color){
 		painter.setBackground(color);
 	}
 	
 	void showMenu(boolean bool){
-		menuButton1.setVisible(bool);
-		menuButton2.setVisible(bool);
-		menuButton3.setVisible(bool);
-		menuButton4.setVisible(bool);
-		menuButton5.setVisible(bool);
+		menuButtonOrcs.setVisible(bool);
+		menuButtonMen.setVisible(bool);
+		menuButtonAI.setVisible(bool);
+		menuButtonFirstMove.setVisible(bool);
+		startButton.setVisible(bool);
+		secretButton.setVisible(bool);
 	}
 	
 	// shows the turn button

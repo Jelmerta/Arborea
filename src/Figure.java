@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Random;
 //import java.util.Random;
 import java.lang.Math;
-//import java.awt.GraphicsDevice; ??? TODO
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
@@ -21,6 +20,11 @@ abstract class Figure {
 	static final BufferedImage iconHealthbar = ArtManager.iconHealthbar;
 	static final BufferedImage iconHealthbarGreen = ArtManager.iconHealthbarGreen;
 
+	static final int AI_RANDOM = 0;
+	static final int AI_TRUE = 1;
+	
+	boolean facingRight = true;
+	
     int startHitpoints, hit, weapon, type;
     int index;
     Point location;
@@ -32,6 +36,7 @@ abstract class Figure {
     Animator animator;
     
     ArrayList<BufferedImage> standSprites;
+    ArrayList<BufferedImage> standSpritesL;
     
     void setUpSprites(){
     	setUpStandSprites();
@@ -39,7 +44,10 @@ abstract class Figure {
     abstract void setUpStandSprites();
     
     BufferedImage getStandSprite(){
-    	return standSprites.get(animator.getAnimationIndex());
+    	if (facingRight)
+    		return standSprites.get(animator.getAnimationIndex());
+    	else
+    		return standSpritesL.get(animator.getAnimationIndex());
     }
 	
 	// creates animation thread and starts it
@@ -70,6 +78,12 @@ abstract class Figure {
     
     // Uses grid in case of further AI development
     public void move(Grid grid, Tile destinationTile) {    	
+
+    	if (destinationTile.getLocation().x < this.getLocation().x)
+    		this.facingRight = false;
+    	if (destinationTile.getLocation().x > this.getLocation().x)
+    		this.facingRight = true;
+    	
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
@@ -113,6 +127,7 @@ abstract class Figure {
     	 } if(print) {
     		 System.out.println("This unit has " + attacked.hit + " HP left.");
     	 }
+
     }
 	
 	public boolean isNextMoveOffensive(Grid grid, double threshold) {
@@ -140,6 +155,8 @@ abstract class Figure {
 		ArrayList<Act> offensiveActs = new ArrayList<Act>();
 		ArrayList<Act> defensiveActs = new ArrayList<Act>();
 		
+
+
 		Tile thisTile = usedGrid.getTile(this.getLocation());
 		if(this.getTeam()) {
 			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
@@ -148,6 +165,8 @@ abstract class Figure {
 			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
 			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
 		}
+
+
 		
 		for (Act currentAct : allActs) {
 			currentAct.printAct();
@@ -185,6 +204,9 @@ abstract class Figure {
 				 ownTeamDistanceNew= lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
 				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
 			} else {
+
+
+
 				ownTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
 				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
 			}			
@@ -207,6 +229,8 @@ abstract class Figure {
 				bestAdjacencyTile = moveTile;
 				if(bestAdjacencyTile == null) {
 					bestAdjacencyTile = gridBefore.getTile(this.getLocation());
+
+
 				}
 			}
 			
@@ -311,9 +335,22 @@ abstract class Figure {
 		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
 			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
 				neighboursAttackable.add(currentNeighbourTileNotNull);
+
+
+
+
+
+
+
+
+
+
+
 			}
 		}
 		return neighboursAttackable;
+
+
 	}
 	
     // For friendly units, there is a bonus for your weapon skill. This is contrary for enemy units and will decrease your weapon skill.
@@ -342,6 +379,9 @@ abstract class Figure {
             bonus = -1*bonus;
         return bonus;
     }
+    
+ 
+ 
     
     static private double calculateChance(int weaponSkills, int weaponSkillsAttacked) {
 		return 1/(1+Math.exp(-0.4*(weaponSkills-weaponSkillsAttacked)));
@@ -412,4 +452,6 @@ abstract class Figure {
 	public int getStartHitpoints() {
 		return this.startHitpoints;
 	}
+	
+
 }
