@@ -65,7 +65,6 @@ class Painter extends JPanel {
 	
 	// paints all tiles
 	private void paintTiles(Graphics g, Grid grid){
-
 		if (!Arborea.enterTheMatrix){ 
 			for (Entry<Point, Tile> entry : grid.tiles.entrySet()){
 				Tile t = entry.getValue();
@@ -110,7 +109,7 @@ class Painter extends JPanel {
 				figureStartHP = currentFigure.getStartHitpoints();
 				drawnPixels = Math.round((figureHealth/figureStartHP)*50);
 				//System.out.println("drawn pixels: " + figureHealth + " " + figureStartHP + " " + drawnPixels);
-				g.drawImage(ArtManager.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this); // ik vind onder toch nog best wel lelijk
+				g.drawImage(ArtManager.iconHealthbar, pixelCoords.x + 20, pixelCoords.y + 40, this);
 				// max width of healthbarGreen is 50, minimum 0 (figure disappears)
 				g.drawImage(ArtManager.iconHealthbarGreen, pixelCoords.x + 20 + 1, pixelCoords.y + 40 + 1, drawnPixels, 3, this); //get new image using percentages
 			}		

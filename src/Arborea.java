@@ -25,7 +25,7 @@ class Arborea {
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
 	
-	static final String mapFile = "src/maps/characterlocations4";
+	static final String mapFile = "src/maps/characterlocations2";
 	//static final String mapFile = "maps/characterlocations2";
     
     // static values to keep track of mouse actions
@@ -290,16 +290,11 @@ class Arborea {
 	private void handleAIMoves() {
 		Grid aiGrid = grid;
 		LinkedList<Act> ai = new LinkedList<Act>();
-
-
-
 		Tile moveTile;
 		Tile attackTileBefore;
 		Tile attackTileAfter;
 		Figure attackedFigure;
 		double threshold = 2;
-
-
 		
 		Random random = new Random();
 		long seed = System.nanoTime();
@@ -312,29 +307,11 @@ class Arborea {
 			allAICurrentFigure = currentFigure.getAllPossibleActs(grid, aiGrid);
 			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
 			ai.add(chosenAI);
-
-
-
-
-
-
-
 			attackTileBefore = chosenAI.getAttackTileBefore();
 			moveTile = chosenAI.getMovingTile();
 			attackTileAfter = chosenAI.getAttackTileAfter();
 			//chosenAI.printAct();
-
-
-
-
-
-
-
-
-
-
 			if(attackTileBefore != null) {
-
 				attackedFigure = attackTileBefore.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
@@ -344,19 +321,10 @@ class Arborea {
 				currentFigure.setMoved(true);
 			}
 			if(attackTileAfter != null) {
-
 				attackedFigure = attackTileAfter.getFigure();
 				currentFigure.attack(grid, attackedFigure, true);
 			}
-
-
 		}
-
-
-
-
-
-
 	}
     
 	public Grid getGrid() {

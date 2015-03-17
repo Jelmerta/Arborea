@@ -10,21 +10,21 @@ import java.util.ArrayList;
 class Team {
 	
 	ArrayList<Figure> figures;
-	int size = 0;
 
     Team() {
     	figures = new ArrayList<Figure>();
     }
     
-    public void addToTeam(Figure figure, int index) {
-    	figure.setIndex(index);
+    public void addToTeam(Figure figure) {
+    	//figure.setIndex(index);
     	figures.add(figure);
-    	size++;
     }
     
     public void remove(Figure figure) {
+    	System.out.println("hoi");
+    	System.out.println(figures);
     	figures.remove(figure);
-    	size--;
+    	System.out.println(figures);
     }
     
     public ArrayList<Figure> getTeam() {
@@ -32,7 +32,7 @@ class Team {
     }
     
     private int getSize() {
-    	return this.size;
+    	return figures.size();
     }
     
     public void update(int index, Figure updatedFigure) {

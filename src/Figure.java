@@ -88,11 +88,11 @@ abstract class Figure {
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
        	//System.out.println(this.getIndex());
-    	if(this.getTeam()) {
+    	/*if(this.getTeam()) {
     		grid.orcs.update(this.getIndex(), this);
     	} else {
     		grid.humans.update(this.getIndex(), this);
-    	}
+    	}*/ //niet nodig want het zijn dezelfde figures? TODO
     }
     
     //not used now
@@ -114,20 +114,19 @@ abstract class Figure {
     	//return Math.sqrt(Math.pow((location.getX() - middleOfTeam[0]), 2) + Math.pow((location.getY() - middleOfTeam[1]), 2));
     }
     
-	public void attack(Grid grid, Figure attacked, boolean print) {	
+	public void attack(Grid grid, Figure attacked, boolean print) {
+		// if attacked = null, figure is already dead
+		if(attacked == null) return;
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
     	 boolean imHitCaptain = Math.random() < hitChance;
     	 if(imHitCaptain) {
     		 attacked.hit--;
     		 if(attacked.hit <= 0) {
     			 removeFromField(grid, attacked);
-    			 grid.removeFromTeam(attacked.getTeam(), attacked);
-    			 
     		 }
     	 } if(print) {
     		 System.out.println("This unit has " + attacked.hit + " HP left.");
     	 }
-
     }
 	
 	public boolean isNextMoveOffensive(Grid grid, double threshold) {
@@ -165,8 +164,6 @@ abstract class Figure {
 			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
 			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
 		}
-
-
 		
 		for (Act currentAct : allActs) {
 			currentAct.printAct();
@@ -229,8 +226,6 @@ abstract class Figure {
 				bestAdjacencyTile = moveTile;
 				if(bestAdjacencyTile == null) {
 					bestAdjacencyTile = gridBefore.getTile(this.getLocation());
-
-
 				}
 			}
 			
@@ -335,22 +330,9 @@ abstract class Figure {
 		for (Tile currentNeighbourTileNotNull : neighboursNotNull) {
 			if(currentNeighbourTileNotNull.hasFigure() && currentNeighbourTileNotNull.getFigure().getTeam() != this.getTeam()) {
 				neighboursAttackable.add(currentNeighbourTileNotNull);
-
-
-
-
-
-
-
-
-
-
-
 			}
 		}
 		return neighboursAttackable;
-
-
 	}
 	
     // For friendly units, there is a bonus for your weapon skill. This is contrary for enemy units and will decrease your weapon skill.
@@ -379,10 +361,7 @@ abstract class Figure {
             bonus = -1*bonus;
         return bonus;
     }
-    
- 
- 
-    
+       
     static private double calculateChance(int weaponSkills, int weaponSkillsAttacked) {
 		return 1/(1+Math.exp(-0.4*(weaponSkills-weaponSkillsAttacked)));
 	}
@@ -399,20 +378,22 @@ abstract class Figure {
 	private void removeFromField(Grid grid, Figure attacked) {
 	    Tile deadTile = grid.getTile(attacked.location);
 	    deadTile.setFigure(null);
-	    if(attacked.getTeam()) {
+		grid.removeFromTeam(attacked.getTeam(), this);
+		System.out.println(grid.getTeam(false));
+	    /*if(attacked.getTeam()) {
 	    	grid.orcs.update(attacked.getIndex(), null);
 	    } else {
 	    	grid.humans.update(attacked.getIndex(), null);
-	    }
+	    }*/ //niet nodig want figure in team is zelfde als figure op board
 	}
-	
+	/*
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
-	public int getIndex() {
+	*/
+	/*public int getIndex() {
 		return this.index;
-	}
+	}*/
 	
 	public void setLocation(Point location) {
 		this.location = location;
