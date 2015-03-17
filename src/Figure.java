@@ -170,6 +170,7 @@ abstract class Figure {
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
 				this.attack(usedGrid, attackTileBefore.getFigure(), false);
+				System.out.println("test4");
 			}
 			Tile moveTile = currentAct.getMovingTile();
 			if(moveTile != null) {
@@ -193,6 +194,7 @@ abstract class Figure {
 			Tile attackTileAfter = currentAct.getAttackTileAfter();
 			if(attackTileAfter != null) {
 				this.attack(usedGrid, attackTileAfter.getFigure(), false);
+				System.out.println("test5");
 			}
 			
 			Tile thisTileNew = usedGrid.getTile(this.getLocation());
