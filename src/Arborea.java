@@ -296,7 +296,6 @@ class Arborea {
 	//else go closer to enemy
 		//if attack left try attack (lowest character pref. (or maybe the general if on orc team)) (should compare best attack before and after and pick best one)	
 	private void handleAIMoves() {
-		Grid aiGrid = new Grid(grid);
 		LinkedList<Act> ai = new LinkedList<Act>();
 		Tile moveTile;
 		Tile attackTileBefore;
@@ -327,6 +326,8 @@ class Arborea {
 			attackTileAfter = chosenAI.getAttackTileAfter();
 			//chosenAI.printAct();
 			
+			
+			
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
 				System.out.println("hoi1" + attackedFigure);
@@ -343,10 +344,6 @@ class Arborea {
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 		}
-	}
-    
-	public Grid getGrid() {
-		return grid;
 	}
 	
 //    void setup(String gridFile) { //TODO deze kan weg?

@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 class Grid {
-    Tile[][] grid;
     
     HashMap<Point, Tile> tiles;
     Team humans, orcs;    
@@ -89,8 +88,13 @@ class Grid {
     }
     
     public Grid(Grid dummy) {
-        this.grid = dummy.grid;
-        this.tiles = dummy.tiles;
+    	new Grid()
+        this.tiles = new HashMap<Point, Tile>();
+    	for(Entry<Point, Tile> entry : tiles.entrySet()) {
+    		Tile t = entry.getValue();
+    		entry.getKey();
+    		tiles.put(entry[0], [1]);
+    	}
         this.humans = dummy.humans;
         this.orcs = dummy.orcs;
     }
