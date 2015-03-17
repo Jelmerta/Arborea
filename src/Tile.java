@@ -30,35 +30,29 @@ class Tile {
     // coordinates
     Point coords;
     Point pixelCoords;
-    Point middle;
-    
-    // use alternative tile image when in selection radius
-    boolean inRadius = false;
     
     //
-    boolean hasBeenDrawn = false;
-    
-    Tile(){
-        this.coords = new Point(0,0);
-        this.neighbours = new Tile[6];
-    }
-    
-    // deze is ws het verstandigst, of eentje met destinations
-    Tile(Point pos){
-        this.coords = pos;
-        this.pixelCoords = calcPixelCoords(pos);
-        
-        this.middle = calcMiddlePoint();
-    }
-    //Tile(Point pos, Point[] dests){
-    //    this.coords = pos;
-    //    this.neighbours = dests;
-    //}
-    
-    Tile(Point pos, Figure tileFigure){
-        this.coords = pos;
-        this.pixelCoords = calcPixelCoords(pos);
-        this.currentFigure = tileFigure;
+ 
+    // copy constructor
+    Tile(Tile copy){
+    	this.pixelCoords = new Point(copy.coords.y,copy.coords.y);
+    	this.coords = new Point(copy.coords.x,copy.coords.y);
+    	this.usedTileImage = copy.usedTileImage;
+    	this.image = copy.image;
+		switch (copy.currentFigure.type){
+			case Figure.TYPE_SWORD:
+				this.currentFigure = new Sword(copy.currentFigure);
+				break;
+			case Figure.TYPE_GENERAL:
+				this.currentFigure = new General(copy.currentFigure);
+				break;
+			case Figure.TYPE_ORC:
+				this.currentFigure = new Orc(copy.currentFigure);
+				break;
+			case Figure.TYPE_GOBLIN:
+				this.currentFigure = new Goblin(copy.currentFigure);
+				break;
+		}
     }
     
     Tile(Point pos, int startType) {
@@ -84,8 +78,6 @@ class Tile {
             	System.out.println("An error has occurred");
                 System.exit(1);
         }
-        
-        this.middle = calcMiddlePoint();
     }
     
     // calculates the pixel coordinates of the top left point of the title

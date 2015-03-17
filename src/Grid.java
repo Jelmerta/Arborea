@@ -16,34 +16,7 @@ class Grid {
     HashMap<Point, Tile> tiles;
     Team humans, orcs;    
     
-    // default grid construction
-    Grid(){
-        tiles = new HashMap<Point, Tile>();
-        
-        int half = Arborea.GRID_SIZE/2;
-        Point currentPoint;
-        
-        for (int row = 0; row < Arborea.GRID_SIZE; row++) {
-            int cols = Arborea.GRID_SIZE - java.lang.Math.abs(row - half);
-
-            for (int col = 0; col < cols; col++) {
-                int xLbl = row < half ? col - row : col - half;
-                int yLbl = row - half;
-                currentPoint = new Point(xLbl, yLbl);
-                Tile currentTile = new Tile(currentPoint);
-                tiles.put(currentPoint, currentTile);
-            }
-        }
-        
-        // calculate neighbours
-		for (Entry<Point, Tile> entry : tiles.entrySet()){
-			Tile t = entry.getValue();
-			t.calculateNeighbours(tiles);
-			//System.out.println(t.toString());
-		}
-    }
-    
-    // grid for special world construction using file
+    // grid for world construction using file
     Grid(String gridFile) {
         tiles = new HashMap<Point, Tile>();
         humans = new Team();
@@ -91,9 +64,9 @@ class Grid {
     public Grid(Grid copy) {
         this.tiles = new HashMap<Point, Tile>();
     	for(Entry<Point, Tile> entry : tiles.entrySet()) {
+    		Point p = entry.getKey();
     		Tile t = entry.getValue();
-    		entry.getKey();
-    		//tiles.put(entry[0], [1]);
+    		tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
         this.humans = new Team(copy.humans);
         this.orcs = new Team(copy.orcs);
