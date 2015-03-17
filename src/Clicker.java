@@ -6,7 +6,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public class Clicker implements MouseListener, MouseMotionListener {
+// this is an object that handles mouse actions on the canvas
+class Clicker implements MouseListener, MouseMotionListener {
     
 	// button has been pressed, not necessarily released
 	@Override
@@ -19,31 +20,30 @@ public class Clicker implements MouseListener, MouseMotionListener {
 			Arborea.rightClicked = true;
 	}
 
-	// button has been pressed and released
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	// button was pressed and is released
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-	
-	// when mouse enters component
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-
-	// when mouse leaves component
-	@Override
-	public void mouseExited(MouseEvent e) {}
-
-    // when mouse is moved
+    // mouse is moved
 	@Override
 	public void mouseMoved(MouseEvent e) {
 	    Arborea.mousePoint.x = e.getX();
 	    Arborea.mousePoint.y = e.getY();
 	}
 
-    // when mouse is pressed (not released yet) and moved
+	// button has been pressed and released
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	// button was pressed and is released
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	
+	// mouse enters component
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	// mouse leaves component
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+    // mouse is pressed (not released yet) and moved
 	@Override
 	public void mouseDragged(MouseEvent e) {}
 	

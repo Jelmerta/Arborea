@@ -6,7 +6,10 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+//this is the more powerful of the figures in the Orc team
 class Orc extends Figure {
+	
+	// regular constructor initializes default values
     Orc(Point pos){
         super(4, pos);
 		type = Figure.TYPE_ORC;
@@ -21,6 +24,7 @@ class Orc extends Figure {
     	super(copy);
     }
 
+    // image frames used in an animation are initialized
 	@Override
 	void setUpStandSprites() {
 		standSprites = new ArrayList<BufferedImage>(2);

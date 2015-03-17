@@ -105,7 +105,7 @@ abstract class Figure {
     boolean canMove(Grid grid, Tile destinationTile){
         if(destinationTile != null) {
             Tile currentTile = grid.getTile(location);
-        	return !destinationTile.hasFigure() && Arrays.asList(currentTile.getNeighbours()).contains(destinationTile);
+        	return !destinationTile.hasFigure() && Arrays.asList(currentTile.neighbours).contains(destinationTile);
         } else
             return false;
     }
@@ -166,7 +166,7 @@ abstract class Figure {
 		}
 		
 		for (Act currentAct : allActs) {
-			//currentAct.printAct();
+			//System.out.println(currentAct.toString());
 			Tile attackTileBefore = currentAct.getAttackTileBefore();
 			if(attackTileBefore != null) {
 				this.attack(usedGrid, attackTileBefore.getFigure(), false);
@@ -174,7 +174,7 @@ abstract class Figure {
 			Tile moveTile = currentAct.getMovingTile();
 			if(moveTile != null) {
 				this.move(usedGrid, moveTile);
-				Tile[] neighbours = moveTile.getNeighbours();
+				Tile[] neighbours = moveTile.neighbours;
 				if(neighbours != null) {
 					for(Tile neighbour : neighbours) {
 						if(neighbour != null) {
@@ -302,7 +302,7 @@ abstract class Figure {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursMoveable = new ArrayList<Tile>();
 		Tile thisTile = grid.getTile(this.getLocation());
-		Tile[] neighbours = thisTile.getNeighbours();
+		Tile[] neighbours = thisTile.neighbours;
 		for (Tile currentNeighbourTile : neighbours) {
 			if(currentNeighbourTile != null) {
 				neighboursNotNull.add(currentNeighbourTile);
@@ -320,7 +320,7 @@ abstract class Figure {
 		ArrayList<Tile> neighboursNotNull = new ArrayList<Tile>();
 		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
 		Tile thisTile = grid.getTile(this.getLocation());
-		Tile[] neighbours = thisTile.getNeighbours();
+		Tile[] neighbours = thisTile.neighbours;
 		
 		for (Tile currentNeighbourTile : neighbours) {
 			if(currentNeighbourTile != null) {
@@ -341,7 +341,7 @@ abstract class Figure {
         int bonus = 0;
         Tile thisTile = grid.getTile(this.location);
         
-        for(Tile neighbour : thisTile.getNeighbours()) {
+        for(Tile neighbour : thisTile.neighbours) {
         	if(neighbour != null) {
 	            if(neighbour.getCharacterType() == TYPE_NONE)
 	                continue;
@@ -370,7 +370,7 @@ abstract class Figure {
 	public boolean inRange(Grid grid, Figure attacked) {
 		Tile currentTile = grid.getTile(this.location);
 		Tile destinationTile = grid.getTile(attacked.location);
-		if(Arrays.asList(currentTile.getNeighbours()).contains(destinationTile))
+		if(Arrays.asList(currentTile.neighbours).contains(destinationTile))
 			return true;
 		else
 			return false;

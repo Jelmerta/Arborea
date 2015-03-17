@@ -67,6 +67,10 @@ class Grid {
     		Tile t = entry.getValue();
     		this.tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
+		for (Entry<Point, Tile> entry : this.tiles.entrySet()){
+		    Tile t = entry.getValue();
+    		t.calculateNeighbours(this.tiles);
+		}
     	
     	this.humans = new Team();
     	this.orcs = new Team();
@@ -94,10 +98,10 @@ class Grid {
 		
 		boolean inTriangle = false;
 		while (nextTile != null){
-			if (clickPoint.x > currentTile.pixelCoords.x + 68){
+			if (clickPoint.x > currentTile.getPixelCoords().x + 68){
 				nextTile = currentTile.neighbours[3];
 			}
-			else if (clickPoint.x < currentTile.pixelCoords.x) {
+			else if (clickPoint.x < currentTile.getPixelCoords().x) {
 				nextTile = currentTile.neighbours[0];
 			}
 			else {
@@ -106,25 +110,25 @@ class Grid {
 			currentTile = nextTile;		
 		}
 		if (currentTile != null)
-			if (clickPoint.x <= currentTile.pixelCoords.x + 28)
+			if (clickPoint.x <= currentTile.getPixelCoords().x + 28)
 				inTriangle = true;
 		
 		nextTile = currentTile;		
 		while (nextTile != null){			
-			if (clickPoint.y > currentTile.pixelCoords.y + currentTile.image.getHeight())
+			if (clickPoint.y > currentTile.getPixelCoords().y + currentTile.image.getHeight())
 				nextTile = currentTile.neighbours[5];		
-			else if (clickPoint.y < currentTile.pixelCoords.y)
+			else if (clickPoint.y < currentTile.getPixelCoords().y)
 				nextTile = currentTile.neighbours[2];
 			else break;
 			currentTile = nextTile;		
 		}
 		
 		if (currentTile != null && inTriangle){
-			int slopeX = clickPoint.x - currentTile.pixelCoords.x;
-			int slopeY = currentTile.pixelCoords.y + (currentTile.image.getHeight()/2) - clickPoint.y;				
+			int slopeX = clickPoint.x - currentTile.getPixelCoords().x;
+			int slopeY = currentTile.getPixelCoords().y + (currentTile.image.getHeight()/2) - clickPoint.y;				
 
 			// the slope of the line is y(x) = x
-			if (clickPoint.y <= currentTile.pixelCoords.y + 29){
+			if (clickPoint.y <= currentTile.getPixelCoords().y + 29){
 				if (slopeY > slopeX)
 					currentTile = currentTile.neighbours[1];
 			} else {
@@ -135,10 +139,10 @@ class Grid {
 		return currentTile;
 	}
     void printNeighbours(Tile t) {
-		String s = t.coords.x + "," + t.coords.y + ": ";
+		String s = t.getLocation().x + "," + t.getLocation().y + ": ";
 	    for (Tile tn : t.neighbours){
 	        if (tn == null) s += "null ";
-	        else s += tn.coords.x + "," + tn.coords.y + " ";
+	        else s += tn.getLocation().x + "," + tn.getLocation().y + " ";
 		}
 	    System.out.println(s);
     }

@@ -12,7 +12,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class ArtManager {
+// this object is a repository for images and handles them
+class ArtManager {
 
 	static final BufferedImage tile1 = createImage("tile1");
 	static final BufferedImage tile2 = createImage("tile2");
@@ -23,7 +24,6 @@ public class ArtManager {
 	static final BufferedImage tileAttack3 = createImage("tileAttack3");
 
 	static final BufferedImage mud = createImage("mud");
-
 	static final BufferedImage select = createImage("select");
 
 	static final BufferedImage swordImage = createImage("Swordsman");
@@ -82,10 +82,10 @@ public class ArtManager {
 			return ImageIO.read(new File("src/art/" + name + ".png")); // eclipse
 		} catch (IOException e1){
 			try {
-				return ImageIO.read(new File("art/" + name + ".png")); // niet eclipse
+				return ImageIO.read(new File("art/" + name + ".png")); // console
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.exit(1); // DEBUG
+				System.exit(1);
 				return null;
 			}
 		}

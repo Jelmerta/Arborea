@@ -2,61 +2,40 @@
  Jelmer Alphenaar 10655751 & Joseph Weel 10321624 - Assignment3
 ---------------------------------------------------------- */
 
-// Toevoegen wordt nu al gedaan en er wordt bijgehouden in welk team de figures zitten, moet deze file dan alsnog wel?
-
 import java.awt.Point;
 import java.util.ArrayList;
 
+// this object holds and handles allied figures
 class Team {
 	
+	// a list containing all figures in a team
 	ArrayList<Figure> figures;
 
+	// list is declared. there is no need for a copy constructor
     Team() {
     	figures = new ArrayList<Figure>();
     }
     
-    // copy constructor
-    Team(Team copy){
-    	figures = new ArrayList<Figure>();
-    	for (Figure f : copy.figures){
-    		switch (f.type){
-    			case Figure.TYPE_SWORD:
-    				figures.add(new Sword(f));
-    				break;
-    			case Figure.TYPE_GENERAL:
-    				figures.add(new General(f));
-    				break;
-    			case Figure.TYPE_ORC:
-    				figures.add(new Orc(f));
-    				break;
-    			case Figure.TYPE_GOBLIN:
-    				figures.add(new Goblin(f));
-    				break;
-    		}
-    	}
-    }
-    
-    public void addToTeam(Figure figure) {
+    // adds or removes a character from the team
+    void addToTeam(Figure figure) {
     	figures.add(figure);
-    }
-    
-    public void remove(Figure figure) {
+    }    
+    void remove(Figure figure) {
     	figures.remove(figure);
     }
     
-    public ArrayList<Figure> getTeam() {
+    // returns the list of characters
+    ArrayList<Figure> getTeam() {
     	return figures;
     }
     
+    // returns the amount of characters left in the team
     private int getSize() {
     	return figures.size();
     }
     
-    public void update(int index, Figure updatedFigure) {
-    	figures.set(index, updatedFigure);
-    }
-    
-    public double[] getAverageMiddlePointOfTeam() {
+    // returns a point based on team positions usable by the AI
+    double[] getAverageMiddlePointOfTeam() {
     	double x = 0;
     	double y = 0;
     	double[] teamMiddlePoint = new double[2];

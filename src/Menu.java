@@ -4,29 +4,26 @@
 
 import java.awt.image.BufferedImage;
 
+// this is an object that handles the introduction movie 
 class Menu {
+	
+	private static final int INTRO_FRAMES = 30;
 	
 	Animator introAnimator;
 	Thread animationThread;
 	
+	// an animator is created and started
+	// the number of animator frames is higher than number in intro
+	// this is to ensure compatibility with other threads
     Menu(){
-        prepareIntro();
-    }
-    
-    void showOptions(){
-    	
-    }
-
-    // the end number of the animator is higher than amount frames
-    // this is to ensure the other thread can access it
-	void prepareIntro() {
-		introAnimator = new Animator(35,75);
+		introAnimator = new Animator(50,75);
 		animationThread = new Thread(introAnimator);
 		animationThread.start();
-	}
+    }
 	
+	// once the animation has shown all frames, the animation ends
 	boolean finishedIntro(){
-		if (introAnimator.getAnimationIndex() >= 29){
+		if (introAnimator.getAnimationIndex() >= INTRO_FRAMES){
 			animationThread.interrupt();
 			introAnimator = null;
 			return true;

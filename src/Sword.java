@@ -6,7 +6,10 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+//this is the less powerful of the figures in the Men team
 class Sword extends Figure {
+	
+	// regular constructor initializes default values
     Sword(Point pos){
         super(1, pos);
 		type = Figure.TYPE_SWORD;
@@ -22,6 +25,7 @@ class Sword extends Figure {
     	super(copy);
     }
 
+    // image frames used in an animation are initialized
 	@Override
 	void setUpStandSprites() {
 		standSprites = new ArrayList<BufferedImage>(2);

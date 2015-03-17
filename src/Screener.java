@@ -10,19 +10,19 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
-//
+// this object is a window that contains a canvas and buttons
 @SuppressWarnings("serial")
 class Screener extends JFrame {
+	
+	private static final Font MENU_FONT = new Font("Franklin Gothic Demi", Font.BOLD, 16);
 
 	static final Color MENU_COLOR = new Color(50,1,2);
 	static final Color BUTTON_COLOR = new Color(130,130,150);
 	static final Color GAME_COLOR = new Color(0,50,100);
-	static final Color MATRIX_COLOR = new Color(0,0,0);
+	static final Color SECRET_COLOR = new Color(0,0,0);
 	
-	private static final Font MENU_FONT = new Font("Franklin Gothic Demi", Font.BOLD, 16);
-	
+	// objects contained in this window
 	private final Painter painter;
-	private final Texter texter;
 	private final Clicker clicker;
 	
 	// buttons for turn ending, menu options and replay
@@ -35,6 +35,7 @@ class Screener extends JFrame {
 	private final JButton secretButton;
 	private final JButton replayButton;
 	
+	// all objects are immediately setup in this constructor
 	Screener(String windowName, Grid grid){
 		
 		// creates default JFrame object
@@ -69,8 +70,7 @@ class Screener extends JFrame {
 		turner.setVisible(false);
 		turner.setBorderPainted(false);
 		turner.setFocusPainted(false);
-		turner.setFont(MENU_FONT);
-		
+		turner.setFont(MENU_FONT);		
 		turner.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -79,13 +79,7 @@ class Screener extends JFrame {
 		});
 		painter.add(turner);
 		
-		// panel on which is written
-		texter = new Texter();
-		
-		// TODO temp
-		String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-		texter.write(content);
-		
+		// button to start the game
 		startButton = new JButton("Start Game");
 		startButton.addActionListener(new ActionListener(){
 			@Override
@@ -99,7 +93,7 @@ class Screener extends JFrame {
 		startButton.setFocusPainted(false);
 		startButton.setFont(MENU_FONT);
 		
-		// buttons for in the title screen menu
+		// button for the intelligence of the Orc team
 		menuButtonOrcs = new JButton("AI");
 		menuButtonOrcs.addActionListener(new ActionListener(){
 			@Override
@@ -117,6 +111,7 @@ class Screener extends JFrame {
 		menuButtonOrcs.setFocusPainted(false);
 		menuButtonOrcs.setFont(MENU_FONT);
 		
+		// button for the intelligence of the Men team
 		menuButtonMen = new JButton("Player");
 		menuButtonMen.addActionListener(new ActionListener(){
 			@Override
@@ -134,7 +129,8 @@ class Screener extends JFrame {
 		menuButtonMen.setFocusPainted(false);
 		menuButtonMen.setFont(MENU_FONT);
 		
-		menuButtonAI = new JButton("True AI");
+		// button for selecting the type of AI
+		menuButtonAI = new JButton("Random AI");
 		menuButtonAI.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -157,6 +153,7 @@ class Screener extends JFrame {
 		menuButtonAI.setFocusPainted(false);
 		menuButtonAI.setFont(MENU_FONT);		
 		
+		// button for selecting which team moves first
 		menuButtonFirstMove = new JButton("Orcs have First Turn");
 		menuButtonFirstMove.addActionListener(new ActionListener(){
 			@Override
@@ -174,12 +171,7 @@ class Screener extends JFrame {
 		menuButtonFirstMove.setVisible(false);
 		menuButtonFirstMove.setFont(MENU_FONT);
 
-		painter.add(startButton);
-		painter.add(menuButtonOrcs);
-		painter.add(menuButtonMen);
-		painter.add(menuButtonAI);
-		painter.add(menuButtonFirstMove);
-		
+		// a button to start a new game on the victory screen
 		replayButton = new JButton("New Game");
 		replayButton.addActionListener(new ActionListener(){
 			@Override
@@ -194,8 +186,7 @@ class Screener extends JFrame {
 		replayButton.setFocusPainted(false);
 		replayButton.setFont(MENU_FONT);
 		
-		painter.add(replayButton);
-		
+		// I wonder what this does
 		secretButton = new JButton("?");
 		secretButton.addActionListener(new ActionListener(){
 			@Override
@@ -214,21 +205,22 @@ class Screener extends JFrame {
 		secretButton.setVisible(false);
 		secretButton.setFocusPainted(false);
 		secretButton.setFont(MENU_FONT);
-		
+
+		// buttons are added
+		painter.add(startButton);
+		painter.add(menuButtonOrcs);
+		painter.add(menuButtonMen);
+		painter.add(menuButtonAI);
+		painter.add(menuButtonFirstMove);
+		painter.add(replayButton);
 		painter.add(secretButton);
 		
-		// the paint and text panels are added to the window
+		// the paint panel is added to the window
 	    this.getContentPane().add(painter, "West");
-	    //this.getContentPane().add(texter, "East");
 
 		// makes the window the correct size and displays it
 		this.pack();
 		this.setVisible(true);
-	}
-	
-	// updates text on the text panel
-	void rewrite(){
-		texter.write(Arborea.text);
 	}
 	
 	// sets the color of the canvas background
@@ -236,6 +228,7 @@ class Screener extends JFrame {
 		painter.setBackground(color);
 	}
 	
+	// shows or hides buttons on the menu
 	void showMenu(boolean bool){
 		menuButtonOrcs.setVisible(bool);
 		menuButtonMen.setVisible(bool);
@@ -245,12 +238,12 @@ class Screener extends JFrame {
 		secretButton.setVisible(bool);
 	}
 	
-	// shows the turn button
+	// shows or hides the turn button
 	void showReplayButton(boolean bool){
 		this.replayButton.setVisible(bool);
 	}
 	
-	// shows the turn button
+	// shows or hides the turn button
 	void showTurnButton(boolean bool){
 		this.turner.setVisible(bool);
 	}

@@ -6,7 +6,10 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+//this is the less powerful of the figures in the Orc team
 class Goblin extends Figure {
+	
+	// regular constructor initializes default values
     Goblin(Point pos){
         super(3, pos);
 		type = Figure.TYPE_GOBLIN;
@@ -21,6 +24,7 @@ class Goblin extends Figure {
     	super(copy);
     }
 
+    // image frames used in an animation are initialized
 	@Override
 	void setUpStandSprites() {
 		standSprites = new ArrayList<BufferedImage>(2);

@@ -15,9 +15,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.LineEvent.Type;
 
-
-// note that music must be .wav files !
-
+// this is an object that plays music files
+// -> note that music must be .wav files
 class MusicPlayer implements Runnable {
 	
 	// boolean for when to play music
@@ -73,15 +72,18 @@ class MusicPlayer implements Runnable {
 		}
 	}
 	
+	// changes used music files
 	void updateMusicFiles(){
 		String folder;
 		if (Arborea.enterTheMatrix) folder = "secret";
 		else folder = "music";
 
-		musicFiles = new File("src/" + folder).listFiles(); //eclipse
-		//musicFiles = new File(folder).listFiles(); //console
+		musicFiles = new File(folder).listFiles(); //console
+		if (musicFiles == null)
+			musicFiles = new File("src/" + folder).listFiles(); //eclipse
 	}
 	
+	// songs are played on a loop until interrupted
 	@Override
 	public void run() {
 	    while (true){
