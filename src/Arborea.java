@@ -26,7 +26,7 @@ class Arborea {
 	static final boolean ORCTEAM = true;
 	static final boolean MENTEAM = false;
 	
-	static final String mapFile = "src/maps/characterlocations2";
+	static final String mapFile = "src/maps/characterlocations6";
 	//static final String mapFile = "maps/characterlocations2";
     
     // static values to keep track of mouse actions
@@ -81,9 +81,6 @@ class Arborea {
 	
 	// The grid with all tiles
     static Grid grid;
-    public Grid aiGridAttackBefore; // Updates when the AI for the next character is updates
-    public Grid aiGridAttackAfter;
-    public Grid aiGrid; // keeps updating with each move
     
     // The queue with AI moves and attacks for every character
     static LinkedList<Act> AIQueue;
@@ -318,15 +315,15 @@ class Arborea {
 		for (Figure currentFigure : allFiguresOfTeam) {
 			System.out.println();
 			System.err.println(currentFigure);
-			allAICurrentFigure = currentFigure.getAllPossibleActs(grid);
-			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
+			allAICurrentFigure = currentFigure.getAllPossibleActs();
+			Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, currentFigure.isNextMoveOffensive(grid, threshold));
 			ai.add(chosenAI);
 			attackTileBefore = chosenAI.getAttackTileBefore();
 			moveTile = chosenAI.getMovingTile();
 			attackTileAfter = chosenAI.getAttackTileAfter();
 			//chosenAI.printAct();
 			
-			
+			//System.out.println("yes\n\n");
 			
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
