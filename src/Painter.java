@@ -130,7 +130,7 @@ class Painter extends JPanel {
 	void paintSecret(Graphics g){
 		if (Arborea.enterTheMatrix)
 			g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this);
-			//g.drawImage(new ImageIcon("src/art/Matrix_Code.gif").getImage(),0,0,800,600,this);	
+			//g.drawImage(new ImageIcon("src/art/Matrix.gif").getImage(),0,0,800,600,this);	
 	}
 	
 	@Override
