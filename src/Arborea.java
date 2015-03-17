@@ -180,13 +180,7 @@ class Arborea {
 			screener.showReplayButton(true);
 			return;
 		}		
-		if(turnEnded) {
-			
-			System.err.println(
-			//grid.getTeam(ORCTEAM) + " " +
-			grid.getTeam(MENTEAM)
-					);
-			
+		if(turnEnded) {			
 			for (Figure currentFigure : grid.getTeam(currentTeamIsOrcs)) {
 				currentFigure.setMoved(true);
 				currentFigure.setAttacked(true);
@@ -334,20 +328,16 @@ class Arborea {
 					randomAIAct.setAttackTileBefore(attackTileBefore);
 					break;
 				case 1:
-					System.out.println();
-					System.err.println(currentFigure);
 					allAICurrentFigure = currentFigure.getAllPossibleActs();
 					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, currentFigure.isNextMoveOffensive(grid, threshold));
 					ai.add(chosenAI);
 					attackTileBefore = chosenAI.getAttackTileBefore();
 					moveTile = chosenAI.getMovingTile();
 					attackTileAfter = chosenAI.getAttackTileAfter();
-					//chosenAI.printAct();
 					break;
 			}	
 			if(attackTileBefore != null) {
 				attackedFigure = attackTileBefore.getFigure();
-				System.out.println("hoi1" + attackedFigure);
 				currentFigure.attack(grid, attackedFigure, true);
 			}
 			if(moveTile != null) {
@@ -357,9 +347,7 @@ class Arborea {
 			}
 			if(attackTileAfter != null) {
 				attackedFigure = attackTileAfter.getFigure();
-				System.out.println("hoi2" + attackedFigure);
-				currentFigure.attack(grid, attackedFigure, true);		
-			
+				currentFigure.attack(grid, attackedFigure, true);
 			}
 		}
 	}

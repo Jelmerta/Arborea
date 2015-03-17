@@ -119,7 +119,6 @@ abstract class Figure {
     
 	public void attack(Grid grid, Figure attacked, boolean print) {
 		// if attacked = null, figure is already dead
-		System.out.println(this);
 		if(attacked == null) return;
     	 double hitChance = calculateChance(this.weapon+this.calculateAdjacencyBonus(grid), attacked.weapon+attacked.calculateAdjacencyBonus(grid));
     	 boolean imHitCaptain = Math.random() < hitChance;
@@ -129,7 +128,6 @@ abstract class Figure {
     			 removeFromField(grid, attacked);
     		 }
     	 } if(print) {
-    		 System.out.println("This unit has " + attacked.hit + " HP left.");
     	 }
     }
 	

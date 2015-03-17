@@ -67,7 +67,6 @@ class Grid {
     		Tile t = entry.getValue();
     		tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
-    	//System.err.println(tiles.size());
         this.humans = new Team(copy.humans);
         this.orcs = new Team(copy.orcs);
     }
