@@ -81,9 +81,6 @@ class Arborea {
 	
 	// The grid with all tiles
     static Grid grid;
-    public Grid aiGridAttackBefore; // Updates when the AI for the next character is updates
-    public Grid aiGridAttackAfter;
-    public Grid aiGrid; // keeps updating with each move
     
     // The queue with AI moves and attacks for every character
     static LinkedList<Act> AIQueue;
@@ -316,6 +313,7 @@ class Arborea {
 		ArrayList<Act> allAICurrentFigure = new ArrayList<Act>();
 
 		for (Figure currentFigure : allFiguresOfTeam) {
+
 			switch(Arborea.indexAI) {
 				case 0:
 					Random randomAI = new Random();
@@ -338,8 +336,8 @@ class Arborea {
 				case 1:
 					System.out.println();
 					System.err.println(currentFigure);
-					allAICurrentFigure = currentFigure.getAllPossibleActs(grid);
-					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, grid, currentFigure.isNextMoveOffensive(grid, threshold));
+					allAICurrentFigure = currentFigure.getAllPossibleActs();
+					Act chosenAI = currentFigure.calculateBestMove(allAICurrentFigure, currentFigure.isNextMoveOffensive(grid, threshold));
 					ai.add(chosenAI);
 					attackTileBefore = chosenAI.getAttackTileBefore();
 					moveTile = chosenAI.getMovingTile();

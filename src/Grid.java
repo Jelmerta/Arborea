@@ -62,11 +62,12 @@ class Grid {
     // copy constructor, uses copy constructors of its objects
     public Grid(Grid copy) {
         this.tiles = new HashMap<Point, Tile>();
-    	for(Entry<Point, Tile> entry : tiles.entrySet()) {
+    	for(Entry<Point, Tile> entry : copy.tiles.entrySet()) {
     		Point p = entry.getKey();
     		Tile t = entry.getValue();
     		tiles.put(new Point(p.x,p.y),new Tile(t));
     	}
+    	//System.err.println(tiles.size());
         this.humans = new Team(copy.humans);
         this.orcs = new Team(copy.orcs);
     }

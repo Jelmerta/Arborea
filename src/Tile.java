@@ -30,8 +30,6 @@ class Tile {
     // coordinates
     Point coords;
     Point pixelCoords;
-    
-    //
  
     // copy constructor
     Tile(Tile copy){

@@ -95,10 +95,6 @@ abstract class Figure {
     		this.facingRight = false;
     	if (destinationTile.getLocation().x > this.getLocation().x)
     		this.facingRight = true;
-    	
-    	System.out.println(grid);
-    	System.out.println(this);
-    	System.out.println(this.getLocation());
     	grid.getTile(this.getLocation()).setFigure(null);
        	destinationTile.setFigure(this);
        	setLocation(destinationTile.getLocation());
@@ -151,8 +147,8 @@ abstract class Figure {
 		}
 	}
 	
-	public Act calculateBestMove(ArrayList<Act> allActs, Grid gridBefore, boolean offensive) {
-		Grid usedGrid = new Grid(gridBefore);
+	public Act calculateBestMove(ArrayList<Act> allActs, boolean offensive) {
+		Grid usedGrid = new Grid(Arborea.grid);
 		int bestAdjacency = 1000;
 		int currentAdjacency;
 		double ownTeamDistance, enemyTeamDistance;
@@ -164,11 +160,11 @@ abstract class Figure {
 
 		Tile thisTile = usedGrid.getTile(this.getLocation());
 		if(this.getTeam()) {
-			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
-			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
+			ownTeamDistance = lengthToMiddleOfTeam(thisTile, Arborea.grid.orcs);
+			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, Arborea.grid.humans);
 		} else {
-			ownTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.orcs);
-			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, gridBefore.humans);
+			ownTeamDistance = lengthToMiddleOfTeam(thisTile, Arborea.grid.orcs);
+			enemyTeamDistance = lengthToMiddleOfTeam(thisTile, Arborea.grid.humans);
 		}
 		
 		for (Act currentAct : allActs) {
@@ -204,7 +200,7 @@ abstract class Figure {
 			Tile thisTileNew = usedGrid.getTile(this.getLocation());
 			double ownTeamDistanceNew, enemyTeamDistanceNew;
 			if(this.getTeam()) {
-				 ownTeamDistanceNew= lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
+				ownTeamDistanceNew= lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
 				enemyTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.humans);
 			} else {
 				ownTeamDistanceNew = lengthToMiddleOfTeam(thisTileNew, usedGrid.orcs);
@@ -228,11 +224,11 @@ abstract class Figure {
 				bestAdjacency = currentAdjacency;
 				bestAdjacencyTile = moveTile;
 				if(bestAdjacencyTile == null) {
-					bestAdjacencyTile = gridBefore.getTile(this.getLocation());
+					bestAdjacencyTile = usedGrid.getTile(this.getLocation());
 				}
 			}
 			
-			usedGrid = new Grid(gridBefore);//new Grid(gridBefore); //check if works without copy constructor
+			usedGrid = new Grid(Arborea.grid);
 		}
 		Random randomGenerator = new Random();
 		int index;
@@ -259,7 +255,9 @@ abstract class Figure {
 		return bestAct;
 	}
 	
-	public ArrayList<Act> getAllPossibleActs(Grid gridBeforeMove) {
+	public ArrayList<Act> getAllPossibleActs() {
+		Grid gridBeforeMove = new Grid(Arborea.grid);
+		
 		ArrayList<Act> allPossibleActs = new ArrayList<Act>();
 		ArrayList<Tile> moveableTiles = this.getAllMoveableTiles(gridBeforeMove);
 		ArrayList<Tile> attackableTiles = this.getAllAttackableTiles(gridBeforeMove);
@@ -296,7 +294,7 @@ abstract class Figure {
 				currentAct.setAttackTileAfter(attackableTile);
 				allPossibleActs.add(currentAct);
 			}
-			this.move(usedGrid, gridBeforeMove.getTile(this.getLocation())); // is this necessary?
+//			this.move(usedGrid, gridBeforeMove.getTile(this.getLocation()));
 			usedGrid = new Grid(gridBeforeMove);
 		}
 		return allPossibleActs;
@@ -325,6 +323,7 @@ abstract class Figure {
 		ArrayList<Tile> neighboursAttackable = new ArrayList<Tile>();
 		Tile thisTile = grid.getTile(this.getLocation());
 		Tile[] neighbours = thisTile.getNeighbours();
+		
 		for (Tile currentNeighbourTile : neighbours) {
 			if(currentNeighbourTile != null) {
 				neighboursNotNull.add(currentNeighbourTile);
